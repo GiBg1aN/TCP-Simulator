@@ -13,7 +13,7 @@ public class Channel extends LinkedList<MySegment>{
         return myChannel;
     }
 
-    public boolean enqueueSegment(MySegment m){
+    public synchronized boolean enqueueSegment(MySegment m){
         if(size()<MAX_LENGTH){
             addLast(m);
             return true;
@@ -21,20 +21,23 @@ public class Channel extends LinkedList<MySegment>{
         return false;
     }
     
-    public void dequeueSegment(){
+    public synchronized int dequeueSegment(){
         if(!isEmpty()){
             MySegment segm = removeFirst();
             if(segm.getSegmentType()==SegmentType.DATA){
                 while(!sendAcknowledgement(segm.getUser())){System.out.println("TANTE BANANE");}
-                System.out.println("(SENT ack)");
+                System.out.println("(SENT ack)" + segm.getUser().getID());
             }
             else
                 segm.getUser().receiveAck();
+            return 1;
         }
+        return 0;
     }
     
     private boolean sendAcknowledgement(User user){
         MySegment ack = new MySegment(SegmentType.ACK, user);
         return Channel.getInstance().enqueueSegment(ack);
     } 
+
 }

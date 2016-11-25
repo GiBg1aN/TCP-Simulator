@@ -24,20 +24,22 @@ public class MyMonitor {
         return myMonitor;
     }
     
-    public synchronized void askConnection() throws InterruptedException{
+    public synchronized void askConnection(int ID) throws InterruptedException{
         while(nUsers>MAX_USER)
             wait();
         nUsers++;
+        System.out.println("CONNECTION OPENED " + ID);
     }
     
     public synchronized void releaseConnection(int ID) throws InterruptedException{
         while(segments[ID]!=0){
-            System.out.println("aspetto");
+            System.out.println("aspetto " + ID);
             wait();
         }
             
         nUsers--;
         notifyAll();
+        System.out.println("CONNECTION CLOSED " + ID);
     }
     
     public synchronized void ack(int ID){
@@ -45,4 +47,8 @@ public class MyMonitor {
         notifyAll();
     }
     
+    public synchronized void data(int ID){
+        segments[ID]++;
+        System.out.println("<---- "+ID);
+    }    
 }

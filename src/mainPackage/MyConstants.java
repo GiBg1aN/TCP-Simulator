@@ -1,8 +1,7 @@
 package mainPackage;
 
-
 public class MyConstants {
-    public static final int K = 2; //Numero massimo utenti
+    public static final int K = 3; //Numero utenti
     public enum SegmentType{
         ACK,
         DATA        
