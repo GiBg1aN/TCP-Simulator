@@ -13,9 +13,11 @@ public class Channel extends LinkedList<MySegment>{
         return myChannel;
     }
 
-    public synchronized boolean enqueueSegment(MySegment m){
+    public synchronized boolean enqueueSegment(MySegment segm){
+        if(segm.getSegmentType() == SegmentType.DATA)
+                System.out.println(segm.getUser().getID() + " say: Sent data n° " + segm.getSeq());
         if(size()<MAX_LENGTH){
-            addLast(m);
+            addLast(segm);
             return true;
         }
         return false;
@@ -23,20 +25,24 @@ public class Channel extends LinkedList<MySegment>{
     
     public synchronized int dequeueSegment(){
         if(!isEmpty()){
-            MySegment segm = removeFirst();
+            MySegment segm = removeFirst();            
             if(segm.getSegmentType()==SegmentType.DATA){
-                while(!sendAcknowledgement(segm.getUser())){System.out.println("TANTE BANANE");}
-                System.out.println("(SENT ack)" + segm.getUser().getID());
+                System.out.println(segm.getUser().getID() + " say: Received data n° " + segm.getSeq());
+                while(!sendAcknowledgement(segm)){System.out.println("TANTE BANANE");}
+                System.out.println(segm.getUser().getID() + " say: Sent ack n° " + segm.getSeq());
             }
-            else
-                segm.getUser().receiveAck();
+            else{
+                System.out.println(segm.getUser().getID() + " say: Received ack n° " + segm.getSeq());
+                segm.getUser().receiveAck(segm.getSeq());
+            }
+               
             return 1;
         }
         return 0;
     }
     
-    private boolean sendAcknowledgement(User user){
-        MySegment ack = new MySegment(SegmentType.ACK, user);
+    private synchronized boolean sendAcknowledgement(MySegment segm){
+        MySegment ack = new MySegment(SegmentType.ACK, segm.getUser(), segm.getSeq() );
         return Channel.getInstance().enqueueSegment(ack);
     } 
 

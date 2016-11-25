@@ -5,10 +5,16 @@ import static mainPackage.MyConstants.*;
 public class MySegment {
     private SegmentType segmentType;
     private User user;
+    private int seq;
 
-    public MySegment(SegmentType segmentType, User user) {
+    public MySegment(SegmentType segmentType, User user, int seq) {
         this.segmentType = segmentType;
         this.user = user;
+        this.seq = seq;
+    }
+
+    public int getSeq() {
+        return seq;
     }
 
     public User getUser() {

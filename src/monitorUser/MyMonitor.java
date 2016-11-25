@@ -19,7 +19,7 @@ public class MyMonitor {
         if (myMonitor==null){
             myMonitor = new MyMonitor();
             for(int i=0; i<MAX_USER;i++)
-                myMonitor.getSegments()[i] = 0;
+                myMonitor.getSegments()[i] = N;
         }
         return myMonitor;
     }
@@ -28,18 +28,18 @@ public class MyMonitor {
         while(nUsers>MAX_USER)
             wait();
         nUsers++;
-        System.out.println("CONNECTION OPENED " + ID);
+        System.out.println(ID + " say: CONNECTION OPENED ");
     }
     
     public synchronized void releaseConnection(int ID) throws InterruptedException{
         while(segments[ID]!=0){
-            System.out.println("aspetto " + ID);
+            System.out.println(ID + " say: Waiting acks");
             wait();
         }
             
         nUsers--;
         notifyAll();
-        System.out.println("CONNECTION CLOSED " + ID);
+        System.out.println(ID + " say: CONNECTION CLOSED " + ID);
     }
     
     public synchronized void ack(int ID){
@@ -48,7 +48,6 @@ public class MyMonitor {
     }
     
     public synchronized void data(int ID){
-        segments[ID]++;
-        System.out.println("<---- "+ID);
+
     }    
 }

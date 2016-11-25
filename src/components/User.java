@@ -1,18 +1,36 @@
 package components;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import static mainPackage.MyConstants.*;
 import monitorUser.MyMonitor;
 
 public class User extends Thread{
     private int ID = 0;
     private static final int nSegment = N;
-
+    private Timer[] timeouts = new Timer[nSegment];
+    
+    /* ----------------------------------------------------------------------- */
+    public class RemindTask extends TimerTask {
+        int seq;
+        
+        public RemindTask(int seq){
+            this.seq = seq;
+        }
+        
+        public void run() {
+            System.out.format(ID + " say: Time's up for segment "+ seq +"!%n      Resend data n° "+ seq +"%n");
+            sendSegment(seq);
+        }
+    }
+    
+    /* ----------------------------------------------------------------------- */    
+    
+    
     public int getID() {
         return ID;
     }
 
-    
-    
     @Override
     public void run() {
         while(true){
@@ -31,25 +49,26 @@ public class User extends Thread{
     }
     
     public void startTransmission(){
-        int sent = 0;
+        int seq = 0;
 
-        while(sent<nSegment){
-            if(sendSegment()){
-                System.out.println("(SENT data) " + ID);
-                MyMonitor.getInstance().data(ID);
-                sent++;       
-            }
+        while(seq<nSegment){
+            sendSegment(seq);
+            seq++;      
         }
         
     }
     
-    private boolean sendSegment(){
-        MySegment segm = new MySegment(SegmentType.DATA, this);
-        return Channel.getInstance().enqueueSegment(segm);
+    private void sendSegment(int seq){
+        MySegment segm = new MySegment(SegmentType.DATA, this, seq);
+        timeouts[seq] = new Timer();
+        timeouts[seq].schedule(new RemindTask(seq), 3000);
+        if(Channel.getInstance().enqueueSegment(segm)){
+                MyMonitor.getInstance().data(ID);    
+        }
     }
     
-    public synchronized void receiveAck(){
-        System.out.println("(RECEIVED ack) " + ID);
+    public synchronized void receiveAck(int seq){
+        timeouts[seq].cancel();
         MyMonitor.getInstance().ack(ID);
     }   
 }
