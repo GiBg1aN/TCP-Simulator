@@ -7,5 +7,5 @@ public class MyConstants {
         DATA        
     }
     public static final int T = 10; //Lunghezza coda
-    public static final int N = 20; //Numero segmenti per utente
+    public static final int N = 4; //Numero segmenti per utente
 }
