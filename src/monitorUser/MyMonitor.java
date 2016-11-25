@@ -27,10 +27,9 @@ public class MyMonitor {
     public synchronized void askConnection(int ID) throws InterruptedException{
         while(nUsers>MAX_USER)
             wait();
-        for(int i=0; i<MAX_USER;i++)
-            myMonitor.getSegments()[i] = N;
+        myMonitor.getSegments()[ID] = N;
         nUsers++;
-        System.out.println(ID + " say: CONNECTION OPENED ");
+        System.out.println("\t\t\t\t\t"+ID + " say: CONNECTION OPENED ");
     }
     
     public synchronized void releaseConnection(int ID) throws InterruptedException{
@@ -41,7 +40,7 @@ public class MyMonitor {
             
         nUsers--;
         notifyAll();
-        System.out.println(ID + " say: CONNECTION CLOSED " + ID);
+        System.out.println("\t\t\t\t\t"+ID + " say: CONNECTION CLOSED ");
     }
     
     public synchronized void ack(int ID){

@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Timer;
+import java.time.Instant;
 import java.util.TimerTask;
 import static mainPackage.MyConstants.*;
 import monitorUser.MyMonitor;
@@ -14,7 +16,8 @@ public class User extends Thread{
     private int ID = 0;
     private static final int nSegment = N;
     private Timer[] timeouts = new Timer[nSegment];
-    private long[] timestamps = new long[nSegment];
+    private Instant[] timestamps = new Instant[nSegment];
+    private Instant[] timestamps2 = new Instant[nSegment];
     private static final SimpleDateFormat sdf = new SimpleDateFormat("HH.mm.ss");
     
     /* ----------------------------------------------------------------------- */
@@ -45,9 +48,9 @@ public class User extends Thread{
                 MyMonitor.getInstance().askConnection(ID);
                 startTransmission();
                 MyMonitor.getInstance().releaseConnection(ID);
-                for(int i = 0; i < nSegment; i++){
-                    System.out.println(new BigDecimal(timestamps[i]).divide(new BigDecimal(1000000)));
-                }
+                //for(int i = 0; i < nSegment; i++){
+                //    System.out.println(Duration.between(timestamps[i], timestamps2[i]).toNanos());
+                //}
             } catch (Exception e){
                 System.out.println("Connection issue");
             }
@@ -63,7 +66,7 @@ public class User extends Thread{
 
         while(seq<nSegment){
             sendSegment(seq);
-            timestamps[seq] = System.nanoTime();
+            //timestamps[seq] = Instant.now();
             seq++;      
         }
         
@@ -81,6 +84,6 @@ public class User extends Thread{
     public synchronized void receiveAck(int seq){
         timeouts[seq].cancel();
         MyMonitor.getInstance().ack(ID);
-        timestamps[seq] = System.nanoTime() - timestamps[seq];
+        //timestamps2[seq] = Instant.now();
     }   
 }
