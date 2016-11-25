@@ -61,7 +61,7 @@ public class User extends Thread{
     private void sendSegment(int seq){
         MySegment segm = new MySegment(SegmentType.DATA, this, seq);
         timeouts[seq] = new Timer();
-        timeouts[seq].schedule(new RemindTask(seq), 3000);
+        timeouts[seq].schedule(new RemindTask(seq), 300);
         if(Channel.getInstance().enqueueSegment(segm)){
                 MyMonitor.getInstance().data(ID);    
         }

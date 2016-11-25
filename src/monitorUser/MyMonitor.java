@@ -27,13 +27,15 @@ public class MyMonitor {
     public synchronized void askConnection(int ID) throws InterruptedException{
         while(nUsers>MAX_USER)
             wait();
+        for(int i=0; i<MAX_USER;i++)
+            myMonitor.getSegments()[i] = N;
         nUsers++;
         System.out.println(ID + " say: CONNECTION OPENED ");
     }
     
     public synchronized void releaseConnection(int ID) throws InterruptedException{
         while(segments[ID]!=0){
-            System.out.println(ID + " say: Waiting acks");
+            System.out.println(ID + " say: Waiting acks (missed "+ segments[ID] +")");
             wait();
         }
             
