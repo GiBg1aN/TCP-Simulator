@@ -1,5 +1,10 @@
 package components;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import static mainPackage.MyConstants.*;
@@ -9,6 +14,8 @@ public class User extends Thread{
     private int ID = 0;
     private static final int nSegment = N;
     private Timer[] timeouts = new Timer[nSegment];
+    private long[] timestamps = new long[nSegment];
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("HH.mm.ss");
     
     /* ----------------------------------------------------------------------- */
     public class RemindTask extends TimerTask {
@@ -33,15 +40,18 @@ public class User extends Thread{
 
     @Override
     public void run() {
-        while(true){
+        //while(true){
             try{
                 MyMonitor.getInstance().askConnection(ID);
                 startTransmission();
-                MyMonitor.getInstance().releaseConnection(ID);            
-            } catch (InterruptedException e){
+                MyMonitor.getInstance().releaseConnection(ID);
+                for(int i = 0; i < nSegment; i++){
+                    System.out.println(new BigDecimal(timestamps[i]).divide(new BigDecimal(1000000)));
+                }
+            } catch (Exception e){
                 System.out.println("Connection issue");
             }
-        }
+        //}
     }
     
     public User(int ID){
@@ -53,6 +63,7 @@ public class User extends Thread{
 
         while(seq<nSegment){
             sendSegment(seq);
+            timestamps[seq] = System.nanoTime();
             seq++;      
         }
         
@@ -70,5 +81,6 @@ public class User extends Thread{
     public synchronized void receiveAck(int seq){
         timeouts[seq].cancel();
         MyMonitor.getInstance().ack(ID);
+        timestamps[seq] = System.nanoTime() - timestamps[seq];
     }   
 }
