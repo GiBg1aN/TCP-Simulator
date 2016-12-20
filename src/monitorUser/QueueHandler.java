@@ -1,4 +1,6 @@
-package components;
+package monitorUser;
+
+import components.Channel;
 
 public class QueueHandler extends Thread{
     @Override
