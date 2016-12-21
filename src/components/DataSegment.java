@@ -56,6 +56,6 @@ public class DataSegment implements MySegment {
     public boolean timeout(){
         /*System.out.println(sentTimestamp);
         System.out.println(receivedTimestamp);*/
-        return receivedTimestamp == -1 || (receivedTimestamp - sentTimestamp) > MyConstants.timeout;
+        return receivedTimestamp == -1 || (receivedTimestamp - sentTimestamp) > MyConstants.TIMEOUT;
     }
 }

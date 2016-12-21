@@ -3,7 +3,7 @@ package tcpImplementations;
 import mainPackage.MyConstants;
 
 
-public class Tahoe implements TCP {
+public class Reno implements TCP {
     private int size;
     private int ssthresh;
     
@@ -24,5 +24,4 @@ public class Tahoe implements TCP {
 
     @Override
     public int size() { return this.size; }
-
 }

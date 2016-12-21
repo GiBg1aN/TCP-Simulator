@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import mainPackage.MyConstants;
 import tcpImplementations.AIMD;
-import tcpImplementations.Reeno;
+import tcpImplementations.Reno;
 import tcpImplementations.TCP;
 import tcpImplementations.Tahoe;
 
@@ -29,8 +29,8 @@ public class User {
         if (tcpProtocol == MyConstants.TCPProtocolType.AIMD) {
             this.tcpProtocol = new AIMD();
         }
-        if (tcpProtocol == MyConstants.TCPProtocolType.REENO) {
-            this.tcpProtocol = new Reeno();
+        if (tcpProtocol == MyConstants.TCPProtocolType.RENO) {
+            this.tcpProtocol = new Reno();
         }
         if (tcpProtocol == MyConstants.TCPProtocolType.TAHOE) {
             this.tcpProtocol = new Tahoe();
