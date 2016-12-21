@@ -1,7 +1,9 @@
 package components;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import mainPackage.MyConstants;
 
 
 public class User {
@@ -9,10 +11,12 @@ public class User {
     private int congestionWindowSize;
     private int segmentsToSend;
     private int segmentsNotConfirmed;
+    private int segmentConfirmed;
     private int cumulativeAck;
     private int seqNumber;
-    private List<MySegment> congestionWindow;
-
+    private List<DataSegment> congestionWindow;
+    private LinkedList<Integer> retransmit = new LinkedList<>();
+    
     public User(int ID) {
         this.ID = ID;
         congestionWindowSize = mainPackage.MyConstants.MSS;
@@ -21,23 +25,42 @@ public class User {
     }
 
     public void transmit(double sendingTimestamp) {
-        if (seqNumber < segmentsToSend) {
-            while (segmentsNotConfirmed < congestionWindowSize) {
-                sendSegment(seqNumber, sendingTimestamp);
-                segmentsNotConfirmed++;
-                seqNumber++;
+        if(segmentConfirmed == segmentsToSend){
+            System.out.println( "(" + sendingTimestamp + ") USER " + ID + " END TRASMISSION");
+            segmentConfirmed++;
+        }        
+        for(DataSegment segm : congestionWindow){
+            if(segm.timeout()){
+                System.out.println((char)27 + "[33m(" + sendingTimestamp + ") - USER: " + ID + " - Segm n° " + segm.getSeq() + " timeout" + (char)27 + "[0m");
+                retransmit.add(segm.getSeq());
+                congestionWindowSize = (congestionWindowSize/2 > 0 ) ? congestionWindowSize/2 : MyConstants.MSS;
             }
+            else{
+                //System.out.println("Segment " + segm.getSeq() + " correctly sent.");
+                congestionWindowSize += 1;
+                segmentConfirmed += 1;
+            }
+        }        
+        congestionWindow.clear();
+        segmentsNotConfirmed = 0;
+        
+        while(segmentConfirmed < segmentsToSend && segmentsNotConfirmed < congestionWindowSize){
+            DataSegment segm;
+            if(retransmit.isEmpty() && seqNumber < segmentsToSend){
+                segm = new DataSegment(this, seqNumber, sendingTimestamp); // Crea un segmento
+                seqNumber++;
+            } else{
+                segm = new DataSegment(this, retransmit.removeFirst(), sendingTimestamp); // Crea un segmento 
+            }
+            sendSegment(segm);
+            segmentsNotConfirmed++;
         }
     }
 
-    private void sendSegment(int seq, double sentTimestamp) {
-        MySegment segm = new DataSegment(this, seq, sentTimestamp); // Crea un segmento
+    private void sendSegment(DataSegment segm) {
         Channel.getInstance().enqueueSegment(segm);
+        System.out.println((char)27 + "[31m(" + segm.getSentTimestamp() + ") - USER: " + ID + " - Sent data n° " + segm.getSeq() + (char)27 + "[0m");
         congestionWindow.add(segm);
-    }
-
-    public void receiveAck(int seq, double ackTimestamp) {
-    
     }
 
     public void restart() {
@@ -45,13 +68,6 @@ public class User {
         seqNumber = 0;
         //active = false;
         System.out.println("restart");
-    }
-
-    //public boolean active(){
-    //    return active;
-    //}
-    private void timeout() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public int getID() {

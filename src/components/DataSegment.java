@@ -1,5 +1,6 @@
 package components;
 
+import mainPackage.MyConstants;
 import static mainPackage.MyConstants.*;
 import static mainPackage.MyConstants.SegmentType.DATA;
 
@@ -16,12 +17,16 @@ public class DataSegment implements MySegment {
         this.sentTimestamp = sentTimestamp;
         this.receivedTimestamp = -1;
     }
+
+    public double getSentTimestamp() {
+        return sentTimestamp;
+    }
     
     @Override
     public void solveSegment(double timestamp) {
-        System.out.println("(" + receivedTimestamp + ") - Received data n° " + seq + " from user " + user.getID());
+        System.out.println((char)27 + "[36m(" + timestamp + ") - USER: " + user.getID() + " - Received data n° " + seq+ (char)27 + "[0m");
         sendAcknowledgement(this);
-        System.out.println("(" + timestamp + ") - Sent ack n° " + seq + " for user " + user.getID());        
+        System.out.println((char)27 + "[32m(" + timestamp + ") - USER: " + user.getID() + " - Sent ack n° " + seq + (char)27 + "[0m");        
     }
     
     private void sendAcknowledgement(DataSegment segm) {
@@ -46,5 +51,11 @@ public class DataSegment implements MySegment {
     @Override
     public SegmentType getSegmentType() {
         return SegmentType.DATA;
+    }
+    
+    public boolean timeout(){
+        System.out.println(sentTimestamp);
+        System.out.println(receivedTimestamp);
+        return receivedTimestamp == -1 || (receivedTimestamp - sentTimestamp) > MyConstants.timeout;
     }
 }

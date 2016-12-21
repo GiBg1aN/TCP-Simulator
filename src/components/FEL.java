@@ -8,6 +8,7 @@ public class FEL {
     public FEL(int nUsers){
         fel = new double[nUsers + 1];
         size = nUsers + 1;
+        fel[nUsers] = 0.01;
     }
     
     public int getNextEvent() {
