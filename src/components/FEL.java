@@ -25,4 +25,12 @@ public class FEL {
     public void scheduleNextEvent(int index) {
         
     }
+    
+    public double getEventTime(int index) {
+        return fel[index];
+    }
+    
+    public void setEventTime(int index, double time) {
+        this.fel[index] += time;
+    }
 }

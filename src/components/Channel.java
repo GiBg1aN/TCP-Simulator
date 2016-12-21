@@ -3,7 +3,7 @@ package components;
 import java.util.LinkedList;
 import static mainPackage.MyConstants.*;
 
-public class Channel extends LinkedList<MySegment>{
+public class Channel extends LinkedList<MySegment> {
     private static final int MAX_LENGTH = T;    
     private static final Channel instance = new Channel();
     
@@ -12,19 +12,15 @@ public class Channel extends LinkedList<MySegment>{
     
     public static Channel getInstance() { return instance; }
 
-    public boolean enqueueSegment(MySegment segm) {
-        if(segm.getSegmentType() == SegmentType.DATA) {
-                System.out.println(segm.getUser().getID() + " say: Sent data n° " + segm.getSeq());
-        } if(size() < MAX_LENGTH){
+    public void enqueueSegment(MySegment segm) {
+        if(size() < MAX_LENGTH){
             addLast(segm);
-            return true;
         }
-        return false;
     }
     
-    public void dequeueSegment() {
+    public void dequeueSegment(double solveTimestamp) {
         if(!isEmpty()) {
-            removeFirst().solveSegment();
+            removeFirst().solveSegment(solveTimestamp);
         }
     }
 }

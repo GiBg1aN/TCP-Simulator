@@ -1,49 +1,43 @@
 package components;
 
-import static mainPackage.MyConstants.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class User {
     private int ID;
-    private int congestionWindow;
+    private int congestionWindowSize;
     private int segmentsToSend;
     private int segmentsNotConfirmed;
     private int cumulativeAck;
     private int seqNumber;
+    private List<MySegment> congestionWindow;
 
-    
     public User(int ID) {
         this.ID = ID;
-        congestionWindow = MSS;
-        segmentsToSend = N;
+        congestionWindowSize = mainPackage.MyConstants.MSS;
+        segmentsToSend = mainPackage.MyConstants.N;
+        congestionWindow = new ArrayList<>();
     }
 
-    public void transmit() {
-        if (segmentsNotConfirmed != 0) {
-            timeout();
-        }
+    public void transmit(double sendingTimestamp) {
         if (seqNumber < segmentsToSend) {
-            while (segmentsNotConfirmed < congestionWindow) {
-                sendSegment(seqNumber);
+            while (segmentsNotConfirmed < congestionWindowSize) {
+                sendSegment(seqNumber, sendingTimestamp);
                 segmentsNotConfirmed++;
                 seqNumber++;
             }
         }
     }
 
-    private void sendSegment(int seq) {
-        MySegment segm = new MySegment(SegmentType.DATA, this, seq); // Crea un segmento
+    private void sendSegment(int seq, double sentTimestamp) {
+        MySegment segm = new DataSegment(this, seq, sentTimestamp); // Crea un segmento
         Channel.getInstance().enqueueSegment(segm);
+        congestionWindow.add(segm);
     }
 
-    public void receiveAck(int seq) {
-        cumulativeAck++;
-        if (cumulativeAck == segmentsToSend) {
-            restart();
-        } else {
-            //active = false;
-            segmentsNotConfirmed = 0;
-        }
+    public void receiveAck(int seq, double ackTimestamp) {
+    
     }
 
     public void restart() {
