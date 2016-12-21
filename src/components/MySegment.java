@@ -7,11 +7,32 @@ public class MySegment {
     private SegmentType segmentType;
     private User user;
     private int seq;
+    
 
     public MySegment(SegmentType segmentType, User user, int seq) {
         this.segmentType = segmentType;
         this.user = user;
         this.seq = seq;
+    }
+    
+    public void solveSegment() {
+        if(segmentType == DATA) {
+            System.out.println("--- Received data n° " + seq + " from user " + user.getID());
+            
+            while(!sendAcknowledgement(this)) {
+                System.out.println("TANTE BANANE"); // DEBUG
+            }
+            
+            System.out.println("--- Sent ack n° " + seq + " for user " + user.getID());
+        } else {
+            System.out.println("User " + user.getID() + " say: Received ack n° " + seq);
+            user.receiveAck(seq);
+        }
+    }
+    
+    private boolean sendAcknowledgement(MySegment segm) {
+        MySegment ack = new MySegment(SegmentType.ACK, segm.getUser(), segm.getSeq());
+        return Channel.getInstance().enqueueSegment(ack);
     }
 
     public int getSeq() {
@@ -29,23 +50,6 @@ public class MySegment {
     public void setSegmentType(SegmentType segmentType) {
         this.segmentType = segmentType;
     }
-    
-    public void solveSegment(){
-        if(segmentType == DATA){
-            System.out.println("--- Received data n° " + seq + " from user " + user.getID());
-            while(!sendAcknowledgement(this)){System.out.println("TANTE BANANE");}
-                System.out.println("--- Sent ack n° " + seq + " for user " + user.getID());
-        }
-        else {
-            System.out.println("User " + user.getID() + " say: Received ack n° " + seq);
-            user.receiveAck(seq);
-        }
-    }
-    
-    private synchronized boolean sendAcknowledgement(MySegment segm){
-        MySegment ack = new MySegment(SegmentType.ACK, segm.getUser(), segm.getSeq() );
-        return Channel.getInstance().enqueueSegment(ack);
-    } 
     
     /*
     

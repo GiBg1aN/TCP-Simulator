@@ -1,23 +1,28 @@
 package components;
 
 public class FEL {
-    private double[] FEL;
-    private int size;
+    private final double[] fel;
+    private final int size;
+
     
     public FEL(int nUsers){
-        FEL = new double[nUsers + 1];
+        fel = new double[nUsers + 1];
         size = nUsers + 1;
     }
     
     public int getNextEvent() {
-        double min = FEL[0];
+        double min = fel[0];
         int index = 0;
-        for(int i = 1; i < size; i++){
-            if(FEL[i]<min){
-                min = FEL[i];
+        for (int i = 1; i < size; i++) {
+            if (fel[i] < min) {
+                min = fel[i];
                 index = i;
             }
         }
         return index;
+    }
+    
+    public void scheduleNextEvent(int index) {
+        
     }
 }

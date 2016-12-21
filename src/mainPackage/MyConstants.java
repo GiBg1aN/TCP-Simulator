@@ -2,7 +2,7 @@ package mainPackage;
 
 public class MyConstants {
     public static final int K = 1; //Numero utenti
-    public enum SegmentType{
+    public enum SegmentType {
         ACK,
         DATA        
     }
