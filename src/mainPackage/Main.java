@@ -19,7 +19,7 @@ public class Main {
 
         /* ---------------------------------------------------------- */
         for (int i = 0; i < N_USERS; i++) {
-            users[i] = new User(i);
+            users[i] = new User(i, MyConstants.TCPProtocolType.AIMD);
         }
         /* ---------------------------------------------------------- */
 

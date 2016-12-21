@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import mainPackage.MyConstants;
+import tcpImplementations.AIMD;
+import tcpImplementations.Reeno;
+import tcpImplementations.TCP;
+import tcpImplementations.Tahoe;
 
 
 public class User {
     private int ID;
-    private int congestionWindowSize;
+    private TCP tcpProtocol;
+    //private int congestionWindowSize;
     private int segmentsToSend;
     private int segmentsNotConfirmed;
     private int segmentConfirmed;
@@ -17,11 +22,19 @@ public class User {
     private List<DataSegment> congestionWindow;
     private LinkedList<Integer> retransmit = new LinkedList<>();
     
-    public User(int ID) {
+    public User(int ID, MyConstants.TCPProtocolType tcpProtocol) {
         this.ID = ID;
-        congestionWindowSize = mainPackage.MyConstants.MSS;
         segmentsToSend = mainPackage.MyConstants.N;
         congestionWindow = new ArrayList<>();
+        if (tcpProtocol == MyConstants.TCPProtocolType.AIMD) {
+            this.tcpProtocol = new AIMD();
+        }
+        if (tcpProtocol == MyConstants.TCPProtocolType.REENO) {
+            this.tcpProtocol = new Reeno();
+        }
+        if (tcpProtocol == MyConstants.TCPProtocolType.TAHOE) {
+            this.tcpProtocol = new Tahoe();
+        }
     }
 
     public void transmit(double sendingTimestamp) {
@@ -33,18 +46,18 @@ public class User {
             if(segm.timeout()){
                 System.out.println((char)27 + "[33m(" + sendingTimestamp + ") - USER: " + ID + " - Segm n° " + segm.getSeq() + " timeout" + (char)27 + "[0m");
                 retransmit.add(segm.getSeq());
-                congestionWindowSize = (congestionWindowSize/2 > 0 ) ? congestionWindowSize/2 : MyConstants.MSS;
+                tcpProtocol.decreaseCongestionWindow();
             }
             else{
                 //System.out.println("Segment " + segm.getSeq() + " correctly sent.");
-                congestionWindowSize += 1;
+                tcpProtocol.increaseCongestionWindow();
                 segmentConfirmed += 1;
             }
         }        
         congestionWindow.clear();
         segmentsNotConfirmed = 0;
         
-        while(segmentConfirmed < segmentsToSend && segmentsNotConfirmed < congestionWindowSize){
+        while(segmentConfirmed < segmentsToSend && segmentsNotConfirmed < tcpProtocol.size()){
             DataSegment segm;
             if(retransmit.isEmpty() && seqNumber < segmentsToSend){
                 segm = new DataSegment(this, seqNumber, sendingTimestamp); // Crea un segmento

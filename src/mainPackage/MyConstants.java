@@ -6,6 +6,11 @@ public class MyConstants {
         ACK,
         DATA        
     }
+    public enum TCPProtocolType {
+        REENO,
+        TAHOE,
+        AIMD
+    }
     public static final int T = 25; //Lunghezza coda
     public static final int N = 1; //Numero segmenti per utente
     public static final int MSS = 1; //Maximum Segment Size
