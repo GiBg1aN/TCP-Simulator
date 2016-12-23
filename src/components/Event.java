@@ -7,7 +7,5 @@ public class Event {
         this.timestamp = timestamp;
     }
 
-    public double getTimestamp() {
-        return timestamp;
-    }
+    public double getTimestamp() { return timestamp; }
 }

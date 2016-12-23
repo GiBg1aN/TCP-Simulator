@@ -9,11 +9,9 @@ public class Channel extends LinkedList<MySegment> {
     private static final Channel instance = new Channel();
 
     
-    
     private Channel() {}
     
     public static Channel getInstance() { return instance; }
-
 
     public void enqueueSegment(MySegment segm) {
         if (size() < MAX_LENGTH) {

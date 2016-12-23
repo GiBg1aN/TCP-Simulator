@@ -18,7 +18,6 @@ public class DataSegment implements MySegment {
         this.receivedTimestamp = -1;
     }
 
-
     @Override
     public void solveSegment(double timestamp) {
         System.out.println((char) 27 + "[36m(" + timestamp + ") - USER: " + user.getID() + " - Received data n° " + seq + (char) 27 + "[0m");
