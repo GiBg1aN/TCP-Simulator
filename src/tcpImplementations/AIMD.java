@@ -12,13 +12,11 @@ public class AIMD implements TCP {
     }
 
     @Override
-    public void increaseCongestionWindow() { this.size++; }
+    public void increaseCongestionWindow() { size++; }
 
     @Override
     public void decreaseCongestionWindow() { size = (size / 2 > 0) ? size / 2 : MyConstants.MSS; }
 
     @Override
-    public int size() {
-        return size;
-    }
+    public int size() { return size; }
 }

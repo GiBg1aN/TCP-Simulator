@@ -1,15 +1,14 @@
 package components;
 
-import mainPackage.MyConstants;
+import mainPackage.SegmentType;
 
 
 public interface MySegment {
-
     public void solveSegment(double timestamp);
 
-    public int getSeq();
+    public SegmentType getSegmentType();
 
     public User getUser();
 
-    public MyConstants.SegmentType getSegmentType();
+    public int getSeq();
 }

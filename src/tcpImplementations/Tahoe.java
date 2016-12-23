@@ -8,13 +8,7 @@ public class Tahoe implements TCP {
     private int ssthresh;
     
     @Override
-    public void increaseCongestionWindow() {
-        if (size < ssthresh) {
-            size *= 2;
-        } else {
-            size++;
-        }
-    }
+    public void increaseCongestionWindow() { size = (size < ssthresh) ? size * 2 : size + 1; }
 
     @Override
     public void decreaseCongestionWindow() {
@@ -24,5 +18,4 @@ public class Tahoe implements TCP {
 
     @Override
     public int size() { return this.size; }
-
 }
