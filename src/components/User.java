@@ -3,7 +3,7 @@ package components;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import mainPackage.MyConstants;
+import mainPackage.TCPProtocolType;
 import tcpImplementations.AIMD;
 import tcpImplementations.Reno;
 import tcpImplementations.TCP;
@@ -21,48 +21,48 @@ public class User {
     private int seqNumber;
     private List<DataSegment> congestionWindow;
     private LinkedList<Integer> retransmit = new LinkedList<>();
-    
-    public User(int ID, MyConstants.TCPProtocolType tcpProtocol) {
+
+
+    public User(int ID, TCPProtocolType tcpProtocol) {
         this.ID = ID;
         segmentsToSend = mainPackage.MyConstants.N;
         congestionWindow = new ArrayList<>();
-        if (tcpProtocol == MyConstants.TCPProtocolType.AIMD) {
+        if (tcpProtocol == TCPProtocolType.AIMD) {
             this.tcpProtocol = new AIMD();
         }
-        if (tcpProtocol == MyConstants.TCPProtocolType.RENO) {
+        if (tcpProtocol == TCPProtocolType.RENO) {
             this.tcpProtocol = new Reno();
         }
-        if (tcpProtocol == MyConstants.TCPProtocolType.TAHOE) {
+        if (tcpProtocol == TCPProtocolType.TAHOE) {
             this.tcpProtocol = new Tahoe();
         }
     }
 
     public void transmit(double sendingTimestamp) {
-        if(segmentConfirmed == segmentsToSend){
-            System.out.println( "(" + sendingTimestamp + ") USER " + ID + " END TRASMISSION");
+        if (segmentConfirmed == segmentsToSend) {
+            System.out.println("(" + sendingTimestamp + ") USER " + ID + " END TRASMISSION");
             segmentConfirmed++;
-        }        
-        for(DataSegment segm : congestionWindow){
-            if(segm.timeout()){
-                System.out.println((char)27 + "[33m(" + sendingTimestamp + ") - USER: " + ID + " - Segm n° " + segm.getSeq() + " timeout" + (char)27 + "[0m");
+        }
+        for (DataSegment segm : congestionWindow) {
+            if (segm.timeout()) {
+                System.out.println((char) 27 + "[33m(" + sendingTimestamp + ") - USER: " + ID + " - Segm n° " + segm.getSeq() + " timeout" + (char) 27 + "[0m");
                 retransmit.add(segm.getSeq());
                 tcpProtocol.decreaseCongestionWindow();
-            }
-            else{
+            } else {
                 //System.out.println("Segment " + segm.getSeq() + " correctly sent.");
                 tcpProtocol.increaseCongestionWindow();
                 segmentConfirmed += 1;
             }
-        }        
+        }
         congestionWindow.clear();
         segmentsNotConfirmed = 0;
-        
-        while(segmentConfirmed < segmentsToSend && segmentsNotConfirmed < tcpProtocol.size()){
+
+        while (segmentConfirmed < segmentsToSend && segmentsNotConfirmed < tcpProtocol.size()) {
             DataSegment segm;
-            if(retransmit.isEmpty() && seqNumber < segmentsToSend){
+            if (retransmit.isEmpty() && seqNumber < segmentsToSend) {
                 segm = new DataSegment(this, seqNumber, sendingTimestamp); // Crea un segmento
                 seqNumber++;
-            } else{
+            } else {
                 segm = new DataSegment(this, retransmit.removeFirst(), sendingTimestamp); // Crea un segmento 
             }
             sendSegment(segm);
@@ -72,7 +72,7 @@ public class User {
 
     private void sendSegment(DataSegment segm) {
         Channel.getInstance().enqueueSegment(segm);
-        System.out.println((char)27 + "[31m(" + segm.getSentTimestamp() + ") - USER: " + ID + " - Sent data n° " + segm.getSeq() + (char)27 + "[0m");
+        System.out.println((char) 27 + "[31m(" + segm.getSentTimestamp() + ") - USER: " + ID + " - Sent data n° " + segm.getSeq() + (char) 27 + "[0m");
         congestionWindow.add(segm);
     }
 
@@ -83,7 +83,7 @@ public class User {
         System.out.println("restart");
     }
 
-    public int getID() {
-        return ID;
-    }
+
+    /* GETTER E SETTER */
+    public int getID() { return ID; }
 }

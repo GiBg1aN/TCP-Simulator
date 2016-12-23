@@ -3,13 +3,11 @@ package mainPackage;
 import components.Channel;
 import components.FEL;
 import components.User;
-import static java.lang.Thread.sleep;
 
 
 public class Main {
-    static final int N_USERS = MyConstants.K;
-
     public static void main(String[] args) throws InterruptedException {
+        final int N_USERS = MyConstants.K;
         int nextEvent;
         FEL fel = new FEL(N_USERS);
         Channel channel = Channel.getInstance();
@@ -19,7 +17,7 @@ public class Main {
 
         /* ---------------------------------------------------------- */
         for (int i = 0; i < N_USERS; i++) {
-            users[i] = new User(i, MyConstants.TCPProtocolType.AIMD);
+            users[i] = new User(i, TCPProtocolType.AIMD);
         }
         /* ---------------------------------------------------------- */
 
