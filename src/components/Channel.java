@@ -8,7 +8,7 @@ public class Channel extends LinkedList<MySegment> {
     private static final Channel instance = new Channel();
     
     
-    public Channel() {}
+    private Channel() {}
     
     public static Channel getInstance() { return instance; }
 

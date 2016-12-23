@@ -24,4 +24,8 @@ public class Reno implements TCP {
 
     @Override
     public int size() { return this.size; }
+    
+    public void fastRecovery(){
+        
+    }
 }

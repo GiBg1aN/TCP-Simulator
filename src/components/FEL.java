@@ -1,37 +1,44 @@
 package components;
 
-public class FEL {
-    private final double[] fel;
-    private final int size;
+import java.util.LinkedList;
+import java.util.List;
 
+public class FEL {
+    private final List<Event> fel;
+    private final FEL instance = new FEL();
+    private double simTime;
     
-    public FEL(int nUsers){
-        fel = new double[nUsers + 1];
-        size = nUsers + 1;
-        fel[nUsers] = 0.01;
+    private FEL() {
+        fel = new LinkedList<>();
     }
     
-    public int getNextEvent() {
-        double min = fel[0];
+    public FEL getInstance() {
+        return instance;
+    }
+    
+    /* Return the event with minimum timestamp */
+    public Event getNextEvent() {
+        double min = fel.get(0).getTimestamp();
         int index = 0;
-        for (int i = 1; i < size; i++) {
-            if (fel[i] < min) {
-                min = fel[i];
+        for (int i = 1; i < fel.size(); i++) {
+            if (fel.get(i).getTimestamp() < min) {
+                min = fel.get(i).getTimestamp();
                 index = i;
             }
         }
-        return index;
+        return fel.get(index);
     }
     
-    public void scheduleNextEvent(int index) {
-        
+    /* Add a new event in the FEL */
+    public void scheduleNextEvent(Event event) {
+        fel.add(event);
     }
     
-    public double getEventTime(int index) {
-        return fel[index];
+    public double getSimTime() {
+        return simTime;
     }
     
-    public void setEventTime(int index, double time) {
-        this.fel[index] += time;
+    public void setSimTime(double simTime) {
+        this.simTime = simTime;
     }
 }

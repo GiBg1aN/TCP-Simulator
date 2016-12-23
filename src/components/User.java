@@ -13,7 +13,6 @@ import tcpImplementations.Tahoe;
 public class User {
     private int ID;
     private TCP tcpProtocol;
-    //private int congestionWindowSize;
     private int segmentsToSend;
     private int segmentsNotConfirmed;
     private int segmentConfirmed;
