@@ -7,6 +7,20 @@ import mainPackage.MyConstants;
 public class Reno implements TCP {
     private int size;
     private int ssthresh;
+        
+    private void fastRecovery() {
+        
+    }
+    
+    @Override
+    public boolean receiveSegment(MySegment s) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void startTransmission(int segmentsToSend) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
     @Override
     public void increaseCongestionWindow() { size = (size < ssthresh) ? size * 2 : size + 1; }
@@ -18,23 +32,6 @@ public class Reno implements TCP {
     }
 
     @Override
-    public int size() { return this.size; }
-    
-    public void fastRecovery(){
-        
-    }
-
-    @Override
-    public void startTransmission(int segmentsToSend) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public boolean receiveSegment(MySegment s) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void restart() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -43,4 +40,7 @@ public class Reno implements TCP {
     public void timeout(int seqNumber) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    
+    @Override
+    public int size() { return this.size; }
 }

@@ -24,12 +24,20 @@ public class AIMD implements TCP {
         this.user = user;
     }
     
-    @Override
-    public void startTransmission(int segmentsToSend) {
-        this.segmentsToSend = segmentsToSend;
-        while (seqNumber < segmentsToSend && congestionWindow.size() < size) {
-            sendSegment();
-        }
+    private void sendSegment() {
+        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " sends segment number: " + seqNumber + (char) 27 + "[0m");
+        MySegment segment = new DataSegment(this.user, this.seqNumber, FEL.getInstance().getSimTime());
+        Channel.getInstance().enqueueSegment(segment);
+        FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + MyConstants.TIMEOUT, segment));
+        congestionWindow.add(seqNumber);
+        seqNumber++;
+    }
+    
+    private void sendSegment(int seqNumber) {
+        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " REsends segment number: " + seqNumber + (char) 27 + "[0m");        
+        MySegment segment = new DataSegment(this.user, seqNumber, FEL.getInstance().getSimTime());
+        Channel.getInstance().enqueueSegment(segment);
+        FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + MyConstants.TIMEOUT, segment));
     }
     
     @Override
@@ -52,22 +60,14 @@ public class AIMD implements TCP {
         return false;
     }
     
-    private void sendSegment() {
-        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " sends segment number: " + seqNumber + (char) 27 + "[0m");
-        MySegment segment = new DataSegment(this.user, this.seqNumber, FEL.getInstance().getSimTime());
-        Channel.getInstance().enqueueSegment(segment);
-        FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + MyConstants.TIMEOUT, segment));
-        congestionWindow.add(seqNumber);
-        seqNumber++;
+    @Override
+    public void startTransmission(int segmentsToSend) {
+        this.segmentsToSend = segmentsToSend;
+        while (seqNumber < segmentsToSend && congestionWindow.size() < size) {
+            sendSegment();
+        }
     }
     
-    private void sendSegment(int seqNumber) {
-        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " REsends segment number: " + seqNumber + (char) 27 + "[0m");        
-        MySegment segment = new DataSegment(this.user, seqNumber, FEL.getInstance().getSimTime());
-        Channel.getInstance().enqueueSegment(segment);
-        FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + MyConstants.TIMEOUT, segment));
-    }
-
     @Override
     public void increaseCongestionWindow() { size++; }
 

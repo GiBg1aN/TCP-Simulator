@@ -4,9 +4,9 @@ import components.MySegment;
 
 
 public interface TCP {
-    void startTransmission(int segmentsToSend);
-    
     boolean receiveSegment(MySegment s);
+    
+    void startTransmission(int segmentsToSend);
     
     void increaseCongestionWindow();
 

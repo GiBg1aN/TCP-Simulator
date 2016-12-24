@@ -9,25 +9,22 @@ public class Tahoe implements TCP {
     private int ssthresh;
     
     @Override
+    public boolean receiveSegment(MySegment s) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    public void startTransmission(int segmentsToSend) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
     public void increaseCongestionWindow() { size = (size < ssthresh) ? size * 2 : size + 1; }
 
     @Override
     public void decreaseCongestionWindow() {
         ssthresh /= 2;
         size = MyConstants.MSS;
-    }
-
-    @Override
-    public int size() { return this.size; }
-
-    @Override
-    public void startTransmission(int segmentsToSend) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public boolean receiveSegment(MySegment s) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -39,4 +36,7 @@ public class Tahoe implements TCP {
     public void timeout(int seqNumber) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    
+    @Override
+    public int size() { return this.size; }
 }
