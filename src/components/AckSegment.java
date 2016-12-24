@@ -15,13 +15,9 @@ public class AckSegment implements MySegment {
         this.reference = reference;
     }
 
-
     @Override
-    public void solveSegment(double timestamp) {
-        if (reference.getSentTimestamp() < timestamp) {
-            reference.setReceivedTime(timestamp);
-            System.out.println("(" + timestamp + ") - USER: " + user.getID() + " - Received ack n° " + seq);
-        }
+    public void solveSegment() {
+        user.receiveAck(this);
     }
     
     

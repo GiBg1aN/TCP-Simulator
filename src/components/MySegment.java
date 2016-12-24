@@ -4,7 +4,7 @@ import mainPackage.SegmentType;
 
 
 public interface MySegment {
-    public void solveSegment(double timestamp);
+    public void solveSegment();
 
     public SegmentType getSegmentType();
 

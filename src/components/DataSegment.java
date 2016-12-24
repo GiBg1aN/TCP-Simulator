@@ -1,6 +1,5 @@
 package components;
 
-import mainPackage.MyConstants;
 import mainPackage.SegmentType;
 
 
@@ -19,21 +18,16 @@ public class DataSegment implements MySegment {
     }
 
     @Override
-    public void solveSegment(double timestamp) {
-        System.out.println((char) 27 + "[36m(" + timestamp + ") - USER: " + user.getID() + " - Received data n° " + seq + (char) 27 + "[0m");
+    public void solveSegment() {
+        double timestamp = FEL.getInstance().getSimTime();
+        //System.out.println((char) 27 + "[36m(" + timestamp + ") - USER: " + user.getID() + " - Received data n° " + seq + (char) 27 + "[0m");
         sendAcknowledgement(this);
-        System.out.println((char) 27 + "[32m(" + timestamp + ") - USER: " + user.getID() + " - Sent ack n° " + seq + (char) 27 + "[0m");
+        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[34mAdversary sends ack number: " + seq + (char) 27 + "[0m");
     }
 
     private void sendAcknowledgement(DataSegment segm) {
         MySegment ack = new AckSegment(segm.getUser(), segm.getSeq(), this);
         Channel.getInstance().enqueueSegment(ack);
-    }
-
-    public boolean timeout() {
-        /*System.out.println(sentTimestamp);
-        System.out.println(receivedTimestamp);*/
-        return receivedTimestamp == -1 || (receivedTimestamp - sentTimestamp) > MyConstants.TIMEOUT;
     }
 
 

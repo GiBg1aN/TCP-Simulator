@@ -1,6 +1,7 @@
 package components;
 
 import java.util.LinkedList;
+import mainPackage.EventType;
 import static mainPackage.MyConstants.*;
 
 
@@ -19,9 +20,10 @@ public class Channel extends LinkedList<MySegment> {
         }
     }
 
-    public void dequeueSegment(double solveTimestamp) {
+    public void dequeueSegment() {
         if (!isEmpty()) {
-            removeFirst().solveSegment(solveTimestamp);
+            removeFirst().solveSegment();
         }
+        FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + 0.01, EventType.CH_SOLVING));
     }
 }

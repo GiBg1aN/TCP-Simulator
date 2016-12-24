@@ -1,5 +1,6 @@
 package tcpImplementations;
 
+import components.MySegment;
 import mainPackage.MyConstants;
 
 
@@ -21,5 +22,25 @@ public class Reno implements TCP {
     
     public void fastRecovery(){
         
+    }
+
+    @Override
+    public void startTransmission(int segmentsToSend) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean receiveSegment(MySegment s) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void restart() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void timeout(int seqNumber) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
