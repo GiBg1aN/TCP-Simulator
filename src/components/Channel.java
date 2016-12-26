@@ -1,6 +1,9 @@
 package components;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import mainPackage.EventType;
 import static mainPackage.MyConstants.*;
 
@@ -8,7 +11,7 @@ import static mainPackage.MyConstants.*;
 public class Channel extends LinkedList<MySegment> {
     private static final int MAX_LENGTH = T;
     private static final Channel instance = new Channel();
-
+    private static Map<User, List> cumulativeAcks = new TreeMap<>();
     
     private Channel() {}
     

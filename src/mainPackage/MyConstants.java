@@ -5,5 +5,6 @@ public class MyConstants {
     public static final int T = 25; //Lunghezza coda
     public static final int N = 25  ; //Numero segmenti per utente
     public static final int MSS = 1; //Maximum Segment Size
-    public static final double TIMEOUT = 0.06;
+    public static final double TIMEOUT = 0.3;
+    public static final int SSTHRESH = 32;
 }

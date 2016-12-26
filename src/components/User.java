@@ -18,10 +18,10 @@ public class User {
             this.tcpProtocol = new AIMD(this);
         }
         if (tcpProtocol == TCPProtocolType.RENO) {
-            this.tcpProtocol = new Reno();
+            this.tcpProtocol = new Reno(this);
         }
         if (tcpProtocol == TCPProtocolType.TAHOE) {
-            this.tcpProtocol = new Tahoe();
+            this.tcpProtocol = new Tahoe(this);
         }
     }
 
