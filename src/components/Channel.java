@@ -1,5 +1,6 @@
 package components;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,41 @@ public class Channel extends LinkedList<MySegment> {
 
     public void dequeueSegment() {
         if (!isEmpty()) {
-            removeFirst().solveSegment();
+            MySegment s = removeFirst();
+            if (s.getClass() == DataSegment.class) {
+                sendAcknowledgement((DataSegment) s);
+                System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[34mAdversary sends ack number: " + s.getSeq() + (char) 27 + "[0m");
+            } else {
+                // TODO
+            }
         }
         FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + 0.01, EventType.CH_SOLVING));
+    }
+    
+    private void sendAcknowledgement(DataSegment segm) {
+        MySegment ack = new AckSegment(segm.getUser(), segm.getSeq(), segm);
+        Channel.getInstance().enqueueSegment(ack);
+    }
+    
+    private class receivedData {
+        int lastCorrectlyReceived;
+        List<Integer> dataWindow;
+        
+        public receivedData() {
+            lastCorrectlyReceived = -1;
+            dataWindow = new LinkedList<>();
+        }
+
+        public int getLastCorrectlyReceived() {
+            return lastCorrectlyReceived;
+        }
+
+        public void add(Integer i) {
+            dataWindow.add(i, i);
+            Iterator<Integer> listIterator = dataWindow.iterator();
+            while (listIterator.hasNext()) {
+                // TODO
+            }
+        }
     }
 }
