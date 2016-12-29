@@ -19,9 +19,7 @@ public class DataSegment implements MySegment {
     
     /* GETTER E SETTER */
     @Override
-    public SegmentType getSegmentType() {
-        return SegmentType.DATA;
-    }
+    public SegmentType getSegmentType() { return SegmentType.DATA; }
 
     @Override
     public User getUser() { return user; }
