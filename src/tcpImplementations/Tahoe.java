@@ -26,9 +26,11 @@ public class Tahoe extends TCPCommonLayer implements TCP {
         if (ack.getSeq() == lastAck ) {
             repeatedAck++;
             if (repeatedAck > 3) {
+                repeatedAck = 0;
                 decreaseCongestionWindow();
             }
         } else if (congestionWindow.contains(ack.getSeq())) {
+            lastAck = ack.getSeq();
             System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[32m" + user.getID() + " receives ack, number: " + ack.getSeq() + " - ACCEPTED" + (char) 27 + "[0m");
             increaseCongestionWindow();
             

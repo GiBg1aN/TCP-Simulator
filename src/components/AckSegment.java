@@ -14,12 +14,6 @@ public class AckSegment implements MySegment {
         this.seq = seq;
         this.reference = reference;
     }
-
-    @Override
-    public void solveSegment() {
-        user.receiveAck(this);
-    }
-    
     
     /* GETTER E SETTER */
     @Override
