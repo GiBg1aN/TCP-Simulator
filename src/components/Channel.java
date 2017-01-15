@@ -1,18 +1,18 @@
 package components;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import mainPackage.EventType;
+import mainPackage.MyConstants;
 import static mainPackage.MyConstants.*;
 
 
 public class Channel extends LinkedList<MySegment> {
     private static final int MAX_LENGTH = T;
     private static final Channel instance = new Channel();
-    private static final Map<Integer, List<Integer>> cumulativeAcks = new TreeMap<>(); //TODO: controllare se il final crea problemi
+    private static final Map<Integer, List<Integer>> cumulativeAcks = new TreeMap<>(); // TODO: controllare se il final crea problemi
     
     private Channel() {}
     
@@ -27,14 +27,18 @@ public class Channel extends LinkedList<MySegment> {
     public void dequeueSegment() {
         if (!isEmpty()) {
             MySegment s = removeFirst();
-            if (s.getClass() == DataSegment.class ) {
-                if (!cumulativeAcks.containsKey(s.getUser().getID())) {
-                    cumulativeAcks.put(s.getUser().getID(), new LinkedList<>());
+            if (MyConstants.segmentNotCorrupted()) {
+                if (s.getClass() == DataSegment.class ) {
+                    if (!cumulativeAcks.containsKey(s.getUser().getID())) {
+                        cumulativeAcks.put(s.getUser().getID(), new LinkedList<>());
+                    }
+                    (cumulativeAcks.get(s.getUser().getID())).add(s.getSeq());
+                    sendAcknowledgement((DataSegment) s);
+                } else {
+                    s.getUser().receiveAck(s);
                 }
-                (cumulativeAcks.get(s.getUser().getID())).add(s.getSeq());
-                sendAcknowledgement((DataSegment) s);
             } else {
-                s.getUser().receiveAck(s);
+                System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31mSEGMENT CORRUPTED!" + (char) 27 + "[0m");           
             }
         }
         FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + 0.01, EventType.CH_SOLVING));
