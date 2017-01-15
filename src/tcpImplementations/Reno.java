@@ -38,7 +38,7 @@ public class Reno extends Tahoe implements TCP {
             }
             if (congestionWindow.isEmpty()) {
                 System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + user.getID() + " ends transmission" + (char) 27 + "[0m");
-                // restart(); TODO
+                restart();
             }
             return true;
         }

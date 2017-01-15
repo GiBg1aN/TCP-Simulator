@@ -1,6 +1,5 @@
 package tcpImplementations;
 
-import components.Event;
 import components.FEL;
 import components.MySegment;
 import components.User;
@@ -48,7 +47,7 @@ public class Tahoe extends TCPCommonLayer implements TCP {
             }
             if (congestionWindow.isEmpty()) {
                 System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + user.getID() + " ends transmission" + (char) 27 + "[0m");
-                // restart(); TODO
+                restart();
             }
             return true;
         }
@@ -73,12 +72,9 @@ public class Tahoe extends TCPCommonLayer implements TCP {
 
     @Override
     public void restart() {
-        seqNumber = 0;
-        size = MyConstants.MSS;
+        super.restart();
         ssthresh = MyConstants.SSTHRESH;
         lastAck = -1;
         repeatedAck = 0;
-        double timestamp = FEL.getInstance().getSimTime() + 0.3; // TODO
-        FEL.getInstance().scheduleNextEvent(new Event(timestamp, user));
     }    
 }

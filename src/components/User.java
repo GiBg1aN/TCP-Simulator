@@ -1,5 +1,6 @@
 package components;
 
+import mainPackage.MyConstants;
 import mainPackage.TCPProtocolType;
 import tcpImplementations.AIMD;
 import tcpImplementations.Reno;
@@ -10,6 +11,7 @@ import tcpImplementations.Tahoe;
 public class User {
     private int ID;
     private TCP tcpProtocol;
+
 
 
     public User(int ID, TCPProtocolType tcpProtocol) {
@@ -26,8 +28,8 @@ public class User {
     }
 
     public void transmit(double timestamp) {
-        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " starts transmission" + (char) 27 + "[0m");
-        int segmentsToSend = mainPackage.MyConstants.N; // DEBUG
+        int segmentsToSend = MyConstants.generateSegmentsToSend();
+        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " starts transmission...sending " + segmentsToSend + " segments" + (char) 27 + "[0m");
         tcpProtocol.startTransmission(segmentsToSend); 
     }
     

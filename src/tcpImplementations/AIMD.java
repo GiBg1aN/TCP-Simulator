@@ -1,14 +1,9 @@
 package tcpImplementations;
 
-import components.Channel;
-import components.DataSegment;
-import components.Event;
 import components.FEL;
 import components.MySegment;
 import components.User;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import mainPackage.MyConstants;
 
 
@@ -37,7 +32,7 @@ public class AIMD extends TCPCommonLayer implements TCP {
             }
             if (congestionWindow.isEmpty()) {
                 System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + user.getID() + " ends transmission" + (char) 27 + "[0m");
-                // restart(); TODO
+                restart();
             }
             return true;
         }
@@ -57,13 +52,5 @@ public class AIMD extends TCPCommonLayer implements TCP {
         size = (size / 2 > 0) ? size / 2 : MyConstants.MSS; 
         System.out.println("------------------------------------------------"
                 + "DECREASED CONGESTION WINDOW SIZE: "+ size);
-    }
-
-    @Override
-    public void restart() {
-        seqNumber = 0;
-        size = MyConstants.MSS;
-        double timestamp = FEL.getInstance().getSimTime() + 0.3; // TODO
-        FEL.getInstance().scheduleNextEvent(new Event(timestamp, user));
     }
 }

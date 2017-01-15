@@ -40,6 +40,8 @@ public class Channel extends LinkedList<MySegment> {
         FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + 0.01, EventType.CH_SOLVING));
     }
     
+    public void resetChannelForUser(int id) { cumulativeAcks.remove(id); }
+    
     private void sendAcknowledgement(DataSegment segm) {
         int lastAck = getLastAcknowledgement(segm);        
         MySegment ack = new AckSegment(segm.getUser(), lastAck, segm);

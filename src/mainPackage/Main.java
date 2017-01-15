@@ -17,7 +17,7 @@ public class Main {
 
         /* ---------------------------------------------------------- */
         for (int i = 0; i < N_USERS; i++) {
-            fel.scheduleNextEvent(new Event(0.0, new User(i, TCPProtocolType.RENO)));
+            fel.scheduleNextEvent(new Event(0.0, new User(i, TCPProtocolType.AIMD)));
         }
         fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
         /* ---------------------------------------------------------- */

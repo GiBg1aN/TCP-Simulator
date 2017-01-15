@@ -58,8 +58,14 @@ public abstract class TCPCommonLayer implements TCP {
     public abstract void decreaseCongestionWindow();
 
     @Override
-    public abstract void restart();
-
+    public void restart() {
+        seqNumber = 0;
+        size = MyConstants.MSS;
+        double timestamp = FEL.getInstance().getSimTime() + 0.3; // TODO
+        FEL.getInstance().scheduleNextEvent(new Event(timestamp, user));
+        Channel.getInstance().resetChannelForUser(this.user.getID());
+    }
+    
     @Override
     public void timeout(int seqNumber) {
         decreaseCongestionWindow();
