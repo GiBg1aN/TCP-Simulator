@@ -36,6 +36,9 @@ public class Event {
         if (eventType == EventType.TRANSMIT) {
             user.transmit(timestamp);
         }
+        if (eventType == EventType.TRAVEL) {
+            Channel.getInstance().enqueueSegment();
+        }
     }
 
     /* GETTER E SETTER */
