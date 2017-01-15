@@ -61,7 +61,7 @@ public abstract class TCPCommonLayer implements TCP {
     public void restart() {
         seqNumber = 0;
         size = MyConstants.MSS;
-        double timestamp = FEL.getInstance().getSimTime() + 0.3; // TODO
+        double timestamp = FEL.getInstance().getSimTime();
         FEL.getInstance().scheduleNextEvent(new Event(timestamp, user));
         Channel.getInstance().resetChannelForUser(this.user.getID());
     }
