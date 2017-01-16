@@ -45,7 +45,7 @@ public class Main {
         fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
         /* ---------------------------------------------------------- */
 
-        while (FEL.getInstance().getSimTime() < 1000) {
+        while (FEL.getInstance().getSimTime() < 10) {
             nextEvent = fel.getNextEvent(); // Ottengo il prossimo evento
             nextEvent.solveEvent();
         }

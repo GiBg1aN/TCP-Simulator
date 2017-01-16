@@ -2,6 +2,7 @@ package statistics;
 
 import components.DataSegment;
 import components.FEL;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import static mainPackage.MyConstants.G;
@@ -71,7 +72,23 @@ public class Statistics {
     /* STREAMS */
     public static PrintWriter openStream() {
         try {
-            writer = new PrintWriter("out/output_header");
+            String filename = "out/output_header";
+            
+            File f = new File(filename);
+            if(f.exists() && !f.isDirectory()) { 
+                boolean flag = true;
+                int i = 0;
+                while (flag) {
+                    f = new File(filename + "_" + i);
+                    if (!f.exists() || f.isDirectory()) {
+                        flag = false;
+                        filename += ("_" + i);
+                    }
+                    i++;
+                }
+            }
+
+            writer = new PrintWriter(filename);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
