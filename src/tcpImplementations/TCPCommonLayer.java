@@ -74,9 +74,11 @@ public abstract class TCPCommonLayer implements TCP {
     public void timeout(MySegment segment) {
         decreaseCongestionWindow();
         ((DataSegment) segment).setReceivedTimestamp(FEL.getInstance().getSimTime());
+        Statistics.refreshResponseTimeStatistics((DataSegment)segment);
         this.devRTT = Statistics.getDevRTT(this.devRTT, (DataSegment) segment);
         timeout = Statistics.getERTT() + (4 * this.devRTT);
         sendSegment(segment.getSeq());
+        //System.out.println(timeout);
     }
 
     @Override

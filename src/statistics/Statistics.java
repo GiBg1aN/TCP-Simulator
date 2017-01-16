@@ -105,10 +105,12 @@ public class Statistics {
     }
 
     public static double getERTT() {
+        
         return evalMean();
     }
 
     public static double getDevRTT(double devRTT, DataSegment item) {
+        //System.out.println((item.getReceivedTimestamp() - item.getSentTimestamp()));
         return (3/4 * devRTT) + (1/4 * Math.abs(getERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
     }
 }
