@@ -30,7 +30,7 @@ public class User {
 
     public void transmit(double timestamp) {
         int segmentsToSend = MyConstants.generateSegmentsToSend(); // Numero segmenti per utente
-        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " starts transmission...sending " + segmentsToSend + " segments" + (char) 27 + "[0m");
+        //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " starts transmission...sending " + segmentsToSend + " segments" + (char) 27 + "[0m");
         tcpProtocol.startTransmission(segmentsToSend); 
     }
     
@@ -39,7 +39,7 @@ public class User {
     }
     
     public void timeout(int seqNumber) {
-        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " reachs timeout for segment number: " + seqNumber + (char) 27 + "[0m");
+        //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " reachs timeout for segment number: " + seqNumber + (char) 27 + "[0m");
         Statistics.increaseTimeout();
         tcpProtocol.timeout(seqNumber);
     }

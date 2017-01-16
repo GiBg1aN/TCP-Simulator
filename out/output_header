@@ -3,11 +3,11 @@ T: 25
 P: 0.98
 G: 0.2
 K: 2
-Mean response time: 0.03705479801002308
-Min  response time: 0.01932999999926821
-Max  response time: 0.6200199999765275
-Standard Deviation: 0.06990646887250342
-#Timeout: 220
-#CorruptedSegments: 84
-Throughput: 53.63331545728951
-Segments sent: 1609
+Mean response time: 0.03840042006366429
+Min  response time: 1.0000000003174137E-5
+Max  response time: 0.6200500001968123
+Standard Deviation: 0.07367768328537158
+#Timeout: 9696
+#CorruptedSegments: 743
+Throughput: 8.117999933500275
+Segments sent: 8118

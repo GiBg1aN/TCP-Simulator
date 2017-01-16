@@ -47,7 +47,7 @@ public class Channel extends LinkedList<MySegment> {
                     s.getUser().receiveAck(s);
                 }
             } else {
-                System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31mSEGMENT CORRUPTED!" + (char) 27 + "[0m");           
+                //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31mSEGMENT CORRUPTED!" + (char) 27 + "[0m");           
                 Statistics.increaseCorruptedSegmentsNumber();
             }
         }
@@ -60,7 +60,7 @@ public class Channel extends LinkedList<MySegment> {
         int lastAck = getLastAcknowledgement(segm);        
         MySegment ack = new AckSegment(segm.getUser(), lastAck, segm);
         Channel.getInstance().startTravel(ack);
-        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[34mAdversary sends ack number: " + ack.getSeq() + (char) 27 + "[0m");           
+        //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[34mAdversary sends ack number: " + ack.getSeq() + (char) 27 + "[0m");           
     }
     
     private int getLastAcknowledgement(DataSegment segm){

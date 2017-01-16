@@ -25,7 +25,7 @@ public abstract class TCPCommonLayer implements TCP {
     }
     
     protected void sendSegment() {
-        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " sends segment number: " + seqNumber + (char) 27 + "[0m");
+        //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " sends segment number: " + seqNumber + (char) 27 + "[0m");
         DataSegment segment = new DataSegment(this.user, this.seqNumber, FEL.getInstance().getSimTime());
         Channel.getInstance().startTravel(segment);
         FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + MyConstants.TIMEOUT, segment));
@@ -34,7 +34,7 @@ public abstract class TCPCommonLayer implements TCP {
     }
     
     protected void sendSegment(int seqNumber) {
-        System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " REsends segment number: " + seqNumber + (char) 27 + "[0m");        
+        //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " REsends segment number: " + seqNumber + (char) 27 + "[0m");        
         MySegment segment = new DataSegment(this.user, seqNumber, FEL.getInstance().getSimTime());
         Channel.getInstance().startTravel(segment);
         FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + MyConstants.TIMEOUT, segment));
