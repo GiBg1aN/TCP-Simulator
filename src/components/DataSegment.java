@@ -28,6 +28,8 @@ public class DataSegment implements MySegment {
     public int getSeq() { return seq; }
 
     public double getSentTimestamp() { return sentTimestamp; }
+
+    public double getReceivedTimestamp() { return receivedTimestamp; }
     
-    void setReceivedTime(double timestamp) { this.receivedTimestamp = timestamp; }
+    public void setReceivedTime(double timestamp) { this.receivedTimestamp = timestamp; }
 }

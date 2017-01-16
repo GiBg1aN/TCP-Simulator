@@ -1,10 +1,12 @@
 package tcpImplementations;
 
+import components.DataSegment;
 import components.FEL;
 import components.MySegment;
 import components.User;
 import java.util.Iterator;
 import mainPackage.MyConstants;
+import statistics.Statistics;
 
 
 public class AIMD extends TCPCommonLayer implements TCP {
@@ -14,15 +16,18 @@ public class AIMD extends TCPCommonLayer implements TCP {
     
     @Override
     public boolean receiveSegment(MySegment ack) {
-        if (congestionWindow.contains(ack.getSeq())) {
+        if (congestionWindow.stream().map(x -> x.getSeq()).anyMatch(x -> x == ack.getSeq())) {
             System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[32m" + user.getID() + " receives ack, number: " + ack.getSeq() + " - ACCEPTED" + (char) 27 + "[0m");
+            // TODO: timestamp ricezione ack
             increaseCongestionWindow();
             
-            Iterator<Integer> iterator = congestionWindow.iterator();
+            Iterator<DataSegment> iterator = congestionWindow.iterator();
             while(iterator.hasNext()) {
-                Integer item = iterator.next();
-                if (item <= ack.getSeq()) {
-                    FEL.getInstance().removeTimeoutEvent(item);
+                DataSegment item = iterator.next();
+                if (item.getSeq() <= ack.getSeq()) {
+                    FEL.getInstance().removeTimeoutEvent(item.getSeq());
+                    item.setReceivedTime(FEL.getInstance().getSimTime());
+                    Statistics.refreshResponseTimeStatistics(item);
                     iterator.remove();
                 }
             }

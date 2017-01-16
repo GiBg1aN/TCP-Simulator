@@ -1,9 +1,11 @@
 package tcpImplementations;
 
+import components.DataSegment;
 import components.FEL;
 import components.MySegment;
 import components.User;
 import java.util.Iterator;
+import statistics.Statistics;
 
 
 public class Reno extends Tahoe implements TCP {
@@ -19,16 +21,18 @@ public class Reno extends Tahoe implements TCP {
                 repeatedAck = 0;
                 fastRecovery();
             }
-        } else if (congestionWindow.contains(ack.getSeq())) {
+        } else if (congestionWindow.stream().map(x -> x.getSeq()).anyMatch(x -> x == ack.getSeq())) {
             lastAck = ack.getSeq();
             System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[32m" + user.getID() + " receives ack, number: " + ack.getSeq() + " - ACCEPTED" + (char) 27 + "[0m");
             increaseCongestionWindow();
             
-            Iterator<Integer> iterator = congestionWindow.iterator();
+            Iterator<DataSegment> iterator = congestionWindow.iterator();
             while(iterator.hasNext()) {
-                Integer item = iterator.next();
-                if (item <= ack.getSeq()) {
-                    FEL.getInstance().removeTimeoutEvent(item);
+                DataSegment item = iterator.next();
+                if (item.getSeq() <= ack.getSeq()) {
+                    FEL.getInstance().removeTimeoutEvent(item.getSeq());
+                    item.setReceivedTime(FEL.getInstance().getSimTime());
+                    Statistics.refreshResponseTimeStatistics(item);
                     iterator.remove();
                 }
             }

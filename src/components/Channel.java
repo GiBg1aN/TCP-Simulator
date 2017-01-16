@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import mainPackage.EventType;
 import mainPackage.MyConstants;
 import static mainPackage.MyConstants.*;
+import statistics.Statistics;
 
 
 public class Channel extends LinkedList<MySegment> {
@@ -47,6 +48,7 @@ public class Channel extends LinkedList<MySegment> {
                 }
             } else {
                 System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31mSEGMENT CORRUPTED!" + (char) 27 + "[0m");           
+                Statistics.increaseCorruptedSegmentsNumber();
             }
         }
         FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + MU, EventType.CH_SOLVING));

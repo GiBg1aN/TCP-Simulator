@@ -15,7 +15,7 @@ public abstract class TCPCommonLayer implements TCP {
     protected int size;
     protected int segmentsToSend;
     protected int seqNumber;
-    protected List<Integer> congestionWindow;
+    protected List<DataSegment> congestionWindow;
     protected User user;
     
     public TCPCommonLayer(User user) {
@@ -26,10 +26,10 @@ public abstract class TCPCommonLayer implements TCP {
     
     protected void sendSegment() {
         System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " sends segment number: " + seqNumber + (char) 27 + "[0m");
-        MySegment segment = new DataSegment(this.user, this.seqNumber, FEL.getInstance().getSimTime());
+        DataSegment segment = new DataSegment(this.user, this.seqNumber, FEL.getInstance().getSimTime());
         Channel.getInstance().startTravel(segment);
         FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + MyConstants.TIMEOUT, segment));
-        congestionWindow.add(seqNumber);
+        congestionWindow.add(segment);
         seqNumber++;
     }
     
