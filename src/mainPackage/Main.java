@@ -17,7 +17,7 @@ public class Main {
         PrintWriter writer = Statistics.getWriterInstance();
         TCPProtocolType protocolType = TCPProtocolType.AIMD;
         
-        if (args.length == 1) {
+        if (args.length == 2) {
             if (args[0].equals("-aimd")) {
                 writer.println("PROTOCOL TYPE: AIMD");
                 protocolType = TCPProtocolType.AIMD;
@@ -45,7 +45,7 @@ public class Main {
         fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
         /* ---------------------------------------------------------- */
 
-        while (FEL.getInstance().getSimTime() < 1000) {
+        while (FEL.getInstance().getSimTime() < Integer.parseInt(args[1])) {
             nextEvent = fel.getNextEvent(); // Ottengo il prossimo evento
             nextEvent.solveEvent();
         }
