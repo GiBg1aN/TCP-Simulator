@@ -31,7 +31,7 @@ public class Event {
             Channel.getInstance().dequeueSegment();
         }
         if (eventType == EventType.TIMEOUT) {
-            segment.getUser().timeout(segment.getSeq());
+            segment.getUser().timeout(segment);
         }
         if (eventType == EventType.TRANSMIT) {
             user.transmit(timestamp);

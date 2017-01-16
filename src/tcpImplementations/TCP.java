@@ -14,7 +14,7 @@ public interface TCP {
     
     void restart();
     
-    void timeout(int seqNumber);
+    void timeout(MySegment segment);
 
     int size();
 }

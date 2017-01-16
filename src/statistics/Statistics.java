@@ -20,7 +20,6 @@ public class Statistics {
     private static double max;
     private static double min = 1;
     private static double meanDevStanCounter;
-    //private static List<Double> valueList = new 
     
     
     /* STATISTICS */
@@ -103,5 +102,13 @@ public class Statistics {
             return openStream();
         }
         return writer;
+    }
+
+    public static double getERTT() {
+        return evalMean();
+    }
+
+    public static double getDevRTT(double devRTT, DataSegment item) {
+        return (3/4 * devRTT) + (1/4 * Math.abs(getERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
     }
 }

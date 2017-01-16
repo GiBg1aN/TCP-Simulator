@@ -38,10 +38,10 @@ public class User {
         tcpProtocol.receiveSegment(s);
     }
     
-    public void timeout(int seqNumber) {
+    public void timeout(MySegment segment) {
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " reachs timeout for segment number: " + seqNumber + (char) 27 + "[0m");
         Statistics.increaseTimeout();
-        tcpProtocol.timeout(seqNumber);
+        tcpProtocol.timeout(segment);
     }
 
     /* GETTER E SETTER */

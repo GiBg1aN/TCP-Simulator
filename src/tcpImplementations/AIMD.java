@@ -9,7 +9,7 @@ import mainPackage.MyConstants;
 import statistics.Statistics;
 
 
-public class AIMD extends TCPCommonLayer implements TCP {
+public class AIMD extends TCPCommonLayer implements TCP {    
     public AIMD(User user) {
         super(user);
     }    
@@ -26,8 +26,11 @@ public class AIMD extends TCPCommonLayer implements TCP {
                 DataSegment item = iterator.next();
                 if (item.getSeq() <= ack.getSeq()) {
                     FEL.getInstance().removeTimeoutEvent(item.getSeq());
-                    item.setReceivedTime(FEL.getInstance().getSimTime());
+                    item.setReceivedTimestamp(FEL.getInstance().getSimTime());
                     Statistics.refreshResponseTimeStatistics(item);
+                    this.devRTT = Statistics.getDevRTT(this.devRTT, item);
+                    timeout = Statistics.getERTT() + (4 * this.devRTT);
+                    System.out.println(timeout);
                     iterator.remove();
                 }
             }

@@ -31,5 +31,5 @@ public class DataSegment implements MySegment {
 
     public double getReceivedTimestamp() { return receivedTimestamp; }
     
-    public void setReceivedTime(double timestamp) { this.receivedTimestamp = timestamp; }
+    public void setReceivedTimestamp(double timestamp) { this.receivedTimestamp = timestamp; }
 }

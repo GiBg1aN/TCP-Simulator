@@ -1,0 +1,13 @@
+PROTOCOL TYPE: AIMD
+T: 100
+P: 0.98
+G: 0.2
+K: 25
+Mean response time: 0.017828679245327488
+Min  response time: 1.0000000000065512E-5
+Max  response time: 0.060830000000060835
+Standard Deviation: 0.007960652430549471
+#Timeout: 63251
+#CorruptedSegments: 2631
+Throughput: 90.09996996957959
+Segments sent: 2703
