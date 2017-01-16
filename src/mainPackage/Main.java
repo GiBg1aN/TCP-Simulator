@@ -2,7 +2,6 @@ package mainPackage;
 
 import components.Event;
 import components.FEL;
-import components.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import statistics.Statistics;
@@ -17,6 +16,10 @@ public class Main {
         PrintWriter writer = Statistics.getWriterInstance();
         TCPProtocolType protocolType = TCPProtocolType.AIMD;
         
+        GUI.GUI.runGui();
+        
+        
+        /*
         if (args.length == 2) {
             if (args[0].equals("-aimd")) {
                 writer.println("PROTOCOL TYPE: AIMD");
@@ -36,15 +39,15 @@ public class Main {
             System.exit(1);
         }
         
-        System.out.println("Inizio simulazione");
+        System.out.println("Inizio simulazione");*/
 
         /* ---------------------------------------------------------- */
-        for (int i = 0; i < N_USERS; i++) {
+        /*for (int i = 0; i < N_USERS; i++) {
             fel.scheduleNextEvent(new Event(0.0, new User(i, protocolType)));
         }
-        fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
+        fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));*/
         /* ---------------------------------------------------------- */
-
+/*
         while (FEL.getInstance().getSimTime() < Integer.parseInt(args[1])) {
             nextEvent = fel.getNextEvent(); // Ottengo il prossimo evento
             nextEvent.solveEvent();
@@ -53,6 +56,6 @@ public class Main {
         System.out.println("Fine simulazione");
         
         Statistics.printStatistics();
-        Statistics.closeStream();
+        Statistics.closeStream();*/
     }
 }
