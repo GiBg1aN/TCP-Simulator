@@ -1,10 +1,12 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import mainPackage.MyConstants;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -19,6 +22,8 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.axis.TickUnits;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.StandardXYItemLabelGenerator;
+import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.DynamicTimeSeriesCollection;
@@ -42,16 +47,17 @@ public class Chart extends ApplicationFrame {
     private static final Random random = new Random();
     private Timer timer;
     private DynamicTimeSeriesCollection dataset;
-    private float dataSegm = 0;
     private static Chart instance;
+    float[] newData = new float[1];
 
     public Chart(final String title) {
         super(title);
         dataset
-                = new DynamicTimeSeriesCollection(2, COUNT, new Second());
+                = new DynamicTimeSeriesCollection(1, COUNT, new Second());
         dataset.setTimeBase(new Second(0, 0, 0, 1, 1, 2011));
-        dataset.addSeries(gaussianData(), 0, "Gaussian data");
-        dataset.addSeries(gaussianData2(), 1, "Gaussian dataasd");
+        for (int i = 0; i < 1; i++) {
+            dataset.addSeries(gaussianData(), i, "User" + i);
+        }
         JFreeChart chart = createChart(dataset);
 
         final JButton run = new JButton(STOP);
@@ -86,17 +92,15 @@ public class Chart extends ApplicationFrame {
         });
 
         this.add(new ChartPanel(chart), BorderLayout.CENTER);
-        JPanel btnPanel = new JPanel(new FlowLayout());
-        btnPanel.add(run);
-        btnPanel.add(combo);
-        this.add(btnPanel, BorderLayout.SOUTH);
+        //JPanel btnPanel = new JPanel(new FlowLayout());
+        //btnPanel.add(run);
+        //btnPanel.add(combo);
+        //this.add(btnPanel, BorderLayout.SOUTH);
 
         timer = new Timer(SLOW, new ActionListener() {
 
-
             @Override
             public void actionPerformed(ActionEvent e) {
-  
 
             }
         });
@@ -124,7 +128,7 @@ public class Chart extends ApplicationFrame {
 
     private JFreeChart createChart(final XYDataset dataset) {
         final JFreeChart result = ChartFactory.createTimeSeriesChart(
-                "Congestion window", "hh:mm:ss", "size", dataset, true, true, false);
+                "Congestion window of user0", "hh:mm:ss", "Size of congestion window", dataset, true, true, false);
         final XYPlot plot = result.getXYPlot();
         ValueAxis domain = plot.getDomainAxis();
         domain.setAutoRange(true);
@@ -133,9 +137,11 @@ public class Chart extends ApplicationFrame {
         range.setRange(0, MINMAX);
         NumberAxis y = (NumberAxis) plot.getRangeAxis();
         y.setTickUnit(new NumberTickUnit(1));
-        //XYLineAndShapeRenderer renderer
-           //     = (XYLineAndShapeRenderer) plot.getRenderer();
-        //renderer.setBaseShapesVisible(true);
+        XYLineAndShapeRenderer renderer
+                = (XYLineAndShapeRenderer) plot.getRenderer();
+        renderer.setPaint(Color.BLUE);
+        
+        
 
         return result;
     }
@@ -144,36 +150,29 @@ public class Chart extends ApplicationFrame {
         timer.start();
     }
 
-    public float[] addValue(int size) {
-        float[] newData = new float[2];
-        newData[0] = size;
-        newData[1] = 10;
-        dataSegm++;
-        dataset.advanceTime();
-        dataset.appendData(newData);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Chart.class.getName()).log(Level.SEVERE, null, ex);
+    public float[] addValue(int size, int ID) {
+
+        if (ID == 0) {
+            this.newData[ID] = size;
+            dataset.advanceTime();
+            dataset.appendData(newData);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Chart.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return newData;
     }
-    
-    public void reset() {
-        float[] newData = new float[2];
-        for(int i = 0; i < 5; i++) {
-            newData[0] = 0;
-            newData[1] = 10;
-            dataSegm++;
+
+    public void reset(int ID) {
+        if (ID == 0) {
+            this.newData[ID] = 0;
+            dataset.advanceTime();
+            dataset.appendData(newData);
             dataset.advanceTime();
             dataset.appendData(newData);
         }
-        newData[0] = 1;
-        newData[1] = 10;
-        
-        dataSegm++;
-        dataset.advanceTime();
-        dataset.appendData(newData);
     }
 
     public static Chart getInstance() {
