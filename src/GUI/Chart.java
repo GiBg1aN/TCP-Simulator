@@ -1,7 +1,6 @@
 package GUI;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,15 +16,12 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.axis.TickUnits;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.DynamicTimeSeriesCollection;
 import org.jfree.data.time.Second;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 
 /**
  * @see http://stackoverflow.com/questions/5048852
@@ -143,7 +139,9 @@ public class Chart extends ApplicationFrame {
     public void start() {
         timer.start();
     }
-
+    
+    /* da chiamare in increasecongwindow */
+    /* Chart.getinstance.addValue(congestionwindowsize) */
     public float[] addValue(int size) {
         float[] newData = new float[2];
         newData[0] = size;
@@ -159,6 +157,7 @@ public class Chart extends ApplicationFrame {
         return newData;
     }
     
+    /* da chiamare ad ogni restart */
     public void reset() {
         float[] newData = new float[2];
         for(int i = 0; i < 5; i++) {
