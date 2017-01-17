@@ -18,6 +18,7 @@ import javax.swing.event.ChangeListener;
 
 public class GUI {
     public static void runGui() {
+        /* LAYOUT */
         JFrame frame = new JFrame("TCP Simulation");
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -27,6 +28,7 @@ public class GUI {
         panel.setLayout(layout);
         panel.setSize(800, 400);
         
+        /* COMPONENTS */
         JLabel protocolLabel = new JLabel("Seleziona protocollo: ");
         JLabel userNoLabel = new JLabel("Numero utenti:");
         JLabel queueLengthLabel = new JLabel("Lunghezza della coda:");
@@ -101,12 +103,6 @@ public class GUI {
         panel.add(userNoTextField);
         panel.add(queueLengthLabel);
         panel.add(queueLengthTextField);
-        
-        
-        /*protocolComboBox.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        segmentCorruptionInverseLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 130));
-        casualNumberLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 130));*/
-        
                 
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
