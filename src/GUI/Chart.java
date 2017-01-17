@@ -40,7 +40,7 @@ public class Chart extends ApplicationFrame {
     private static final String TITLE = "Dynamic Series";
     private static final String START = "Start";
     private static final String STOP = "Stop";
-    private static final float MINMAX = 20;
+    private static final float MAXRANGE = 40;
     private static final int COUNT = 2 * 60;
     private static final int FAST = 100;
     private static final int SLOW = FAST * 5;
@@ -48,16 +48,15 @@ public class Chart extends ApplicationFrame {
     private Timer timer;
     private DynamicTimeSeriesCollection dataset;
     private static Chart instance;
-    float[] newData = new float[1];
+    float[] newData = new float[2];
 
     public Chart(final String title) {
         super(title);
         dataset
-                = new DynamicTimeSeriesCollection(1, COUNT, new Second());
+                = new DynamicTimeSeriesCollection(2, COUNT, new Second());
         dataset.setTimeBase(new Second(0, 0, 0, 1, 1, 2011));
-        for (int i = 0; i < 1; i++) {
-            dataset.addSeries(gaussianData(), i, "User" + i);
-        }
+        dataset.addSeries(gaussianData(), 0, "User0");
+        dataset.addSeries(gaussianData(), 1, "ssthresh");
         JFreeChart chart = createChart(dataset);
 
         final JButton run = new JButton(STOP);
@@ -107,7 +106,7 @@ public class Chart extends ApplicationFrame {
     }
 
     private float randomValue() {
-        return (float) (random.nextGaussian() * MINMAX / 3);
+        return (float) (random.nextGaussian() * MAXRANGE / 3);
     }
 
     private float[] gaussianData() {
@@ -119,9 +118,9 @@ public class Chart extends ApplicationFrame {
     }
 
     private float[] gaussianData2() {
-        float[] a = new float[100];
+        float[] a = new float[1];
         for (int i = 0; i < a.length; i++) {
-            a[i] = 10;
+            a[i] = MyConstants.SSTHRESH;
         }
         return a;
     }
@@ -134,12 +133,12 @@ public class Chart extends ApplicationFrame {
         domain.setAutoRange(true);
         domain.setVisible(false);
         ValueAxis range = plot.getRangeAxis();
-        range.setRange(0, MINMAX);
+        range.setRange(0, MAXRANGE);
         NumberAxis y = (NumberAxis) plot.getRangeAxis();
         y.setTickUnit(new NumberTickUnit(1));
-        XYLineAndShapeRenderer renderer
+        /*XYLineAndShapeRenderer renderer
                 = (XYLineAndShapeRenderer) plot.getRenderer();
-        renderer.setPaint(Color.BLUE);
+        renderer.setPaint(Color.BLUE);*/
         
         
 
@@ -150,14 +149,17 @@ public class Chart extends ApplicationFrame {
         timer.start();
     }
 
-    public float[] addValue(int size, int ID) {
+    public float[] addValue(int size, int ID, int ssthresh) {
 
         if (ID == 0) {
-            this.newData[ID] = size;
+            this.newData[0] = size;
+            if (ssthresh != -1) {
+                this.newData[1] = ssthresh;
+            }
             dataset.advanceTime();
             dataset.appendData(newData);
             try {
-                Thread.sleep(500);
+                Thread.sleep(50);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Chart.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -167,11 +169,12 @@ public class Chart extends ApplicationFrame {
 
     public void reset(int ID) {
         if (ID == 0) {
-            this.newData[ID] = 0;
-            dataset.advanceTime();
-            dataset.appendData(newData);
-            dataset.advanceTime();
-            dataset.appendData(newData);
+            this.newData[0] = 1;
+            this.newData[1] = MyConstants.SSTHRESH;
+            for (int i = 0; i < 10; i++) {
+                dataset.advanceTime();
+                dataset.appendData(newData);
+            }
         }
     }
 

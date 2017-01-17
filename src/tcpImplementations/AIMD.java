@@ -26,7 +26,7 @@ public class AIMD extends TCPCommonLayer implements TCP {
             while(iterator.hasNext()) {
                 DataSegment item = iterator.next();
                 if (item.getSeq() <= ack.getSeq()) {
-                    FEL.getInstance().removeTimeoutEvent(item.getSeq());
+                    FEL.getInstance().removeTimeoutEvent(item.getSeq(), item.getUser().getID());
                     item.setReceivedTimestamp(FEL.getInstance().getSimTime());
                     Statistics.refreshResponseTimeStatistics(item);
                     this.devRTT = Statistics.getDevRTT(this.devRTT, item);
@@ -53,7 +53,7 @@ public class AIMD extends TCPCommonLayer implements TCP {
     @Override
     public void increaseCongestionWindow() { 
         size++; 
-        Chart.getInstance().addValue(size, user.getID());
+        Chart.getInstance().addValue(size, user.getID(), -1);
         //System.out.println("------------------------------------------------"
           //      + "INCREASED CONGESTION WINDOW SIZE: "+ size);
     }
@@ -61,7 +61,7 @@ public class AIMD extends TCPCommonLayer implements TCP {
     @Override
     public void decreaseCongestionWindow() { 
         size = (size / 2 > 0) ? size / 2 : MyConstants.MSS; 
-        Chart.getInstance().addValue(size, user.getID());
+        Chart.getInstance().addValue(size, user.getID(), -1);
         //System.out.println("------------------------------------------------"
              //   + "DECREASED CONGESTION WINDOW SIZE: "+ size);
     }

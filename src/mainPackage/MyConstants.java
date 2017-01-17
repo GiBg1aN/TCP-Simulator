@@ -7,7 +7,7 @@ import umontreal.ssj.rng.RandomStream;
 
 
 public class MyConstants {
-    public static int K = 1; // Numero utenti
+    public static int K = 4; // Numero utenti
     public static int T = 100; // Lunghezza coda
     public static final int MSS = 1; // Maximum Segment Size
     public static final double TIMEOUT = 0.03;

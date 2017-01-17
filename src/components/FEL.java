@@ -29,11 +29,13 @@ public class FEL {
     /* Add a new event in the FEL */
     public void scheduleNextEvent(Event event) { fel.add(event); }
     
-    public void removeTimeoutEvent(int seqNumber) {
-        for (Event e : fel) {
-            if (e.getEventType() == EventType.TIMEOUT && e.getSegment().getSeq() == seqNumber) {
-                fel.remove(e);
-                break;
+    public void removeTimeoutEvent(int seqNumber, int userID) {
+        
+        for ( int i = 0; i < fel.size(); i++) {
+            if (fel.get(i).getEventType() == EventType.TIMEOUT && fel.get(i).getSegment().getSeq() == seqNumber
+                    && fel.get(i).getSegment().getUser().getID() == userID) {
+                fel.remove(fel.get(i));
+                i--;
             }
         }
     }

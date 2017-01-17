@@ -5,6 +5,7 @@ import components.FEL;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import mainPackage.MyConstants;
 import static mainPackage.MyConstants.G;
 import static mainPackage.MyConstants.K;
 import static mainPackage.MyConstants.P;
@@ -43,6 +44,7 @@ public class Statistics {
     
     /* FORMATTED PRINTS */
     public static void printStatistics() {
+        printProtocol();
         printConstants();
         printResponseTimeStatistics();
         printTimeout();
@@ -52,6 +54,10 @@ public class Statistics {
     }
     
     public static void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }
+    
+    public static void printProtocol() { writer.append( MyConstants.protocolType.toString() + "\n"); }
+    
+    
     
     public static void printResponseTimeStatistics() { 
         writer.append("Mean response time: "+ evalMean() +
