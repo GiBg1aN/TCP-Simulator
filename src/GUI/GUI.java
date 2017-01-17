@@ -1,6 +1,8 @@
 package GUI;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import javax.swing.BorderFactory;
@@ -9,11 +11,15 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import mainPackage.MyConstants;
+import mainPackage.TCPProtocolType;
 
 
 public class GUI {
@@ -32,12 +38,14 @@ public class GUI {
         JLabel protocolLabel = new JLabel("Seleziona protocollo: ");
         JLabel userNoLabel = new JLabel("Numero utenti:");
         JLabel queueLengthLabel = new JLabel("Lunghezza della coda:");
+        JLabel simulationDurationLabel = new JLabel("Inserire il tempo di simulazione:");
         JLabel segmentCorruptionInverseLabel = new JLabel("Probabilità che un segmento sia integro:");
         JLabel casualNumberLabel = new JLabel("Probabilità di successo geometrica:");
         
         JComboBox protocolComboBox = new JComboBox(new String[] {"AIMD", "Tahoe", "Reno"});
         JTextField userNoTextField = new JTextField("1", 3);
         JTextField queueLengthTextField = new JTextField("100", 3);
+        JTextField simulationDurationTextField = new JTextField("10", 3);
         
         int start = 0;
         int end = 1000;
@@ -94,7 +102,53 @@ public class GUI {
         
         JButton play = new JButton("Play");
         JButton stop = new JButton("Stop");
-                
+        
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                String s = protocolComboBox.getSelectedItem().toString();
+                if(s.equals("AIMD"))
+                    MyConstants.protocolType = TCPProtocolType.AIMD;
+                if(s.equals("Tahoe"))
+                    MyConstants.protocolType = TCPProtocolType.TAHOE;
+                if(s.equals("Reno"))
+                    MyConstants.protocolType = TCPProtocolType.RENO;
+
+                MyConstants.K = Integer.parseInt(userNoTextField.getText());
+
+                MyConstants.T = Integer.parseInt(queueLengthTextField.getText());
+
+                MyConstants.P = Double.parseDouble(segmentCorruptionInverseTextField.getText());
+
+                MyConstants.G = Double.parseDouble(casualNumberTextField.getText());
+
+                MyConstants.simulationTime = Integer.parseInt(simulationDurationTextField.getText());
+
+                mainPackage.Main.run();
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                JOptionPane.showMessageDialog(frame, "Simulazione terminata");
+            }
+        };        
+        
+        
+        
+        play.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                worker.execute();
+            }
+        });
+        
+        stop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                worker.cancel(true);
+            }
+        });
         
         panel.add(protocolLabel);
         panel.add(protocolComboBox);
@@ -103,6 +157,8 @@ public class GUI {
         panel.add(userNoTextField);
         panel.add(queueLengthLabel);
         panel.add(queueLengthTextField);
+        panel.add(simulationDurationLabel);
+        panel.add(simulationDurationTextField);
                 
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
