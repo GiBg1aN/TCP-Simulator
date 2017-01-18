@@ -36,14 +36,14 @@ public class GUI {
 
         
         /* COMPONENTS */
-        JLabel protocolLabel = new JLabel("Seleziona protocollo: ");
+        JLabel protocolLabel = new JLabel("Seleziona protocollo:");
         JLabel userNoLabel = new JLabel("Numero utenti:");
         JLabel queueLengthLabel = new JLabel("Lunghezza della coda:");
         JLabel simulationDurationLabel = new JLabel("Inserire il tempo di simulazione:");
         JLabel segmentCorruptionInverseLabel = new JLabel("Probabilità che un segmento sia integro:");
         JLabel casualNumberLabel = new JLabel("Probabilità di successo geometrica:");
         
-        JComboBox protocolComboBox = new JComboBox(new String[] {"AIMD", "Tahoe", "Reno"});
+        JComboBox protocolComboBox = new JComboBox((Object[]) new String[] {"AIMD", "Tahoe", "Reno"});
         
         JTextField userNoTextField = new JTextField("1", 3);
         JTextField queueLengthTextField = new JTextField("100", 3);

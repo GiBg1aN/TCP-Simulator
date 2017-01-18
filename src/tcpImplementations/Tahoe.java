@@ -23,12 +23,6 @@ public class Tahoe extends TCPCommonLayer implements TCP {
 
     @Override
     public boolean receiveSegment(MySegment ack) {
-        /*if (user.getID() == 13) {
-            for (int i = 0; i < congestionWindow.size(); i++) {// TODO: togliere?
-                System.out.print(congestionWindow.get(i).getSeq() + ",");
-            }
-            System.out.println("\n");
-        }*/
         if (ack.getSeq() == lastAck) {
             repeatedAck++;
             if (repeatedAck > 3) {
@@ -75,9 +69,9 @@ public class Tahoe extends TCPCommonLayer implements TCP {
         ssthresh = (size > ssthresh) ? size : ssthresh;
         //System.out.println("" + size + " " + ssthresh);
         Chart.getInstance().addValue(size, user.getID(), ssthresh);
-        System.out.println("------------------------------------------------"
-                + "INCREASED CONGESTION WINDOW SIZE: " + size + "; SSTHRESH: " + ssthresh);
-    } //TODO: pensare al superamento esponenziale di ssthresh
+        /*System.out.println("------------------------------------------------"
+                + "INCREASED CONGESTION WINDOW SIZE: " + size + "; SSTHRESH: " + ssthresh);*/
+    }
 
     @Override
     public void decreaseCongestionWindow() {
@@ -85,8 +79,8 @@ public class Tahoe extends TCPCommonLayer implements TCP {
         size = MyConstants.MSS;
         //System.out.println("" + size + " " + ssthresh);
         Chart.getInstance().addValue(size, user.getID(), ssthresh);
-        System.out.println("------------------------------------------------"
-                + "DECREASED CONGESTION WINDOW SIZE: " + size + "; SSTHRESH: " + ssthresh);
+        /*System.out.println("------------------------------------------------"
+                + "DECREASED CONGESTION WINDOW SIZE: " + size + "; SSTHRESH: " + ssthresh);*/
     }
 
     @Override

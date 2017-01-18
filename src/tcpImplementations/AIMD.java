@@ -19,7 +19,6 @@ public class AIMD extends TCPCommonLayer implements TCP {
     public boolean receiveSegment(MySegment ack) {
         if (congestionWindow.stream().map(x -> x.getSeq()).anyMatch(x -> x == ack.getSeq())) {
             //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[32m" + user.getID() + " receives ack, number: " + ack.getSeq() + " - ACCEPTED" + (char) 27 + "[0m");
-            // TODO: timestamp ricezione ack
             increaseCongestionWindow();
             
             Iterator<DataSegment> iterator = congestionWindow.iterator();

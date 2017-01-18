@@ -39,7 +39,7 @@ public class Event {
             segment.getUser().timeout(segment);
         }
         if (eventType == EventType.TRANSMIT) {
-            user.transmit(timestamp);
+            user.transmit();
         }
         if (eventType == EventType.TRAVEL) {
             Channel.getInstance().enqueueSegment();

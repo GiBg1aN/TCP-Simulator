@@ -27,7 +27,7 @@ public class User {
         }
     }
 
-    public void transmit(double timestamp) { // TODO: serve la variabile timestamp?
+    public void transmit() {
         int segmentsToSend = MyConstants.generateSegmentsToSend(); // Numero segmenti per utente
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " starts transmission...sending " + segmentsToSend + " segments" + (char) 27 + "[0m");
         tcpProtocol.startTransmission(segmentsToSend); 
