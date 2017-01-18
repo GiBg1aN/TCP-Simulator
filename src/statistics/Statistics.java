@@ -19,22 +19,40 @@ public class Statistics {
     private static int corruptedSegmentsNumber;
     private static PrintWriter writer;
     private static double max;
-    private static double min = 1;
+    private static double min;
     private static double meanDevStanCounter;
-    
+    private static PrintWriter times = openStreamForTimes();
+    private static double minConfidenceValue;
+    private static double maxConfidenceValue;
+    private static boolean firstValue = true;
     
     /* STATISTICS */
     public static void refreshResponseTimeStatistics(DataSegment item) {
         double d = item.getReceivedTimestamp() - item.getSentTimestamp();
+        
         sum += d;
         segmentCounter++;
-        
-        max = (max > d) ? max : d;
-        min = (min < d) ? min : d;
-        meanDevStanCounter += (d * d);
+        //times.append(d + "\n");
+        if (firstValue) {
+            max = d;
+            min = d;
+        } else {
+            max = (max > d) ? max : d;
+            min = (min < d) ? min : d;
+        }
+        meanDevStanCounter += (d * d);   
+        minConfidenceValue = -1.96 * evalMeanDevStan() + evalMean();
+        maxConfidenceValue = 1.96 * evalMeanDevStan() + evalMean();
+        //System.out.println(evalMeanDevStan() + " - " + evalMean() + " " +minConfidenceValue + " - " + maxConfidenceValue);
+        firstValue = false;
     }
     
     public static void increaseTimeout() { timeout++; }
+    
+    public static boolean stop() { 
+        //System.out.println( FEL.getInstance().getSimTime() + " ) " + minConfidenceValue + " < " + min + " - " + max + " < " + maxConfidenceValue);
+            
+        return Statistics.minConfidenceValue < Statistics.min && Statistics.max < Statistics.maxConfidenceValue; }
     
     public static void increaseCorruptedSegmentsNumber() { corruptedSegmentsNumber++; }
     
@@ -107,6 +125,33 @@ public class Statistics {
             return writer;
         }
     }
+    
+    public static PrintWriter openStreamForTimes() {
+        try {
+            String filename = "out/times";
+            
+            File f = new File(filename);
+            if(f.exists() && !f.isDirectory()) { 
+                boolean flag = true;
+                int i = 0;
+                while (flag) {
+                    f = new File(filename + "_" + i);
+                    if (!f.exists() || f.isDirectory()) {
+                        flag = false;
+                        filename += ("_" + i);
+                    }
+                    i++;
+                }
+            }
+
+            times = new PrintWriter(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            return times;
+        }
+    }
+    
     
     public static void closeStream() { writer.close(); }
     

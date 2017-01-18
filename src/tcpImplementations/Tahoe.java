@@ -76,6 +76,8 @@ public class Tahoe extends TCPCommonLayer implements TCP {
     @Override
     public void decreaseCongestionWindow() {
         ssthresh = size / 2;
+        if (ssthresh == 0)
+            ssthresh++;
         size = MyConstants.MSS;
         //System.out.println("" + size + " " + ssthresh);
         Chart.getInstance().addValue(size, user.getID(), ssthresh);

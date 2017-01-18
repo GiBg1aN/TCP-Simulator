@@ -1,18 +1,13 @@
 package GUI;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JPanel;
 import javax.swing.Timer;
 import mainPackage.MyConstants;
 import org.jfree.chart.ChartFactory;
@@ -20,17 +15,12 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.axis.TickUnits;
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.labels.StandardXYItemLabelGenerator;
-import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.DynamicTimeSeriesCollection;
 import org.jfree.data.time.Second;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 
 /**
  * @see http://stackoverflow.com/questions/5048852
@@ -52,10 +42,9 @@ public class Chart extends ApplicationFrame {
 
     public Chart(final String title) {
         super(title);
-        dataset
-                = new DynamicTimeSeriesCollection(2, COUNT, new Second());
+        dataset = new DynamicTimeSeriesCollection(2, COUNT, new Second());
         dataset.setTimeBase(new Second(0, 0, 0, 1, 1, 2011));
-        dataset.addSeries(gaussianData(), 0, "User0");
+        dataset.addSeries(gaussianData(), 0, "Congestion window");
         dataset.addSeries(gaussianData(), 1, "ssthresh");
         JFreeChart chart = createChart(dataset);
 
@@ -159,7 +148,7 @@ public class Chart extends ApplicationFrame {
             dataset.advanceTime();
             dataset.appendData(newData);
             try {
-                Thread.sleep(50);
+                Thread.sleep(0);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Chart.class.getName()).log(Level.SEVERE, null, ex);
             }

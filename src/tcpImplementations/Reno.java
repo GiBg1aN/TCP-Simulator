@@ -58,8 +58,11 @@ public class Reno extends Tahoe implements TCP {
     
     private void fastRecovery() {
         ssthresh = size / 2;
+        if (ssthresh == 0)
+            ssthresh++;
         size = ssthresh;
-        System.out.println("------------------------------------------------"
-                + "FASTRECO CONGESTION WINDOW SIZE: "+ size + "; SSTHRESH: " + ssthresh);     
+        Chart.getInstance().addValue(size, user.getID(), ssthresh);
+        //System.out.println("------------------------------------------------"
+                //+ "FASTRECO CONGESTION WINDOW SIZE: "+ size + "; SSTHRESH: " + ssthresh);     
     }
 }

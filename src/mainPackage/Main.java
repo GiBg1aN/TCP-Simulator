@@ -18,7 +18,7 @@ public class Main {
         final int N_USERS = MyConstants.K;
         Event nextEvent;
         FEL fel = FEL.getInstance();
-        
+        Statistics.getWriterInstance();
         System.out.println("Inizio simulazione");
 
         /* Creazione utenti */
@@ -28,7 +28,7 @@ public class Main {
         fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
 
         /* Avvio simulazione */
-        while (FEL.getInstance().getSimTime() < MyConstants.simulationTime) {
+        while (FEL.getInstance().getSimTime() < MyConstants.simulationTime || !Statistics.stop()) {
             nextEvent = fel.getNextEvent();
             nextEvent.solveEvent();
         }
