@@ -27,12 +27,13 @@ public class GUI {
         /* LAYOUT */
         JFrame frame = new JFrame("TCP Simulation");
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        GridLayout layout = new GridLayout(0, 2);
-        layout.setHgap(100);
-        layout.setVgap(20);
-        panel.setLayout(layout);
-        panel.setSize(800, 400);
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+        JPanel panel3 = new JPanel();
+        JPanel panel4 = new JPanel();     
+        JPanel panel5 = new JPanel();        
+        JPanel panel6 = new JPanel(); 
+
         
         /* COMPONENTS */
         JLabel protocolLabel = new JLabel("Seleziona protocollo: ");
@@ -43,62 +44,17 @@ public class GUI {
         JLabel casualNumberLabel = new JLabel("Probabilità di successo geometrica:");
         
         JComboBox protocolComboBox = new JComboBox(new String[] {"AIMD", "Tahoe", "Reno"});
+        
         JTextField userNoTextField = new JTextField("1", 3);
         JTextField queueLengthTextField = new JTextField("100", 3);
         JTextField simulationDurationTextField = new JTextField("10", 3);
-        
-        int start = 0;
-        int end = 1000;
-        int value = 980;
-
         JTextField segmentCorruptionInverseTextField = new JTextField(String.valueOf(0.98), 5);
-        JSlider segmentCorruptionInverseSlider = new JSlider(start, end, value);
-        segmentCorruptionInverseSlider.setPaintLabels(true);
-        segmentCorruptionInverseSlider.setPaintTicks(true);
-        segmentCorruptionInverseSlider.setMajorTickSpacing(60);
-        segmentCorruptionInverseSlider.setMinorTickSpacing(10);
-        
-        Dictionary<Integer, JLabel> labels = new Hashtable<>();
-        for (int i = start; i <= end; i += 300) {
-           String text = String.format("%4.2f", i / 1000.0);
-           labels.put(i, new JLabel(text));
-        }
-
-        segmentCorruptionInverseSlider.setLabelTable(labels);
-
-        segmentCorruptionInverseSlider.addChangeListener(new ChangeListener() {
-           @Override
-           public void stateChanged(ChangeEvent e) {
-              int value = segmentCorruptionInverseSlider.getValue();
-              double sliderValue = value / 1000.0;
-              segmentCorruptionInverseTextField.setText(String.valueOf(sliderValue));
-           }
-        });
-        
-        value = 200;
         JTextField casualNumberTextField = new JTextField(String.valueOf(0.2), 5);
-        JSlider casualNumberSlider = new JSlider(start, end, value);
-        casualNumberSlider.setPaintLabels(true);
-        casualNumberSlider.setPaintTicks(true);
-        casualNumberSlider.setMajorTickSpacing(60);
-        casualNumberSlider.setMinorTickSpacing(10);
         
-        Dictionary<Integer, JLabel> labels1 = new Hashtable<>();
-        for (int i = start; i <= end; i += 300) {
-           String text = String.format("%4.2f", i / 1000.0);
-           labels1.put(i, new JLabel(text));
-        }
-
-        casualNumberSlider.setLabelTable(labels);
-
-        casualNumberSlider.addChangeListener(new ChangeListener() {
-           @Override
-           public void stateChanged(ChangeEvent e) {
-              int value = casualNumberSlider.getValue();
-              double sliderValue = value / 1000.0;
-              casualNumberTextField.setText(String.valueOf(sliderValue));
-           }
-        });
+        
+        JSlider segmentCorruptionInverseSlider = initSlider(980, segmentCorruptionInverseTextField);        
+        JSlider casualNumberSlider = initSlider(200, casualNumberTextField);
+        
         
         JButton play = new JButton("Play");
         JButton stop = new JButton("Stop");
@@ -107,12 +63,15 @@ public class GUI {
             @Override
             protected Void doInBackground() throws Exception {
                 String s = protocolComboBox.getSelectedItem().toString();
-                if(s.equals("AIMD"))
+                if (s.equals("AIMD")) {
                     MyConstants.protocolType = TCPProtocolType.AIMD;
-                if(s.equals("Tahoe"))
+                }
+                if(s.equals("Tahoe")) {
                     MyConstants.protocolType = TCPProtocolType.TAHOE;
-                if(s.equals("Reno"))
+                }
+                if(s.equals("Reno")) {
                     MyConstants.protocolType = TCPProtocolType.RENO;
+                }
 
                 MyConstants.K = Integer.parseInt(userNoTextField.getText());
 
@@ -134,8 +93,6 @@ public class GUI {
             }
         };        
         
-        
-        
         play.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -150,6 +107,15 @@ public class GUI {
             }
         });
         
+        
+        /* POSITIONING */
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        GridLayout layout = new GridLayout(0, 2);
+        layout.setHgap(100);
+        layout.setVgap(20);
+        panel.setLayout(layout);
+        panel.setSize(800, 400);
+        
         panel.add(protocolLabel);
         panel.add(protocolComboBox);
         
@@ -159,14 +125,7 @@ public class GUI {
         panel.add(queueLengthTextField);
         panel.add(simulationDurationLabel);
         panel.add(simulationDurationTextField);
-                
-        JPanel panel1 = new JPanel();
-        JPanel panel2 = new JPanel();
-        JPanel panel3 = new JPanel();
-        JPanel panel4 = new JPanel();     
-        JPanel panel5 = new JPanel();        
-        JPanel panel6 = new JPanel();   
-        
+                  
         panel1.setLayout(new GridLayout(0, 1));
         panel3.setLayout(new GridLayout(0, 1));
         
@@ -193,5 +152,35 @@ public class GUI {
         frame.pack();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+    
+    private static JSlider initSlider(int value, JTextField sliderText) {
+        int start = 0;
+        int end = 1000;
+        
+        JSlider slider = new JSlider(start, end, value);
+        slider.setPaintLabels(true);
+        slider.setPaintTicks(true);
+        slider.setMajorTickSpacing(60);
+        slider.setMinorTickSpacing(10);
+        
+        Dictionary<Integer, JLabel> labels = new Hashtable<>();
+        for (int i = start; i <= end; i += 300) {
+           String text = String.format("%4.2f", i / 1000.0);
+           labels.put(i, new JLabel(text));
+        }
+
+        slider.setLabelTable(labels);
+
+        slider.addChangeListener(new ChangeListener() {
+           @Override
+           public void stateChanged(ChangeEvent e) {
+              int value = slider.getValue();
+              double sliderValue = value / 1000.0;
+              sliderText.setText(String.valueOf(sliderValue));
+           }
+        });
+        
+        return slider;
     }
 }

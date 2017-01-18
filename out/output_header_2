@@ -1,0 +1,13 @@
+AIMD
+T: 100
+P: 0.98
+G: 0.2
+K: 1
+Mean response time: 0.02345829101560435
+Min  response time: 0.020000000000006124
+Max  response time: 0.08346999999962013
+Standard Deviation: 0.010522353385731252
+#Timeout: 25
+#CorruptedSegments: 4
+Throughput: 102.99897001049726
+Segments sent: 103

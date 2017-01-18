@@ -5,10 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import mainPackage.EventType;
 
-
+/**
+ * Rappresenta la Future Event List.
+ */
 public class FEL {
     private final List<Event> fel;
-    private static final FEL instance = new FEL();
+    private static final FEL instance = new FEL(); // Pattern Singleton.
     private double simTime;
     
     
@@ -18,7 +20,7 @@ public class FEL {
 
     public static FEL getInstance() { return instance; }
     
-    /* Return the event with minimum timestamp */
+    /* Ritorna l'evento con il timestamp minimo */
     public Event getNextEvent() { 
         Event next = fel.stream().min(Comparator.comparing(e -> e.getTimestamp())).get();
         simTime = next.getTimestamp();
@@ -26,12 +28,16 @@ public class FEL {
         return next;
     }
 
-    /* Add a new event in the FEL */
     public void scheduleNextEvent(Event event) { fel.add(event); }
     
+    /**
+     * Se l'ack del segmento inviato è arrivato correttamente il relativo timeout
+     * viene annullato.
+     * @param seqNumber numero di sequenza del segmento.
+     * @param userID    id dell'utente.
+     */
     public void removeTimeoutEvent(int seqNumber, int userID) {
-        
-        for ( int i = 0; i < fel.size(); i++) {
+        for (int i = 0; i < fel.size(); i++) {
             if (fel.get(i).getEventType() == EventType.TIMEOUT && fel.get(i).getSegment().getSeq() == seqNumber
                     && fel.get(i).getSegment().getUser().getID() == userID) {
                 fel.remove(fel.get(i));

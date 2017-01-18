@@ -10,9 +10,8 @@ import tcpImplementations.Tahoe;
 
 
 public class User {
-    private int ID;
+    private final int ID;
     private TCP tcpProtocol;
-
 
 
     public User(int ID, TCPProtocolType tcpProtocol) {
@@ -28,7 +27,7 @@ public class User {
         }
     }
 
-    public void transmit(double timestamp) {
+    public void transmit(double timestamp) { // TODO: serve la variabile timestamp?
         int segmentsToSend = MyConstants.generateSegmentsToSend(); // Numero segmenti per utente
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " starts transmission...sending " + segmentsToSend + " segments" + (char) 27 + "[0m");
         tcpProtocol.startTransmission(segmentsToSend); 
@@ -44,6 +43,7 @@ public class User {
         tcpProtocol.timeout(segment);
     }
 
+    
     /* GETTER E SETTER */
     public int getID() { return ID; }
 }

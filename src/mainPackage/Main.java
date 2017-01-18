@@ -1,39 +1,35 @@
 package mainPackage;
 
+import GUI.GUI;
 import components.Event;
 import components.FEL;
 import components.User;
 import java.io.IOException;
-import java.io.PrintWriter;
 import statistics.Statistics;
 
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException, IOException {
-    
-        GUI.GUI.runGui();
+    public static void main(String[] args)  {
+        GUI.runGui();
     }
     
     
-    public static void run() {
+    public static void run() throws InterruptedException, IOException {
         final int N_USERS = MyConstants.K;
         Event nextEvent;
         FEL fel = FEL.getInstance();
-        //Channel channel = Channel.getInstance();
-        PrintWriter writer = Statistics.getWriterInstance();
-
         
         System.out.println("Inizio simulazione");
 
-        /* ---------------------------------------------------------- */
+        /* Creazione utenti */
         for (int i = 0; i < N_USERS; i++) {
             fel.scheduleNextEvent(new Event(0.0, new User(i, MyConstants.protocolType)));
         }
         fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
-        /* ---------------------------------------------------------- */
 
+        /* Avvio simulazione */
         while (FEL.getInstance().getSimTime() < MyConstants.simulationTime) {
-            nextEvent = fel.getNextEvent(); // Ottengo il prossimo evento
+            nextEvent = fel.getNextEvent();
             nextEvent.solveEvent();
         }
         

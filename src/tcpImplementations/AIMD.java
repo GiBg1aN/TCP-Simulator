@@ -29,6 +29,7 @@ public class AIMD extends TCPCommonLayer implements TCP {
                     FEL.getInstance().removeTimeoutEvent(item.getSeq(), item.getUser().getID());
                     item.setReceivedTimestamp(FEL.getInstance().getSimTime());
                     Statistics.refreshResponseTimeStatistics(item);
+                    
                     this.devRTT = Statistics.getDevRTT(this.devRTT, item);
                     timeout = Statistics.getERTT() + (4 * this.devRTT);
                     //System.out.println(String.valueOf(timeout));
@@ -39,6 +40,7 @@ public class AIMD extends TCPCommonLayer implements TCP {
             while (seqNumber < segmentsToSend && congestionWindow.size() < size) {
                 sendSegment();
             }
+            
             if (congestionWindow.isEmpty()) {
                 //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + user.getID() + " ends transmission" + (char) 27 + "[0m");
                 Chart.getInstance().reset(user.getID());

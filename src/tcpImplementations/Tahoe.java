@@ -10,7 +10,6 @@ import mainPackage.MyConstants;
 import statistics.Statistics;
 
 public class Tahoe extends TCPCommonLayer implements TCP {
-
     protected int ssthresh;
     protected int lastAck;
     protected int repeatedAck;
@@ -25,7 +24,7 @@ public class Tahoe extends TCPCommonLayer implements TCP {
     @Override
     public boolean receiveSegment(MySegment ack) {
         /*if (user.getID() == 13) {
-            for (int i = 0; i < congestionWindow.size(); i++) {
+            for (int i = 0; i < congestionWindow.size(); i++) {// TODO: togliere?
                 System.out.print(congestionWindow.get(i).getSeq() + ",");
             }
             System.out.println("\n");
@@ -48,6 +47,7 @@ public class Tahoe extends TCPCommonLayer implements TCP {
                     FEL.getInstance().removeTimeoutEvent(item.getSeq(), item.getUser().getID());
                     item.setReceivedTimestamp(FEL.getInstance().getSimTime());
                     Statistics.refreshResponseTimeStatistics(item);
+                    
                     this.devRTT = Statistics.getDevRTT(this.devRTT, item);
                     timeout = Statistics.getERTT() + (4 * this.devRTT);
                     iterator.remove();
@@ -57,6 +57,7 @@ public class Tahoe extends TCPCommonLayer implements TCP {
             while (seqNumber < segmentsToSend && congestionWindow.size() < size) {
                 sendSegment();
             }
+            
             if (congestionWindow.isEmpty()) {
                 System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + user.getID() + " ends transmission" + (char) 27 + "[0m");
                 Chart.getInstance().reset(user.getID());

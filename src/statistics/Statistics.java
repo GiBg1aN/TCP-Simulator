@@ -42,6 +42,14 @@ public class Statistics {
     
     public static double evalMeanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
     
+    public static double getERTT() { return evalMean(); }
+
+    public static double getDevRTT(double devRTT, DataSegment item) {
+        //System.out.println((item.getReceivedTimestamp() - item.getSentTimestamp()));
+        return (3/4 * devRTT) + (1/4 * Math.abs(getERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
+    }
+    
+ 
     /* FORMATTED PRINTS */
     public static void printStatistics() {
         printProtocol();
@@ -53,11 +61,9 @@ public class Statistics {
         printSegmentsSent();
     }
     
-    public static void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }
-    
     public static void printProtocol() { writer.append( MyConstants.protocolType.toString() + "\n"); }
     
-    
+    public static void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }    
     
     public static void printResponseTimeStatistics() { 
         writer.append("Mean response time: "+ evalMean() +
@@ -73,6 +79,7 @@ public class Statistics {
     public static void printThroughput() { writer.append("Throughput: " + (segmentCounter / (FEL.getInstance().getSimTime())) + "\n"); }
     
     public static void printSegmentsSent() { writer.append("Segments sent: "+ segmentCounter + "\n"); }
+    
     
     /* STREAMS */
     public static PrintWriter openStream() {
@@ -108,15 +115,5 @@ public class Statistics {
             return openStream();
         }
         return writer;
-    }
-
-    public static double getERTT() {
-        
-        return evalMean();
-    }
-
-    public static double getDevRTT(double devRTT, DataSegment item) {
-        //System.out.println((item.getReceivedTimestamp() - item.getSentTimestamp()));
-        return (3/4 * devRTT) + (1/4 * Math.abs(getERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
     }
 }

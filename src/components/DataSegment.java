@@ -7,7 +7,7 @@ public class DataSegment implements MySegment {
     private final User user;
     private final int seq;
     private final double sentTimestamp;
-    private double receivedTimestamp; //TODO: utilizzarla per le statistiche
+    private double receivedTimestamp;
 
 
     public DataSegment(User user, int seq, double sentTimestamp) {
