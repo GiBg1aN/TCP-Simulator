@@ -26,7 +26,7 @@ public class Reno extends Tahoe implements TCP {
             increaseCongestionWindow();
             
             Iterator<DataSegment> iterator = congestionWindow.iterator();
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 DataSegment item = iterator.next();
                 if (item.getSeq() <= ack.getSeq()) {
                     Monitor.getFEL(Thread.currentThread()).removeTimeoutEvent(item.getSeq(), item.getUser().getID());

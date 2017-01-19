@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import mainPackage.EventType;
-import mainPackage.MyConstants;
 import static mainPackage.MyConstants.*;
-import statistics.Statistics;
 
 /**
  * Rappresenta il canale dove viaggiano i segmenti.
@@ -89,7 +87,7 @@ public class Channel {
      * @param id    id dell'utente di riferimento.
      * @return      il numero di sequenza dell'ultimo segmento arrivato correttamente.
      */
-    private int getLastAcknowledgement(int id){
+    private int getLastAcknowledgement(int id) {
         List<Integer> tmp = cumulativeAcks.get(id);
         int min = -1;
         for (Integer i : tmp) {

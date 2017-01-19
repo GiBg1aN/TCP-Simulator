@@ -14,12 +14,12 @@ import umontreal.ssj.rng.RandomStream;
 
 
 public class Monitor {
-    private static Map<Thread, FEL> FELs = new HashMap<>();
-    private static Map<Thread, Channel> CHANNELs = new HashMap<>();
-    private static Map<Thread, Statistics> STATISTICs = new HashMap<>();
-    private static Map<Thread, RandomStream> RANDOMSTREAMs = new HashMap<>();
+    private static final Map<Thread, FEL> FELs = new HashMap<>();
+    private static final Map<Thread, Channel> CHANNELs = new HashMap<>();
+    private static final Map<Thread, Statistics> STATISTICs = new HashMap<>();
+    private static final Map<Thread, RandomStream> RANDOMSTREAMs = new HashMap<>();
 
-    
+    /* ADDER */
     public synchronized static void addFEL(Thread t) { FELs.put(t, new FEL()); }
 
     public synchronized static void addCHANNEL(Thread t) { CHANNELs.put(t, new Channel(t)); }
@@ -28,6 +28,7 @@ public class Monitor {
 
     public synchronized static void addRANDOMSTREAM(Thread t) { RANDOMSTREAMs.put(t, new LFSR113()); }
 
+    /* GETTER */
     public synchronized static FEL getFEL(Thread t) { return FELs.get(t); }
 
     public synchronized static Channel getCHANNEL(Thread t) { return CHANNELs.get(t); }
@@ -36,6 +37,7 @@ public class Monitor {
 
     public synchronized static RandomStream getRANDOMSTREAM(Thread t) { return RANDOMSTREAMs.get(t); }
 
+    /* GLOBAL STATISTICS */
     public synchronized static double evalCampionaryMean() { 
         return STATISTICs.entrySet().stream()
                 .map(x -> x.getValue().evalMean())
@@ -83,4 +85,10 @@ public class Monitor {
 
         return counter / STATISTICs.size() >= 0.95;
     }
+
+    
+    /* GETTER */
+    public static Map<Thread, FEL> getFELs() { return FELs; }
+
+    public static Map<Thread, Statistics> getSTATISTICs() { return STATISTICs; }
 }

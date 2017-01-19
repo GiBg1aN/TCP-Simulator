@@ -1,7 +1,6 @@
 package statistics;
 
 import components.DataSegment;
-import components.FEL;
 import components.Monitor;
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +17,13 @@ public class Statistics {
     private int segmentCounter;
     private int timeout;
     private int corruptedSegmentsNumber;
-    private PrintWriter writer;
     private double max;
     private double min;
     private double meanDevStanCounter;
-    private PrintWriter times;
     private boolean firstValue = true;
+    private PrintWriter writer;
+    private PrintWriter times;
+
     
     /* STATISTICS */
     public void refreshResponseTimeStatistics(DataSegment item) {
@@ -58,6 +58,10 @@ public class Statistics {
         return (3/4 * devRTT) + (1/4 * Math.abs(getERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
     }
     
+    public double evalThroughput() { return segmentCounter / (Monitor.getFEL(Thread.currentThread()).getSimTime()); } // TODO: probabilmente si può togliere.
+    
+    public double evalThroughput(Thread t) { return segmentCounter / (Monitor.getFEL(t).getSimTime()); }
+
  
     /* FORMATTED PRINTS */
     public void printStatistics() {
@@ -70,24 +74,77 @@ public class Statistics {
         printSegmentsSent();
     }
     
+    public void printTimes(double minMean, double campionaryMean, double maxMean) { 
+        times.append(minMean + "," + campionaryMean + "," + maxMean + "\n");
+    }
     
+    public void printGlobalStatistics() {
+        writer.println("-GLOBALS-");
+        printProtocol();
+        printConstants();
+        double meanResponseTime = Monitor.getSTATISTICs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().evalMean())
+                .average()
+                .getAsDouble();
+        double maxMaxResponseTime = Monitor.getSTATISTICs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().max)
+                .max()
+                .getAsDouble();
+        double minMinResponseTime = Monitor.getSTATISTICs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().min)
+                .min()
+                .getAsDouble();
+        double meanMeanDevStan = Monitor.getSTATISTICs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().evalMeanDevStan())
+                .average()
+                .getAsDouble();
+        int meanTimeout = (int) Monitor.getSTATISTICs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().timeout)
+                .average()
+                .getAsDouble();
+        int meanCorruptedSegmentsNumber = (int) Monitor.getSTATISTICs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().corruptedSegmentsNumber)
+                .average()
+                .getAsDouble();
+        double meanThroughput = Monitor.getSTATISTICs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().evalThroughput(x.getKey()))
+                .average()
+                .getAsDouble();
+        int meanSegmentsSent = (int) Monitor.getSTATISTICs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().segmentCounter)
+                .average()
+                .getAsDouble();
+        Double maxSimTime = Monitor.getFELs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().getSimTime())
+                .max()
+                .getAsDouble();
+        writer.append("Mean Response time: " + meanResponseTime +
+                "\nMin response time: " + minMinResponseTime +
+                "\nMax response time: " + maxMaxResponseTime +
+                "\nStandard Deviation: " + meanMeanDevStan +
+                "\n#Timeout: " + meanTimeout +
+                "\n#Corrupted Segments: " + meanCorruptedSegmentsNumber +
+                "\nThroughput: " + meanThroughput +
+                "\nSegments sent: " + meanSegmentsSent +
+                "\nSim. Time: " + maxSimTime);
+    }
     
-    public void printProtocol() { writer.append( MyConstants.protocolType.toString() + "\n"); }
+    public void printProtocol() { writer.append(MyConstants.protocolType.toString() + "\n"); }
     
-    public void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }    
+    public void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }
     
     public void printResponseTimeStatistics() { 
         writer.append("Mean response time: "+ evalMean() +
-                "\nMin  response time: " + min +
-                "\nMax  response time: " + max +
+                "\nMin response time: " + min +
+                "\nMax response time: " + max +
                 "\nStandard Deviation: " + evalMeanDevStan() + "\n"); 
     }
     
     public void printTimeout() { writer.append("#Timeout: " + timeout + "\n"); }
     
-    public void printCorruptedSegmentsNumber() { writer.append("#CorruptedSegments: " + corruptedSegmentsNumber + "\n"); }
+    public void printCorruptedSegmentsNumber() { writer.append("#Corrupted Segments: " + corruptedSegmentsNumber + "\n"); }
     
-    public void printThroughput() { writer.append("Throughput: " + (segmentCounter / (Monitor.getFEL(Thread.currentThread()).getSimTime())) + "\n"); }
+    public void printThroughput() { writer.append("Throughput: " + evalThroughput() + "\n"); }
     
     public void printSegmentsSent() { writer.append("Segments sent: "+ segmentCounter + "\n"); }
     
@@ -98,7 +155,7 @@ public class Statistics {
             String filename = "out/output_header";
             
             File f = new File(filename);
-            if(f.exists() && !f.isDirectory()) { 
+            if (f.exists() && !f.isDirectory()) { 
                 boolean flag = true;
                 int i = 0;
                 while (flag) {
@@ -121,14 +178,14 @@ public class Statistics {
     
     public PrintWriter openStreamForTimes() {
         try {
-            String filename = "out/times";
+            String filename = "out/times.csv";
             
             File f = new File(filename);
-            if(f.exists() && !f.isDirectory()) { 
+            if (f.exists() && !f.isDirectory()) { 
                 boolean flag = true;
                 int i = 0;
                 while (flag) {
-                    f = new File(filename + "_" + i);
+                    f = new File("times" + "_" + i + ".csv");
                     if (!f.exists() || f.isDirectory()) {
                         flag = false;
                         filename += ("_" + i);
@@ -145,8 +202,10 @@ public class Statistics {
         }
     }
     
-    
-    public void closeStream() { writer.close(); }
+    public void closeStream() { 
+        writer.close(); 
+        times.close();
+    }
     
     public PrintWriter getWriterInstance() {
         if (writer == null) {

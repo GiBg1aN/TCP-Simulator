@@ -5,7 +5,6 @@ import components.Monitor;
 import statistics.Statistics;
 
 public class Main {
-
     public static void main(String[] args) {
         GUI.runGui();
     }
@@ -16,16 +15,20 @@ public class Main {
         statistics.getWriterInstance();
         statistics.openStreamForTimes();
         
-        while(flag){
+        while (flag) {
             try {
                 Thread.sleep(0);
                 
-                if(Monitor.minMean() > Monitor.evalCampionaryMean()*0.95 &&
-                   Monitor.maxMean() < Monitor.evalCampionaryMean()*1.05 &&
-                   Monitor.isInConfidentialRange(1.96)){
-                    System.out.println("BANANE TANTO TANTO DUREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                double minMean = Monitor.minMean();
+                double campionaryMean = Monitor.evalCampionaryMean();
+                double maxMean = Monitor.maxMean();
+                
+                statistics.printTimes(minMean, campionaryMean, maxMean);
+                
+                if (minMean > campionaryMean * 0.95 && maxMean < campionaryMean * 1.05 && Monitor.isInConfidentialRange(1.96)) {
+                    System.out.println("FINE SIMULAZIONE");
                     flag = false;
-                    for(RunPilota r : runPilota){
+                    for(RunPilota r : runPilota) {
                         r.stop();
                     }
                 }
@@ -33,5 +36,7 @@ public class Main {
                 System.out.println("Simulazione stoppata");
             } 
         }
+        statistics.printGlobalStatistics();
+        statistics.closeStream();
     }
 }

@@ -12,13 +12,12 @@ public class RunPilota implements Runnable {
         t.start();
     }
     
-    public void stop(){
+    public void stop() {
         t.interrupt();
     }
 
     @Override
     public void run() {
-
         final int N_USERS = MyConstants.K;
         Event nextEvent;
         Monitor.addFEL(Thread.currentThread());
@@ -36,7 +35,7 @@ public class RunPilota implements Runnable {
 
         /* Avvio simulazione */
         //while (Monitor.getFEL(Thread.currentThread()).getSimTime() < MyConstants.simulationTime) {
-        while(true){
+        while (true) {
             nextEvent = fel.getNextEvent();
             nextEvent.solveEvent();
         }

@@ -1,13 +1,11 @@
 package tcpImplementations;
 
 import components.DataSegment;
-import components.FEL;
 import components.Monitor;
 import components.MySegment;
 import components.User;
 import java.util.Iterator;
 import mainPackage.MyConstants;
-import statistics.Statistics;
 
 public class Tahoe extends TCPCommonLayer implements TCP {
     protected int ssthresh;
@@ -31,7 +29,7 @@ public class Tahoe extends TCPCommonLayer implements TCP {
             }
         } else if (congestionWindow.stream().map(x -> x.getSeq()).anyMatch(x -> x == ack.getSeq())) {
             lastAck = ack.getSeq();
-            System.out.println("(" + Monitor.getFEL(Thread.currentThread()).getSimTime() + ")" + (char) 27 + "[32m" + user.getID() + " receives ack, number: " + ack.getSeq() + " - ACCEPTED" + (char) 27 + "[0m");
+            //System.out.println("(" + Monitor.getFEL(Thread.currentThread()).getSimTime() + ")" + (char) 27 + "[32m" + user.getID() + " receives ack, number: " + ack.getSeq() + " - ACCEPTED" + (char) 27 + "[0m");
             increaseCongestionWindow();
 
             Iterator<DataSegment> iterator = congestionWindow.iterator();
@@ -53,12 +51,12 @@ public class Tahoe extends TCPCommonLayer implements TCP {
             }
             
             if (congestionWindow.isEmpty()) {
-                System.out.println("(" + Monitor.getFEL(Thread.currentThread()).getSimTime() + ")" + (char) 27 + "[31m" + user.getID() + " ends transmission" + (char) 27 + "[0m");
+                //System.out.println("(" + Monitor.getFEL(Thread.currentThread()).getSimTime() + ")" + (char) 27 + "[31m" + user.getID() + " ends transmission" + (char) 27 + "[0m");
                 restart();
             }
             return true;
         }
-        System.out.println("(" + Monitor.getFEL(Thread.currentThread()).getSimTime() + ")" + (char) 27 + "[32m" + user.getID() + " receives ack, number: " + ack.getSeq() + (char) 27 + "[31m" + " - DUPLICATE" + (char) 27 + "[0m");
+        //System.out.println("(" + Monitor.getFEL(Thread.currentThread()).getSimTime() + ")" + (char) 27 + "[32m" + user.getID() + " receives ack, number: " + ack.getSeq() + (char) 27 + "[31m" + " - DUPLICATE" + (char) 27 + "[0m");
         return false;
     }
 
