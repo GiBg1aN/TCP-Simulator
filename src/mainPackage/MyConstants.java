@@ -1,10 +1,5 @@
 package mainPackage;
 
-import umontreal.ssj.probdist.GeometricDist;
-import umontreal.ssj.randvar.UniformGen;
-import umontreal.ssj.rng.LFSR113;
-import umontreal.ssj.rng.RandomStream;
-
 
 public class MyConstants {
     public static int K = 4; // Numero utenti

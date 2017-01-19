@@ -39,7 +39,7 @@ public class GUI {
         JLabel protocolLabel = new JLabel("Seleziona protocollo:");
         JLabel userNoLabel = new JLabel("Numero utenti:");
         JLabel queueLengthLabel = new JLabel("Lunghezza della coda:");
-        JLabel simulationDurationLabel = new JLabel("Inserire il tempo di simulazione:");
+        JLabel parallelSimulationLabel = new JLabel("Numero di simulazione da eseguire in parallelo:");
         JLabel segmentCorruptionInverseLabel = new JLabel("Probabilità che un segmento sia integro:");
         JLabel casualNumberLabel = new JLabel("Probabilità di successo geometrica:");
 
@@ -47,7 +47,7 @@ public class GUI {
 
         JTextField userNoTextField = new JTextField("1", 3);
         JTextField queueLengthTextField = new JTextField("100", 3);
-        JTextField simulationDurationTextField = new JTextField("10", 3);
+        JTextField parallelSimulationTextField = new JTextField(Integer.toString(MyConstants.N_THREAD), 3);
         JTextField segmentCorruptionInverseTextField = new JTextField(String.valueOf(0.98), 5);
         JTextField casualNumberTextField = new JTextField(String.valueOf(0.2), 5);
 
@@ -79,7 +79,7 @@ public class GUI {
 
                 MyConstants.G = Double.parseDouble(casualNumberTextField.getText());
 
-                MyConstants.simulationTime = Integer.parseInt(simulationDurationTextField.getText());
+                MyConstants.N_THREAD = Integer.parseInt(parallelSimulationTextField.getText());
 
                 RunPilota[] runPilota = new RunPilota[MyConstants.N_THREAD];
 
@@ -95,7 +95,6 @@ public class GUI {
             protected void done() {
                 JOptionPane.showMessageDialog(frame, "Simulazione terminata");
                 Thread.currentThread().interrupt();
-                Chart.stop();
             }
         };
 
@@ -128,8 +127,8 @@ public class GUI {
         panel.add(userNoTextField);
         panel.add(queueLengthLabel);
         panel.add(queueLengthTextField);
-        panel.add(simulationDurationLabel);
-        panel.add(simulationDurationTextField);
+        panel.add(parallelSimulationLabel);
+        panel.add(parallelSimulationTextField);
 
         panel1.setLayout(new GridLayout(0, 1));
         panel3.setLayout(new GridLayout(0, 1));

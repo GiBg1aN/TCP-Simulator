@@ -14,7 +14,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.DynamicTimeSeriesCollection;
@@ -22,9 +21,7 @@ import org.jfree.data.time.Second;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.ApplicationFrame;
 
-/**
- * @see http://stackoverflow.com/questions/5048852
- */
+
 public class Chart extends ApplicationFrame {
     static Chart demo;
     private static final String TITLE = "Dynamic Series";
@@ -134,9 +131,6 @@ public class Chart extends ApplicationFrame {
         timer.start();
     }
     
-    public static void stop(){
-        demo.stop();
-    }
 
     public float[] addValue(double max, double mean, double min) {
 
