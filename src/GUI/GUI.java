@@ -81,18 +81,21 @@ public class GUI {
 
                 MyConstants.simulationTime = Integer.parseInt(simulationDurationTextField.getText());
 
-                RunPilota[] runPilota = new RunPilota[15];
-                for (int i = 0; i < 3; i++) {
+                RunPilota[] runPilota = new RunPilota[MyConstants.N_THREAD];
+
+                for (int i = 0; i < MyConstants.N_THREAD; i++) {
                     runPilota[i] = new RunPilota();
                     runPilota[i].start();
                 }
-                //mainPackage.Main.run();
+                mainPackage.Main.run(runPilota);
                 return null;
             }
 
             @Override
             protected void done() {
                 JOptionPane.showMessageDialog(frame, "Simulazione terminata");
+                Thread.currentThread().interrupt();
+                Chart.stop();
             }
         };
 
@@ -138,7 +141,7 @@ public class GUI {
         panel4.add(casualNumberSlider);
         panel4.add(casualNumberTextField);
         panel5.add(play);
-        panel5.add(stop);
+        //panel5.add(stop);
 
         panel.add(panel1);
         panel.add(panel2);

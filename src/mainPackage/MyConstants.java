@@ -18,20 +18,5 @@ public class MyConstants {
     public static final double TRAVEL_TIME = 0.01; // tempo che il pacchetto impiega nella trasmissione.
     public static TCPProtocolType protocolType = TCPProtocolType.AIMD;
     public static int simulationTime = 100;
-    
-    public static final RandomStream uniformRandomStream = new LFSR113();
-
-    
-    public static int generateSegmentsToSend() {
-        double gap = UniformGen.nextDouble(uniformRandomStream, 0, G);
-        int segmentsToSend = 1;
-        
-        while (GeometricDist.prob(G, segmentsToSend) > gap) {
-            segmentsToSend++;
-        }
-        
-        return segmentsToSend;
-    }
-    
-    public static boolean isSegmentNotCorrupted() { return (UniformGen.nextDouble(uniformRandomStream, 0, 1) < P); }
+    public static int N_THREAD = 15;    
 }

@@ -4,14 +4,16 @@ import components.Event;
 import components.FEL;
 import components.Monitor;
 import components.User;
-import statistics.Statistics;
 
 public class RunPilota implements Runnable {
-    private int id;
     Thread t = new Thread(this);
 
     public void start() {
         t.start();
+    }
+    
+    public void stop(){
+        t.interrupt();
     }
 
     @Override
@@ -22,8 +24,9 @@ public class RunPilota implements Runnable {
         Monitor.addFEL(Thread.currentThread());
         FEL fel = Monitor.getFEL(Thread.currentThread());
         Monitor.addCHANNEL(Thread.currentThread());
-        Statistics.getWriterInstance();
-        System.out.println("Inizio simulazione");
+        Monitor.addSTATISTIC(Thread.currentThread());
+        //Monitor.getSTATISTIC(Thread.currentThread()).getWriterInstance();
+        Monitor.addRANDOMSTREAM(Thread.currentThread());
 
         /* Creazione utenti */
         for (int i = 0; i < N_USERS; i++) {
@@ -32,15 +35,16 @@ public class RunPilota implements Runnable {
         fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
 
         /* Avvio simulazione */
-        while (Monitor.getFEL(Thread.currentThread()).getSimTime() < MyConstants.simulationTime) {
+        //while (Monitor.getFEL(Thread.currentThread()).getSimTime() < MyConstants.simulationTime) {
+        while(true){
             nextEvent = fel.getNextEvent();
             nextEvent.solveEvent();
         }
 
-        System.out.println("Fine simulazione " + Monitor.getFEL(Thread.currentThread()).getSimTime());
+        /*System.out.println("Fine simulazione " + Monitor.getFEL(Thread.currentThread()).getSimTime());
 
-        Statistics.printStatistics();
-        Statistics.closeStream();
+        Monitor.getSTATISTIC(Thread.currentThread()).printStatistics();
+        Monitor.getSTATISTIC(Thread.currentThread()).closeStream();*/
     }
 
 }

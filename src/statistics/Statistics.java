@@ -14,21 +14,19 @@ import static mainPackage.MyConstants.T;
 
 
 public class Statistics {
-    private static double sum;
-    private static int segmentCounter;
-    private static int timeout;
-    private static int corruptedSegmentsNumber;
-    private static PrintWriter writer;
-    private static double max;
-    private static double min;
-    private static double meanDevStanCounter;
-    private static PrintWriter times = openStreamForTimes();
-    private static double minConfidenceValue;
-    private static double maxConfidenceValue;
-    private static boolean firstValue = true;
+    private double sum;
+    private int segmentCounter;
+    private int timeout;
+    private int corruptedSegmentsNumber;
+    private PrintWriter writer;
+    private double max;
+    private double min;
+    private double meanDevStanCounter;
+    private PrintWriter times;
+    private boolean firstValue = true;
     
     /* STATISTICS */
-    public static void refreshResponseTimeStatistics(DataSegment item) {
+    public void refreshResponseTimeStatistics(DataSegment item) {
         double d = item.getReceivedTimestamp() - item.getSentTimestamp();
         
         sum += d;
@@ -45,24 +43,24 @@ public class Statistics {
         meanDevStanCounter += (d * d);
     }
     
-    public static void increaseTimeout() { timeout++; }
+    public void increaseTimeout() { timeout++; }
     
-    public static void increaseCorruptedSegmentsNumber() { corruptedSegmentsNumber++; }
+    public void increaseCorruptedSegmentsNumber() { corruptedSegmentsNumber++; }
     
-    public static double evalMean() { return (sum / segmentCounter); }
+    public double evalMean() { return (sum / segmentCounter); }
     
-    public static double evalMeanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
+    public double evalMeanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
     
-    public static double getERTT() { return evalMean(); }
+    public double getERTT() { return evalMean(); }
 
-    public static double getDevRTT(double devRTT, DataSegment item) {
+    public double getDevRTT(double devRTT, DataSegment item) {
         //System.out.println((item.getReceivedTimestamp() - item.getSentTimestamp()));
         return (3/4 * devRTT) + (1/4 * Math.abs(getERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
     }
     
  
     /* FORMATTED PRINTS */
-    public static void printStatistics() {
+    public void printStatistics() {
         printProtocol();
         printConstants();
         printResponseTimeStatistics();
@@ -72,28 +70,30 @@ public class Statistics {
         printSegmentsSent();
     }
     
-    public static void printProtocol() { writer.append( MyConstants.protocolType.toString() + "\n"); }
     
-    public static void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }    
     
-    public static void printResponseTimeStatistics() { 
+    public void printProtocol() { writer.append( MyConstants.protocolType.toString() + "\n"); }
+    
+    public void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }    
+    
+    public void printResponseTimeStatistics() { 
         writer.append("Mean response time: "+ evalMean() +
                 "\nMin  response time: " + min +
                 "\nMax  response time: " + max +
                 "\nStandard Deviation: " + evalMeanDevStan() + "\n"); 
     }
     
-    public static void printTimeout() { writer.append("#Timeout: " + timeout + "\n"); }
+    public void printTimeout() { writer.append("#Timeout: " + timeout + "\n"); }
     
-    public static void printCorruptedSegmentsNumber() { writer.append("#CorruptedSegments: " + corruptedSegmentsNumber + "\n"); }
+    public void printCorruptedSegmentsNumber() { writer.append("#CorruptedSegments: " + corruptedSegmentsNumber + "\n"); }
     
-    public static void printThroughput() { writer.append("Throughput: " + (segmentCounter / (Monitor.getFEL(Thread.currentThread()).getSimTime())) + "\n"); }
+    public void printThroughput() { writer.append("Throughput: " + (segmentCounter / (Monitor.getFEL(Thread.currentThread()).getSimTime())) + "\n"); }
     
-    public static void printSegmentsSent() { writer.append("Segments sent: "+ segmentCounter + "\n"); }
+    public void printSegmentsSent() { writer.append("Segments sent: "+ segmentCounter + "\n"); }
     
     
     /* STREAMS */
-    public static PrintWriter openStream() {
+    public PrintWriter openStream() {
         try {
             String filename = "out/output_header";
             
@@ -119,7 +119,7 @@ public class Statistics {
         }
     }
     
-    public static PrintWriter openStreamForTimes() {
+    public PrintWriter openStreamForTimes() {
         try {
             String filename = "out/times";
             
@@ -146,9 +146,9 @@ public class Statistics {
     }
     
     
-    public static void closeStream() { writer.close(); }
+    public void closeStream() { writer.close(); }
     
-    public static PrintWriter getWriterInstance() {
+    public PrintWriter getWriterInstance() {
         if (writer == null) {
             return openStream();
         }

@@ -53,7 +53,7 @@ public class Channel {
     public void dequeueSegment() {
         if (!queue.isEmpty()) {
             MySegment s = queue.removeFirst();
-            if (MyConstants.isSegmentNotCorrupted()) {
+            if (Monitor.isSegmentNotCorrupted(Thread.currentThread())) {
                 if (s.getClass() == DataSegment.class ) {
                     if (!cumulativeAcks.containsKey(s.getUser().getID())) {
                         cumulativeAcks.put(s.getUser().getID(), new LinkedList<>());
@@ -65,7 +65,7 @@ public class Channel {
                 }
             } else {
                 //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31mSEGMENT CORRUPTED!" + (char) 27 + "[0m");           
-                Statistics.increaseCorruptedSegmentsNumber();
+                Monitor.getSTATISTIC(Thread.currentThread()).increaseCorruptedSegmentsNumber();
             }
         }
         Monitor.getFEL(t).scheduleNextEvent(new Event(Monitor.getFEL(t).getSimTime() + MU, EventType.CH_SOLVING));

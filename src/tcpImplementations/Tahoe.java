@@ -1,6 +1,5 @@
 package tcpImplementations;
 
-import GUI.Chart;
 import components.DataSegment;
 import components.FEL;
 import components.Monitor;
@@ -41,10 +40,10 @@ public class Tahoe extends TCPCommonLayer implements TCP {
                 if (item.getSeq() <= ack.getSeq()) {
                     Monitor.getFEL(Thread.currentThread()).removeTimeoutEvent(item.getSeq(), item.getUser().getID());
                     item.setReceivedTimestamp(Monitor.getFEL(Thread.currentThread()).getSimTime());
-                    Statistics.refreshResponseTimeStatistics(item);
+                    Monitor.getSTATISTIC(Thread.currentThread()).refreshResponseTimeStatistics(item);
                     
-                    this.devRTT = Statistics.getDevRTT(this.devRTT, item);
-                    timeout = Statistics.getERTT() + (4 * this.devRTT);
+                    this.devRTT = Monitor.getSTATISTIC(Thread.currentThread()).getDevRTT(this.devRTT, item);
+                    timeout = Monitor.getSTATISTIC(Thread.currentThread()).getERTT() + (4 * this.devRTT);
                     iterator.remove();
                 }
             }
@@ -55,7 +54,6 @@ public class Tahoe extends TCPCommonLayer implements TCP {
             
             if (congestionWindow.isEmpty()) {
                 System.out.println("(" + Monitor.getFEL(Thread.currentThread()).getSimTime() + ")" + (char) 27 + "[31m" + user.getID() + " ends transmission" + (char) 27 + "[0m");
-                Chart.getInstance().reset(user.getID());
                 restart();
             }
             return true;
@@ -69,7 +67,6 @@ public class Tahoe extends TCPCommonLayer implements TCP {
         size = (size < ssthresh) ? size * 2 : size + 1;
         ssthresh = (size > ssthresh) ? size : ssthresh;
         //System.out.println("" + size + " " + ssthresh);
-        Chart.getInstance().addValue(size, user.getID(), ssthresh);
         /*System.out.println("------------------------------------------------"
                 + "INCREASED CONGESTION WINDOW SIZE: " + size + "; SSTHRESH: " + ssthresh);*/
     }
@@ -81,7 +78,6 @@ public class Tahoe extends TCPCommonLayer implements TCP {
             ssthresh++;
         size = MyConstants.MSS;
         //System.out.println("" + size + " " + ssthresh);
-        Chart.getInstance().addValue(size, user.getID(), ssthresh);
         /*System.out.println("------------------------------------------------"
                 + "DECREASED CONGESTION WINDOW SIZE: " + size + "; SSTHRESH: " + ssthresh);*/
     }
@@ -93,6 +89,5 @@ public class Tahoe extends TCPCommonLayer implements TCP {
         ssthresh = MyConstants.SSTHRESH;
         lastAck = -1;
         repeatedAck = 0;
-        Chart.getInstance().addValue(size, user.getID(), ssthresh);
     }
 }

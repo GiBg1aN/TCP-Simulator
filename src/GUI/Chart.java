@@ -26,11 +26,11 @@ import org.jfree.ui.ApplicationFrame;
  * @see http://stackoverflow.com/questions/5048852
  */
 public class Chart extends ApplicationFrame {
-
+    static Chart demo;
     private static final String TITLE = "Dynamic Series";
     private static final String START = "Start";
     private static final String STOP = "Stop";
-    private static final float MAXRANGE = 40;
+    private static final double MAXRANGE = 0.5;
     private static final int COUNT = 2 * 60;
     private static final int FAST = 100;
     private static final int SLOW = FAST * 5;
@@ -38,14 +38,16 @@ public class Chart extends ApplicationFrame {
     private Timer timer;
     private DynamicTimeSeriesCollection dataset;
     private static Chart instance;
-    float[] newData = new float[2];
+    float[] newData = new float[3];
 
     public Chart(final String title) {
         super(title);
-        dataset = new DynamicTimeSeriesCollection(2, COUNT, new Second());
+        dataset = new DynamicTimeSeriesCollection(3, COUNT, new Second());
         dataset.setTimeBase(new Second(0, 0, 0, 1, 1, 2011));
-        dataset.addSeries(gaussianData(), 0, "Congestion window");
-        dataset.addSeries(gaussianData(), 1, "ssthresh");
+        dataset.addSeries(gaussianData(), 0, "Min");
+        dataset.addSeries(gaussianData(), 1, "Mean");
+        dataset.addSeries(gaussianData(), 2, "Max");
+        
         JFreeChart chart = createChart(dataset);
 
         final JButton run = new JButton(STOP);
@@ -122,14 +124,8 @@ public class Chart extends ApplicationFrame {
         domain.setAutoRange(true);
         domain.setVisible(false);
         ValueAxis range = plot.getRangeAxis();
-        range.setRange(0, MAXRANGE);
+        range.setRange(0.0205, 0.0225);
         NumberAxis y = (NumberAxis) plot.getRangeAxis();
-        y.setTickUnit(new NumberTickUnit(1));
-        /*XYLineAndShapeRenderer renderer
-                = (XYLineAndShapeRenderer) plot.getRenderer();
-        renderer.setPaint(Color.BLUE);*/
-        
-        
 
         return result;
     }
@@ -137,22 +133,24 @@ public class Chart extends ApplicationFrame {
     public void start() {
         timer.start();
     }
+    
+    public static void stop(){
+        demo.stop();
+    }
 
-    public float[] addValue(int size, int ID, int ssthresh) {
+    public float[] addValue(double max, double mean, double min) {
 
-        if (ID == 0) {
-            this.newData[0] = size;
-            if (ssthresh != -1) {
-                this.newData[1] = ssthresh;
-            }
-            dataset.advanceTime();
-            dataset.appendData(newData);
-            try {
-                Thread.sleep(0);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Chart.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        this.newData[0] = (float) min;
+        this.newData[1] = (float) mean;
+        this.newData[2] = (float) max;
+        dataset.advanceTime();
+        dataset.appendData(newData);
+        try {
+            Thread.sleep(0);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Chart.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return newData;
     }
 
@@ -175,20 +173,11 @@ public class Chart extends ApplicationFrame {
     }
 
     public static Chart initialize() {
-        Chart demo = new Chart("User");
+        demo = new Chart("User");
         demo.pack();
         demo.setVisible(true);
         demo.start();
         return demo;
     }
-    /*
-     public static void main(final String[] args) {
-     EventQueue.invokeLater(new Runnable() {
-
-     @Override
-     public void run() {
-     Graph a = Graph.initialize();            
-     }
-     });
-     }*/
+    
 }
