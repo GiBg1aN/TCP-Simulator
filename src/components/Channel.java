@@ -12,24 +12,26 @@ import statistics.Statistics;
 /**
  * Rappresenta il canale dove viaggiano i segmenti.
  */
-public class Channel extends LinkedList<MySegment> {
+public class Channel {
     private static final int MAX_LENGTH = T;
-    private static final Channel instance = new Channel(); // Pattern Singleton
-    private static final Map<Integer, List<Integer>> cumulativeAcks = new TreeMap<>();
-    private static final LinkedList<MySegment> travelling = new LinkedList<>(); // Rappresenta i pacchetti in transito.
-    
-    
-    private Channel() {}
-    
-    public static Channel getInstance() { return instance; }
+    private final LinkedList<MySegment> queue = new LinkedList<>();
+    private final Map<Integer, List<Integer>> cumulativeAcks = new TreeMap<>();
+    private final LinkedList<MySegment> travelling = new LinkedList<>(); // Rappresenta i pacchetti in transito.
+    private Thread t;
 
+    
+    public Channel(Thread t) {
+        this.t = t;
+    }
+    
     /**
      * Inserisce un segmento in transito.
      * @param segm      segmento da elaborare.
      */
     public void startTravel(MySegment segm) {
         travelling.addLast(segm);
-        FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + TRAVEL_TIME, EventType.TRAVEL));
+        
+        Monitor.getFEL(t).scheduleNextEvent((new Event(Monitor.getFEL(t).getSimTime() + TRAVEL_TIME, EventType.TRAVEL)));
     }
     
     /**
@@ -37,8 +39,8 @@ public class Channel extends LinkedList<MySegment> {
      */
     public void enqueueSegment() {
         MySegment segm = travelling.removeFirst();
-        if (size() < MAX_LENGTH) {
-            addLast(segm);
+        if (queue.size() < MAX_LENGTH) {
+            queue.addLast(segm);
         }
     }
 
@@ -49,8 +51,8 @@ public class Channel extends LinkedList<MySegment> {
      * all'utente.
      */
     public void dequeueSegment() {
-        if (!isEmpty()) {
-            MySegment s = removeFirst();
+        if (!queue.isEmpty()) {
+            MySegment s = queue.removeFirst();
             if (MyConstants.isSegmentNotCorrupted()) {
                 if (s.getClass() == DataSegment.class ) {
                     if (!cumulativeAcks.containsKey(s.getUser().getID())) {
@@ -66,7 +68,7 @@ public class Channel extends LinkedList<MySegment> {
                 Statistics.increaseCorruptedSegmentsNumber();
             }
         }
-        FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + MU, EventType.CH_SOLVING));
+        Monitor.getFEL(t).scheduleNextEvent(new Event(Monitor.getFEL(t).getSimTime() + MU, EventType.CH_SOLVING));
     }
     
     public void resetChannelForUser(int id) { cumulativeAcks.remove(id); }
@@ -78,7 +80,7 @@ public class Channel extends LinkedList<MySegment> {
     private void sendAcknowledgement(DataSegment segm) {
         int lastAck = getLastAcknowledgement(segm.getUser().getID());        
         MySegment ack = new AckSegment(segm.getUser(), lastAck, segm);
-        Channel.getInstance().startTravel(ack);
+        Monitor.getCHANNEL(t).startTravel(ack);
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[34mAdversary sends ack number: " + ack.getSeq() + (char) 27 + "[0m");           
     }
     

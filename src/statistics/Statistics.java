@@ -2,6 +2,7 @@ package statistics;
 
 import components.DataSegment;
 import components.FEL;
+import components.Monitor;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,23 +37,15 @@ public class Statistics {
         if (firstValue) {
             max = d;
             min = d;
+            firstValue = false;
         } else {
             max = (max > d) ? max : d;
             min = (min < d) ? min : d;
         }
-        meanDevStanCounter += (d * d);   
-        minConfidenceValue = -1.96 * evalMeanDevStan() + evalMean();
-        maxConfidenceValue = 1.96 * evalMeanDevStan() + evalMean();
-        //System.out.println(evalMeanDevStan() + " - " + evalMean() + " " +minConfidenceValue + " - " + maxConfidenceValue);
-        firstValue = false;
+        meanDevStanCounter += (d * d);
     }
     
     public static void increaseTimeout() { timeout++; }
-    
-    public static boolean stop() { 
-        //System.out.println( FEL.getInstance().getSimTime() + " ) " + minConfidenceValue + " < " + min + " - " + max + " < " + maxConfidenceValue);
-            
-        return Statistics.minConfidenceValue < Statistics.min && Statistics.max < Statistics.maxConfidenceValue; }
     
     public static void increaseCorruptedSegmentsNumber() { corruptedSegmentsNumber++; }
     
@@ -94,7 +87,7 @@ public class Statistics {
     
     public static void printCorruptedSegmentsNumber() { writer.append("#CorruptedSegments: " + corruptedSegmentsNumber + "\n"); }
     
-    public static void printThroughput() { writer.append("Throughput: " + (segmentCounter / (FEL.getInstance().getSimTime())) + "\n"); }
+    public static void printThroughput() { writer.append("Throughput: " + (segmentCounter / (Monitor.getFEL(Thread.currentThread()).getSimTime())) + "\n"); }
     
     public static void printSegmentsSent() { writer.append("Segments sent: "+ segmentCounter + "\n"); }
     

@@ -3,6 +3,7 @@ package tcpImplementations;
 import GUI.Chart;
 import components.DataSegment;
 import components.FEL;
+import components.Monitor;
 import components.MySegment;
 import components.User;
 import java.util.Iterator;
@@ -31,8 +32,8 @@ public class Reno extends Tahoe implements TCP {
             while(iterator.hasNext()) {
                 DataSegment item = iterator.next();
                 if (item.getSeq() <= ack.getSeq()) {
-                    FEL.getInstance().removeTimeoutEvent(item.getSeq(), item.getUser().getID());
-                    item.setReceivedTimestamp(FEL.getInstance().getSimTime());
+                    Monitor.getFEL(Thread.currentThread()).removeTimeoutEvent(item.getSeq(), item.getUser().getID());
+                    item.setReceivedTimestamp(Monitor.getFEL(Thread.currentThread()).getSimTime());
                     Statistics.refreshResponseTimeStatistics(item);      
                     
                     this.devRTT = Statistics.getDevRTT(this.devRTT, item);

@@ -33,7 +33,7 @@ public class Event {
       
     public void solveEvent() {
         if (eventType == EventType.CH_SOLVING) {
-            Channel.getInstance().dequeueSegment();
+            Monitor.getCHANNEL(Thread.currentThread()).dequeueSegment();
         }
         if (eventType == EventType.TIMEOUT) {
             segment.getUser().timeout(segment);
@@ -42,10 +42,11 @@ public class Event {
             user.transmit();
         }
         if (eventType == EventType.TRAVEL) {
-            Channel.getInstance().enqueueSegment();
+            Monitor.getCHANNEL(Thread.currentThread()).enqueueSegment();
         }
     }
 
+    
     /* GETTER E SETTER */
     public double getTimestamp() { return timestamp; }
 

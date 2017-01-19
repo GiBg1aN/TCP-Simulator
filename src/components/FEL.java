@@ -9,16 +9,8 @@ import mainPackage.EventType;
  * Rappresenta la Future Event List.
  */
 public class FEL {
-    private final List<Event> fel;
-    private static final FEL instance = new FEL(); // Pattern Singleton.
+    private final List<Event> fel = new LinkedList<>();
     private double simTime;
-    
-    
-    private FEL() {
-        fel = new LinkedList<>();
-    }
-
-    public static FEL getInstance() { return instance; }
     
     /* Ritorna l'evento con il timestamp minimo */
     public Event getNextEvent() { 
