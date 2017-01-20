@@ -1,13 +1,6 @@
 package GUI;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.Timer;
 import mainPackage.MyConstants;
 import org.jfree.chart.ChartFactory;
@@ -19,22 +12,16 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.DynamicTimeSeriesCollection;
 import org.jfree.data.time.Second;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
 import org.jfree.ui.ApplicationFrame;
 
 
 public class Chart extends ApplicationFrame {
     static Chart demo;
-    private static final String TITLE = "Dynamic Series";
-    private static final String START = "Start";
-    private static final String STOP = "Stop";
-    private static final double MAXRANGE = 0.5;
     private static final int COUNT = 2 * 60;
     private static final int FAST = 100;
     private static final int SLOW = FAST * 5;
-    private static final Random random = new Random();
-    private Timer timer;
-    private DynamicTimeSeriesCollection dataset;
+    private final Timer timer;
+    private final DynamicTimeSeriesCollection dataset;
     private static Chart instance;
     float[] newData = new float[3];
     public ValueAxis range;
@@ -51,10 +38,7 @@ public class Chart extends ApplicationFrame {
 
         this.add(new ChartPanel(chart), BorderLayout.CENTER);
 
-        timer = new Timer(SLOW, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {}
-        });
+        timer = new Timer(SLOW, null);
     }
 
     private float[] gaussianData() {
@@ -129,5 +113,4 @@ public class Chart extends ApplicationFrame {
         demo.start();
         return demo;
     }
-    
 }

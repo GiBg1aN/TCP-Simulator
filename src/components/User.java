@@ -1,8 +1,6 @@
 package components;
 
-import mainPackage.MyConstants;
 import mainPackage.TCPProtocolType;
-import statistics.Statistics;
 import tcpImplementations.AIMD;
 import tcpImplementations.Reno;
 import tcpImplementations.TCP;

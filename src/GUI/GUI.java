@@ -43,7 +43,8 @@ public class GUI {
         JLabel segmentCorruptionInverseLabel = new JLabel("Probabilità che un segmento sia integro:");
         JLabel casualNumberLabel = new JLabel("Probabilità di successo geometrica:");
 
-        JComboBox protocolComboBox = new JComboBox((Object[]) new String[]{"AIMD", "Tahoe", "Reno"});
+        
+        JComboBox protocolComboBox = new JComboBox(new String[]{"AIMD", "Tahoe", "Reno"});
 
         JTextField userNoTextField = new JTextField("1", 3);
         JTextField queueLengthTextField = new JTextField("100", 3);

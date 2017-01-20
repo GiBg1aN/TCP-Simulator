@@ -31,7 +31,7 @@ public class Statistics {
         
         sum += d;
         segmentCounter++;
-        //times.append(d + "\n");
+        
         if (firstValue) {
             max = d;
             min = d;
@@ -54,7 +54,6 @@ public class Statistics {
     public double getERTT() { return evalMean(); }
 
     public double getDevRTT(double devRTT, DataSegment item) {
-        //System.out.println((item.getReceivedTimestamp() - item.getSentTimestamp()));
         return (3/4 * devRTT) + (1/4 * Math.abs(getERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
     }
     
@@ -71,18 +70,8 @@ public class Statistics {
 
  
     /* FORMATTED PRINTS */
-    public void printStatistics() {
-        printProtocol();
-        printConstants();
-        printResponseTimeStatistics();
-        printTimeout();
-        printCorruptedSegmentsNumber();
-        printThroughput();
-        printSegmentsSent();
-    }
-    
     public void printTimes(double minMean, double campionaryMean, double maxMean) {
-        if (minMean != Double.NaN && campionaryMean != Double.NaN && maxMean != Double.NaN) {
+        if (!Double.isNaN(minMean)  && !Double.isNaN(campionaryMean) && !Double.isNaN(maxMean)) {
             times.append(minMean + "," + campionaryMean + "," + maxMean + "\n");            
         }
     }
@@ -182,7 +171,7 @@ public class Statistics {
                     f = new File("times_" + i + ".csv");
                     if (!f.exists() || f.isDirectory()) {
                         flag = false;
-                        filename = ("times_" + i + ".csv");
+                        filename = ("out/times_" + i + ".csv");
                     }
                     i++;
                 }

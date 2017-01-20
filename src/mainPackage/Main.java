@@ -23,8 +23,8 @@ public class Main {
                 double campionaryMean = Monitor.evalCampionaryMean();
                 double maxMean = Monitor.maxMean();
                 
-                //statistics.printTimes(minMean, campionaryMean, maxMean); // TODO: decommentare per attivare la stampa times.
-                System.out.println(statistics.evalMaxSimTime());
+                statistics.printTimes(minMean, campionaryMean, maxMean);
+                
                 if (Monitor.isInConfidentialRange(1.96) && minMean > campionaryMean * 0.95 && maxMean < campionaryMean * 1.05) {
                     System.out.println("FINE SIMULAZIONE");
                     flag = false;

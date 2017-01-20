@@ -82,7 +82,7 @@ public class Monitor {
         }
         Chart.getInstance().addValue(minMean(), evalCampionaryMean(), maxMean());
 
-        return counter / STATISTICs.size() >= 0.95;
+        return counter / (double) STATISTICs.size() >= 0.95;
     }
 
     

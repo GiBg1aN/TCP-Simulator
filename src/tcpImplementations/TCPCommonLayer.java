@@ -1,16 +1,13 @@
 package tcpImplementations;
 
-import components.Channel;
 import components.DataSegment;
 import components.Event;
-import components.FEL;
 import components.Monitor;
 import components.MySegment;
 import components.User;
 import java.util.LinkedList;
 import java.util.List;
 import mainPackage.MyConstants;
-import statistics.Statistics;
 
 
 public abstract class TCPCommonLayer implements TCP {
