@@ -61,6 +61,13 @@ public class Statistics {
     public double evalThroughput() { return segmentCounter / (Monitor.getFEL(Thread.currentThread()).getSimTime()); } // TODO: probabilmente si può togliere.
     
     public double evalThroughput(Thread t) { return segmentCounter / (Monitor.getFEL(t).getSimTime()); }
+    
+    public double evalMaxSimTime() {
+        return Monitor.getFELs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().getSimTime())
+                .max()
+                .getAsDouble();
+    }
 
  
     /* FORMATTED PRINTS */
@@ -74,26 +81,16 @@ public class Statistics {
         printSegmentsSent();
     }
     
-    public void printTimes(double minMean, double campionaryMean, double maxMean) { 
-        times.append(minMean + "," + campionaryMean + "," + maxMean + "\n");
+    public void printTimes(double minMean, double campionaryMean, double maxMean) {
+        if (minMean != Double.NaN && campionaryMean != Double.NaN && maxMean != Double.NaN) {
+            times.append(minMean + "," + campionaryMean + "," + maxMean + "\n");            
+        }
     }
     
     public void printGlobalStatistics() {
         writer.println("-GLOBALS-");
         printProtocol();
         printConstants();
-        double meanResponseTime = Monitor.getSTATISTICs().entrySet().stream()
-                .mapToDouble(x -> x.getValue().evalMean())
-                .average()
-                .getAsDouble();
-        double maxMaxResponseTime = Monitor.getSTATISTICs().entrySet().stream()
-                .mapToDouble(x -> x.getValue().max)
-                .max()
-                .getAsDouble();
-        double minMinResponseTime = Monitor.getSTATISTICs().entrySet().stream()
-                .mapToDouble(x -> x.getValue().min)
-                .min()
-                .getAsDouble();
         double meanMeanDevStan = Monitor.getSTATISTICs().entrySet().stream()
                 .mapToDouble(x -> x.getValue().evalMeanDevStan())
                 .average()
@@ -114,19 +111,16 @@ public class Statistics {
                 .mapToDouble(x -> x.getValue().segmentCounter)
                 .average()
                 .getAsDouble();
-        Double maxSimTime = Monitor.getFELs().entrySet().stream()
-                .mapToDouble(x -> x.getValue().getSimTime())
-                .max()
-                .getAsDouble();
-        writer.append("Mean Response time: " + meanResponseTime +
-                "\nMin response time: " + minMinResponseTime +
-                "\nMax response time: " + maxMaxResponseTime +
+        
+        writer.append("Mean Response time: " + Monitor.evalCampionaryMean() +
+                "\nMin response time: " + Monitor.minMean() +
+                "\nMax response time: " + Monitor.maxMean() +
                 "\nStandard Deviation: " + meanMeanDevStan +
                 "\n#Timeout: " + meanTimeout +
                 "\n#Corrupted Segments: " + meanCorruptedSegmentsNumber +
                 "\nThroughput: " + meanThroughput +
                 "\nSegments sent: " + meanSegmentsSent +
-                "\nSim. Time: " + maxSimTime);
+                "\nSim. Time: " + evalMaxSimTime() + "\n");
     }
     
     public void printProtocol() { writer.append(MyConstants.protocolType.toString() + "\n"); }
@@ -185,10 +179,10 @@ public class Statistics {
                 boolean flag = true;
                 int i = 0;
                 while (flag) {
-                    f = new File("times" + "_" + i + ".csv");
+                    f = new File("times_" + i + ".csv");
                     if (!f.exists() || f.isDirectory()) {
                         flag = false;
-                        filename += ("_" + i);
+                        filename = ("times_" + i + ".csv");
                     }
                     i++;
                 }

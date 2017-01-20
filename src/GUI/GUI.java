@@ -39,7 +39,7 @@ public class GUI {
         JLabel protocolLabel = new JLabel("Seleziona protocollo:");
         JLabel userNoLabel = new JLabel("Numero utenti:");
         JLabel queueLengthLabel = new JLabel("Lunghezza della coda:");
-        JLabel parallelSimulationLabel = new JLabel("Numero di simulazione da eseguire in parallelo:");
+        JLabel parallelSimulationLabel = new JLabel("Numero di simulazione in parallelo:");
         JLabel segmentCorruptionInverseLabel = new JLabel("Probabilità che un segmento sia integro:");
         JLabel casualNumberLabel = new JLabel("Probabilità di successo geometrica:");
 
@@ -83,6 +83,8 @@ public class GUI {
 
                 RunPilota[] runPilota = new RunPilota[MyConstants.N_THREAD];
 
+                Chart.getInstance();
+                
                 for (int i = 0; i < MyConstants.N_THREAD; i++) {
                     runPilota[i] = new RunPilota();
                     runPilota[i].start();

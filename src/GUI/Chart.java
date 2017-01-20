@@ -19,6 +19,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.DynamicTimeSeriesCollection;
 import org.jfree.data.time.Second;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
 import org.jfree.ui.ApplicationFrame;
 
 
@@ -36,6 +37,7 @@ public class Chart extends ApplicationFrame {
     private DynamicTimeSeriesCollection dataset;
     private static Chart instance;
     float[] newData = new float[3];
+    public ValueAxis range;
 
     public Chart(final String title) {
         super(title);
@@ -47,54 +49,12 @@ public class Chart extends ApplicationFrame {
         
         JFreeChart chart = createChart(dataset);
 
-        final JButton run = new JButton(STOP);
-        run.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String cmd = e.getActionCommand();
-                if (STOP.equals(cmd)) {
-                    timer.stop();
-                    run.setText(START);
-                } else {
-                    timer.start();
-                    run.setText(STOP);
-                }
-            }
-        });
-
-        final JComboBox combo = new JComboBox();
-        combo.addItem("Fast");
-        combo.addItem("Slow");
-        combo.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ("Fast".equals(combo.getSelectedItem())) {
-                    timer.setDelay(FAST);
-                } else {
-                    timer.setDelay(SLOW);
-                }
-            }
-        });
-
         this.add(new ChartPanel(chart), BorderLayout.CENTER);
-        //JPanel btnPanel = new JPanel(new FlowLayout());
-        //btnPanel.add(run);
-        //btnPanel.add(combo);
-        //this.add(btnPanel, BorderLayout.SOUTH);
 
         timer = new Timer(SLOW, new ActionListener() {
-
             @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
+            public void actionPerformed(ActionEvent e) {}
         });
-    }
-
-    private float randomValue() {
-        return (float) (random.nextGaussian() * MAXRANGE / 3);
     }
 
     private float[] gaussianData() {
@@ -105,22 +65,14 @@ public class Chart extends ApplicationFrame {
         return a;
     }
 
-    private float[] gaussianData2() {
-        float[] a = new float[1];
-        for (int i = 0; i < a.length; i++) {
-            a[i] = MyConstants.SSTHRESH;
-        }
-        return a;
-    }
-
     private JFreeChart createChart(final XYDataset dataset) {
         final JFreeChart result = ChartFactory.createTimeSeriesChart(
-                "Congestion window of user0", "hh:mm:ss", "Size of congestion window", dataset, true, true, false);
+                "Response Time variation during simulation", "hh:mm:ss", "Response Time", dataset, true, true, false);
         final XYPlot plot = result.getXYPlot();
         ValueAxis domain = plot.getDomainAxis();
         domain.setAutoRange(true);
         domain.setVisible(false);
-        ValueAxis range = plot.getRangeAxis();
+        range = plot.getRangeAxis();
         range.setRange(0.0205, 0.0225);
         NumberAxis y = (NumberAxis) plot.getRangeAxis();
 
@@ -133,16 +85,20 @@ public class Chart extends ApplicationFrame {
     
 
     public float[] addValue(double max, double mean, double min) {
-
-        this.newData[0] = (float) min;
-        this.newData[1] = (float) mean;
-        this.newData[2] = (float) max;
-        dataset.advanceTime();
-        dataset.appendData(newData);
         try {
+            double maxRange = Math.max(min + 0.003, max + 0.003);
+            double minRange = Math.min(min - 0.003, max - 0.003);
+            range.setRange(minRange, maxRange);
+            this.newData[0] = (float) min;
+            this.newData[1] = (float) mean;
+            this.newData[2] = (float) max;
+            dataset.advanceTime();
+            dataset.appendData(newData);
             Thread.sleep(0);
         } catch (InterruptedException ex) {
-            Logger.getLogger(Chart.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return newData;
@@ -167,7 +123,7 @@ public class Chart extends ApplicationFrame {
     }
 
     public static Chart initialize() {
-        demo = new Chart("User");
+        demo = new Chart("TCPSimulation");
         demo.pack();
         demo.setVisible(true);
         demo.start();

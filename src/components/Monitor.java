@@ -1,7 +1,6 @@
 package components;
 
 import GUI.Chart;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import static mainPackage.MyConstants.G;
@@ -40,24 +39,24 @@ public class Monitor {
     /* GLOBAL STATISTICS */
     public synchronized static double evalCampionaryMean() { 
         return STATISTICs.entrySet().stream()
-                .map(x -> x.getValue().evalMean())
-                .reduce(0.0, (x, y) -> x + y)
-                / STATISTICs.size();
+                .mapToDouble(x -> x.getValue().evalMean())
+                .average()
+                .getAsDouble();
     }
 
     public synchronized static double evalCampionaryVariance() {
         return STATISTICs.entrySet().stream()
-                .map(x -> x.getValue().evalMeanDevStan() * x.getValue().evalMeanDevStan())
-                .reduce(0.0, (x, y) -> x + y)
-                / STATISTICs.size();
+                .mapToDouble(x -> x.getValue().evalMeanDevStan() * x.getValue().evalMeanDevStan())
+                .average()
+                .getAsDouble();
     }
 
     public synchronized static double minMean() {
-        return STATISTICs.entrySet().stream().map(x -> x.getValue().evalMean()).min(Double::compare).get();
+        return STATISTICs.entrySet().stream().mapToDouble(x -> x.getValue().evalMean()).min().getAsDouble();
     }
 
     public synchronized static double maxMean() {
-        return STATISTICs.entrySet().stream().map(x -> x.getValue().evalMean()).max(Double::compare).get();
+        return STATISTICs.entrySet().stream().mapToDouble(x -> x.getValue().evalMean()).max().getAsDouble();
     }
 
     public static int generateSegmentsToSend(Thread t) {

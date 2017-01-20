@@ -17,24 +17,24 @@ public class Main {
         
         while (flag) {
             try {
-                Thread.sleep(0);
+                Thread.sleep(250);
                 
                 double minMean = Monitor.minMean();
                 double campionaryMean = Monitor.evalCampionaryMean();
                 double maxMean = Monitor.maxMean();
                 
-                statistics.printTimes(minMean, campionaryMean, maxMean);
-                
-                if (minMean > campionaryMean * 0.95 && maxMean < campionaryMean * 1.05 && Monitor.isInConfidentialRange(1.96)) {
+                //statistics.printTimes(minMean, campionaryMean, maxMean); // TODO: decommentare per attivare la stampa times.
+                System.out.println(statistics.evalMaxSimTime());
+                if (Monitor.isInConfidentialRange(1.96) && minMean > campionaryMean * 0.95 && maxMean < campionaryMean * 1.05) {
                     System.out.println("FINE SIMULAZIONE");
                     flag = false;
-                    for(RunPilota r : runPilota) {
+                    for (RunPilota r : runPilota) {
                         r.stop();
                     }
                 }
             } catch (InterruptedException ex) {
                 System.out.println("Simulazione stoppata");
-            } 
+            }
         }
         statistics.printGlobalStatistics();
         statistics.closeStream();
