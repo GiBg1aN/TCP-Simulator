@@ -73,8 +73,8 @@ public abstract class TCPCommonLayer implements TCP {
         decreaseCongestionWindow();
         ((DataSegment) segment).setReceivedTimestamp(Monitor.getFEL(Thread.currentThread()).getSimTime());
         Monitor.getStatistic(Thread.currentThread()).refreshResponseTimeStatistics((DataSegment)segment);
-        this.devRTT = Monitor.getStatistic(Thread.currentThread()).getDevRTT(this.devRTT, (DataSegment) segment);
-        timeout = Monitor.getStatistic(Thread.currentThread()).getERTT() + (4 * this.devRTT);
+        this.devRTT = Monitor.getStatistic(Thread.currentThread()).devRTT(this.devRTT, (DataSegment) segment);
+        timeout = Monitor.getStatistic(Thread.currentThread()).ERTT() + (4 * this.devRTT);
         sendSegment(segment.getSeq());
         //System.out.printl1n(timeout);
     }

@@ -18,6 +18,7 @@ public class Monitor {
     private static final Map<Thread, Statistics> statisticsMap = new HashMap<>();
     private static final Map<Thread, RandomStream> randomStreamsMap = new HashMap<>();
 
+    
     /* ADDER */
     public synchronized static void addFEL(Thread t) { FELMap.put(t, new FEL()); }
 
@@ -27,36 +28,23 @@ public class Monitor {
 
     public synchronized static void addRandomStream(Thread t) { randomStreamsMap.put(t, new LFSR113()); }
 
-    /* GETTER */
-    public synchronized static FEL getFEL(Thread t) { return FELMap.get(t); }
-
-    public synchronized static Channel getChannel(Thread t) { return channelMap.get(t); }
-
-    public synchronized static Statistics getStatistic(Thread t) { return statisticsMap.get(t); }
-
-    public synchronized static RandomStream getRandomStream(Thread t) { return randomStreamsMap.get(t); }
-
+    
     /* GLOBAL STATISTICS */
     public synchronized static double campionaryMean() { 
-        return statisticsMap.entrySet().stream()
-                .mapToDouble(x -> x.getValue().evalMean())
-                .average()
-                .getAsDouble();
+        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().mean()).average().getAsDouble();
     }
 
     public synchronized static double campionaryVariance() {
         return statisticsMap.entrySet().stream()
-                .mapToDouble(x -> x.getValue().evalMeanDevStan() * x.getValue().evalMeanDevStan())
-                .average()
-                .getAsDouble();
+                .mapToDouble(x -> x.getValue().meanDevStan() * x.getValue().meanDevStan()).average().getAsDouble();
     }
 
     public synchronized static double minMean() {
-        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().evalMean()).min().getAsDouble();
+        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().mean()).min().getAsDouble();
     }
 
-    public synchronized static double maxMean() {
-        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().evalMean()).max().getAsDouble();
+    public synchronized static double maxMean() { 
+        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().mean()).max().getAsDouble();
     }
 
     public static int generateSegmentsToSend(Thread t) {
@@ -76,7 +64,7 @@ public class Monitor {
         double max = d * campionaryVariance() + campionaryMean();
         int counter = 0;
         for (Statistics s : statisticsMap.values()) {
-            if (s.evalMean() > min && s.evalMean() < max) {
+            if (s.mean() > min && s.mean() < max) {
                 counter++;
             }
         }
@@ -90,4 +78,12 @@ public class Monitor {
     public static Map<Thread, FEL> getFELs() { return FELMap; }
 
     public static Map<Thread, Statistics> getSTATISTICs() { return statisticsMap; }
+    
+    public synchronized static FEL getFEL(Thread t) { return FELMap.get(t); }
+
+    public synchronized static Channel getChannel(Thread t) { return channelMap.get(t); }
+
+    public synchronized static Statistics getStatistic(Thread t) { return statisticsMap.get(t); }
+
+    public synchronized static RandomStream getRandomStream(Thread t) { return randomStreamsMap.get(t); }    
 }

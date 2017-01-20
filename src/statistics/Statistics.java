@@ -13,10 +13,10 @@ import static mainPackage.MyConstants.T;
 
 
 public class Statistics {
-    private double sum;
     private int segmentCounter;
     private int timeout;
     private int corruptedSegmentsNumber;
+    private double sum;
     private double max;
     private double min;
     private double meanDevStanCounter;
@@ -47,28 +47,26 @@ public class Statistics {
     
     public void increaseCorruptedSegmentsNumber() { corruptedSegmentsNumber++; }
     
-    public double evalMean() { return (sum / segmentCounter); }
+    public double mean() { return sum / segmentCounter; }
     
-    public double evalMeanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
+    public double meanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
     
-    public double getERTT() { return evalMean(); }
+    public double ERTT() { return mean(); }
 
-    public double getDevRTT(double devRTT, DataSegment item) {
-        return (3/4 * devRTT) + (1/4 * Math.abs(getERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
+    public double devRTT(double devRTT, DataSegment item) {
+        return (3/4 * devRTT) + (1/4 * Math.abs(ERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
     }
     
-    public double evalThroughput() { return segmentCounter / (Monitor.getFEL(Thread.currentThread()).getSimTime()); } // TODO: probabilmente si può togliere.
+    public double throughput(Thread t) { return segmentCounter / (Monitor.getFEL(t).getSimTime()); }
     
-    public double evalThroughput(Thread t) { return segmentCounter / (Monitor.getFEL(t).getSimTime()); }
-    
-    public double evalMaxSimTime() {
+    public double maxSimTime() {
         return Monitor.getFELs().entrySet().stream()
                 .mapToDouble(x -> x.getValue().getSimTime())
                 .max()
                 .getAsDouble();
     }
 
- 
+    
     /* FORMATTED PRINTS */
     public void printTimes(double minMean, double campionaryMean, double maxMean) {
         if (!Double.isNaN(minMean)  && !Double.isNaN(campionaryMean) && !Double.isNaN(maxMean)) {
@@ -81,7 +79,7 @@ public class Statistics {
         printProtocol();
         printConstants();
         double meanMeanDevStan = Monitor.getSTATISTICs().entrySet().stream()
-                .mapToDouble(x -> x.getValue().evalMeanDevStan())
+                .mapToDouble(x -> x.getValue().meanDevStan())
                 .average()
                 .getAsDouble();
         int meanTimeout = (int) Monitor.getSTATISTICs().entrySet().stream()
@@ -93,7 +91,7 @@ public class Statistics {
                 .average()
                 .getAsDouble();
         double meanThroughput = Monitor.getSTATISTICs().entrySet().stream()
-                .mapToDouble(x -> x.getValue().evalThroughput(x.getKey()))
+                .mapToDouble(x -> x.getValue().throughput(x.getKey()))
                 .average()
                 .getAsDouble();
         int meanSegmentsSent = (int) Monitor.getSTATISTICs().entrySet().stream()
@@ -109,28 +107,13 @@ public class Statistics {
                 "\n#Corrupted Segments: " + meanCorruptedSegmentsNumber +
                 "\nThroughput: " + meanThroughput +
                 "\nSegments sent: " + meanSegmentsSent +
-                "\nSim. Time: " + evalMaxSimTime() + "\n");
+                "\nSim. Time: " + maxSimTime() + "\n");
     }
     
     public void printProtocol() { writer.append(MyConstants.protocolType.toString() + "\n"); }
     
     public void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }
-    
-    public void printResponseTimeStatistics() { 
-        writer.append("Mean response time: "+ evalMean() +
-                "\nMin response time: " + min +
-                "\nMax response time: " + max +
-                "\nStandard Deviation: " + evalMeanDevStan() + "\n"); 
-    }
-    
-    public void printTimeout() { writer.append("#Timeout: " + timeout + "\n"); }
-    
-    public void printCorruptedSegmentsNumber() { writer.append("#Corrupted Segments: " + corruptedSegmentsNumber + "\n"); }
-    
-    public void printThroughput() { writer.append("Throughput: " + evalThroughput() + "\n"); }
-    
-    public void printSegmentsSent() { writer.append("Segments sent: "+ segmentCounter + "\n"); }
-    
+        
     
     /* STREAMS */
     public PrintWriter openStream() {

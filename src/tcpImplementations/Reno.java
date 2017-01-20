@@ -33,8 +33,8 @@ public class Reno extends Tahoe implements TCP {
                     item.setReceivedTimestamp(Monitor.getFEL(Thread.currentThread()).getSimTime());
                     Monitor.getStatistic(Thread.currentThread()).refreshResponseTimeStatistics(item);      
                     
-                    this.devRTT = Monitor.getStatistic(Thread.currentThread()).getDevRTT(this.devRTT, item);
-                    timeout = Monitor.getStatistic(Thread.currentThread()).getERTT() + (4 * this.devRTT);
+                    this.devRTT = Monitor.getStatistic(Thread.currentThread()).devRTT(this.devRTT, item);
+                    timeout = Monitor.getStatistic(Thread.currentThread()).ERTT() + (4 * this.devRTT);
                     iterator.remove();
                 }
             }

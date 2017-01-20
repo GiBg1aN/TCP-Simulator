@@ -15,6 +15,7 @@ public class DataSegment implements MySegment {
         this.receivedTimestamp = -1;
     }
     
+    
     /* GETTER E SETTER */
     @Override
     public User getUser() { return user; }
