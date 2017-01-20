@@ -6,8 +6,8 @@ import mainPackage.EventType;
  * Rappresenta un evento generico che viene elaborato dalla Future Event List.
  */
 public class Event {
-    private double timestamp;
-    private EventType eventType;
+    private final double timestamp;
+    private final EventType eventType;
     private User user;
     private MySegment segment;
     
@@ -33,7 +33,7 @@ public class Event {
       
     public void solveEvent() {
         if (eventType == EventType.CH_SOLVING) {
-            Monitor.getCHANNEL(Thread.currentThread()).dequeueSegment();
+            Monitor.getChannel(Thread.currentThread()).dequeueSegment();
         }
         if (eventType == EventType.TIMEOUT) {
             segment.getUser().timeout(segment);
@@ -42,7 +42,7 @@ public class Event {
             user.transmit();
         }
         if (eventType == EventType.TRAVEL) {
-            Monitor.getCHANNEL(Thread.currentThread()).enqueueSegment();
+            Monitor.getChannel(Thread.currentThread()).enqueueSegment();
         }
     }
 

@@ -13,7 +13,7 @@ public class FEL {
     private double simTime;
     
     /* Ritorna l'evento con il timestamp minimo */
-    public Event getNextEvent() { 
+    public Event getNextEvent() {
         Event next = fel.stream().min(Comparator.comparing(e -> e.getTimestamp())).get();
         simTime = next.getTimestamp();
         fel.remove(next);
@@ -39,8 +39,6 @@ public class FEL {
     }
     
     
-    /* GETTER E SETTER */
+    /* GETTER */
     public double getSimTime() { return simTime; }
-    
-    public void setSimTime(double simTime) { this.simTime = simTime; }
 }

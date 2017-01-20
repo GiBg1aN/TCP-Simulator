@@ -101,7 +101,7 @@ public class Statistics {
                 .average()
                 .getAsDouble();
         
-        writer.append("Mean Response time: " + Monitor.evalCampionaryMean() +
+        writer.append("Mean Response time: " + Monitor.campionaryMean() +
                 "\nMin response time: " + Monitor.minMean() +
                 "\nMax response time: " + Monitor.maxMean() +
                 "\nStandard Deviation: " + meanMeanDevStan +

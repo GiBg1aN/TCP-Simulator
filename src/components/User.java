@@ -37,7 +37,7 @@ public class User {
     
     public void timeout(MySegment segment) {
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " reachs timeout for segment number: " + seqNumber + (char) 27 + "[0m");
-        Monitor.getSTATISTIC(Thread.currentThread()).increaseTimeout();
+        Monitor.getStatistic(Thread.currentThread()).increaseTimeout();
         tcpProtocol.timeout(segment);
     }
 

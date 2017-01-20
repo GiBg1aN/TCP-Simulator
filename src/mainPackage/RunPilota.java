@@ -8,13 +8,9 @@ import components.User;
 public class RunPilota implements Runnable {
     Thread t = new Thread(this);
 
-    public void start() {
-        t.start();
-    }
+    public void start() { t.start(); }
     
-    public void stop() {
-        t.interrupt();
-    }
+    public void stop() { t.interrupt(); }
 
     @Override
     public void run() {
@@ -22,10 +18,9 @@ public class RunPilota implements Runnable {
         Event nextEvent;
         Monitor.addFEL(Thread.currentThread());
         FEL fel = Monitor.getFEL(Thread.currentThread());
-        Monitor.addCHANNEL(Thread.currentThread());
-        Monitor.addSTATISTIC(Thread.currentThread());
-        //Monitor.getSTATISTIC(Thread.currentThread()).getWriterInstance();
-        Monitor.addRANDOMSTREAM(Thread.currentThread());
+        Monitor.addChannel(Thread.currentThread());
+        Monitor.addStatistic(Thread.currentThread());
+        Monitor.addRandomStream(Thread.currentThread());
 
         /* Creazione utenti */
         for (int i = 0; i < N_USERS; i++) {

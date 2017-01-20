@@ -1,12 +1,10 @@
 package components;
 
-import mainPackage.SegmentType;
-
 
 public class AckSegment implements MySegment {
-    private User user;
-    private int seq;
-    private DataSegment reference;
+    private final User user;
+    private final int seq;
+    private final DataSegment reference; // TODO: perché non lo usiamo?
 
 
     public AckSegment(User user, int seq, DataSegment reference) {
@@ -16,9 +14,6 @@ public class AckSegment implements MySegment {
     }
     
     /* GETTER E SETTER */
-    @Override
-    public SegmentType getSegmentType() { return SegmentType.ACK; }
-
     @Override
     public User getUser() { return this.user; }
     

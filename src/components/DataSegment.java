@@ -1,7 +1,5 @@
 package components;
 
-import mainPackage.SegmentType;
-
 
 public class DataSegment implements MySegment {
     private final User user;
@@ -18,9 +16,6 @@ public class DataSegment implements MySegment {
     }
     
     /* GETTER E SETTER */
-    @Override
-    public SegmentType getSegmentType() { return SegmentType.DATA; }
-
     @Override
     public User getUser() { return user; }
     

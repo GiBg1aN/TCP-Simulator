@@ -20,7 +20,7 @@ public class Main {
                 Thread.sleep(250);
                 
                 double minMean = Monitor.minMean();
-                double campionaryMean = Monitor.evalCampionaryMean();
+                double campionaryMean = Monitor.campionaryMean();
                 double maxMean = Monitor.maxMean();
                 
                 statistics.printTimes(minMean, campionaryMean, maxMean);
