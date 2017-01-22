@@ -18,18 +18,20 @@ public class Main {
         while (flag) {
             try {
                 Thread.sleep(250);
-                
-                double minMean = Monitor.minMean();
-                double campionaryMean = Monitor.campionaryMean();
-                double maxMean = Monitor.maxMean();
-                
-                statistics.printTimes(minMean, campionaryMean, maxMean);
-                
-                if (Monitor.isInConfidentialRange(1.96) && minMean > campionaryMean * 0.95 && maxMean < campionaryMean * 1.05) {
-                    System.out.println("FINE SIMULAZIONE");
-                    flag = false;
-                    for (RunPilota r : runPilota) {
-                        r.stop();
+                if (Monitor.getInstance().gatherInformation()) {
+                    double minMean = Monitor.getInstance().minMean();
+                    double campionaryMean = Monitor.getInstance().campionaryMean();
+                    double maxMean = Monitor.getInstance().maxMean();
+
+                    statistics.printTimes(minMean, campionaryMean, maxMean);
+
+                    if (Monitor.getInstance().checkConfidentialRange(1.96) && 
+                            minMean > campionaryMean * 0.95 && maxMean < campionaryMean * 1.05) {
+                        System.out.println("FINE SIMULAZIONE");
+                        flag = false;
+                        /*for (RunPilota r : runPilota) {
+                            r.stop();
+                        }*/
                     }
                 }
             } catch (InterruptedException ex) {

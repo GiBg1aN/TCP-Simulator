@@ -23,12 +23,12 @@ public class AIMD extends TCPCommonLayer implements TCP {
             while (iterator.hasNext()) {
                 DataSegment item = iterator.next();
                 if (item.getSeq() <= ack.getSeq()) {
-                    Monitor.getFEL(Thread.currentThread()).removeTimeoutEvent(item.getSeq(), item.getUser().getID());
-                    item.setReceivedTimestamp(Monitor.getFEL(Thread.currentThread()).getSimTime());
-                    Monitor.getStatistic(Thread.currentThread()).refreshResponseTimeStatistics(item);
+                    Monitor.getInstance().getFEL(Thread.currentThread()).removeTimeoutEvent(item.getSeq(), item.getUser().getID());
+                    item.setReceivedTimestamp(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
+                    Monitor.getInstance().getStatistic(Thread.currentThread()).refreshResponseTimeStatistics(item);
                     
-                    this.devRTT = Monitor.getStatistic(Thread.currentThread()).devRTT(this.devRTT, item);
-                    timeout = Monitor.getStatistic(Thread.currentThread()).ERTT() + (4 * this.devRTT);
+                    this.devRTT = Monitor.getInstance().getStatistic(Thread.currentThread()).devRTT(this.devRTT, item);
+                    timeout = Monitor.getInstance().getStatistic(Thread.currentThread()).ERTT() + (4 * this.devRTT);
                     //System.out.println(String.valueOf(timeout));
                     iterator.remove();
                 }

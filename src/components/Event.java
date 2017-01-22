@@ -33,7 +33,7 @@ public class Event {
       
     public void solveEvent() {
         if (eventType == EventType.CH_SOLVING) {
-            Monitor.getChannel(Thread.currentThread()).dequeueSegment();
+            Monitor.getInstance().getChannel(Thread.currentThread()).dequeueSegment();
         }
         if (eventType == EventType.TIMEOUT) {
             segment.getUser().timeout(segment);
@@ -42,7 +42,7 @@ public class Event {
             user.transmit();
         }
         if (eventType == EventType.TRAVEL) {
-            Monitor.getChannel(Thread.currentThread()).enqueueSegment();
+            Monitor.getInstance().getChannel(Thread.currentThread()).enqueueSegment();
         }
     }
 

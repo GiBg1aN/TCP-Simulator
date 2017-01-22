@@ -30,9 +30,10 @@ public class Chart extends ApplicationFrame {
         super(title);
         dataset = new DynamicTimeSeriesCollection(3, COUNT, new Second());
         dataset.setTimeBase(new Second(0, 0, 0, 1, 1, 2011));
-        dataset.addSeries(gaussianData(), 0, "Min");
+
+        dataset.addSeries(gaussianData(), 0, "Max");
         dataset.addSeries(gaussianData(), 1, "Mean");
-        dataset.addSeries(gaussianData(), 2, "Max");
+        dataset.addSeries(gaussianData(), 2, "Min");
         
         JFreeChart chart = createChart(dataset);
 
@@ -87,7 +88,7 @@ public class Chart extends ApplicationFrame {
 
         return newData;
     }
-
+    
     public void reset(int ID) {
         if (ID == 0) {
             this.newData[0] = 1;

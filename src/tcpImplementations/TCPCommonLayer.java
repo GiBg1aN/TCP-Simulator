@@ -28,18 +28,18 @@ public abstract class TCPCommonLayer implements TCP {
     
     protected void sendSegment() {
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " sends segment number: " + seqNumber + (char) 27 + "[0m");
-        DataSegment segment = new DataSegment(this.user, this.seqNumber, Monitor.getFEL(Thread.currentThread()).getSimTime());
-        Monitor.getChannel(Thread.currentThread()).startTravel(segment);
-        Monitor.getFEL(Thread.currentThread()).scheduleNextEvent(new Event(Monitor.getFEL(Thread.currentThread()).getSimTime() + timeout, segment));
+        DataSegment segment = new DataSegment(this.user, this.seqNumber, Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
+        Monitor.getInstance().getChannel(Thread.currentThread()).startTravel(segment);
+        Monitor.getInstance().getFEL(Thread.currentThread()).scheduleNextEvent(new Event(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() + timeout, segment));
         congestionWindow.add(segment);
         seqNumber++;
     }
     
     protected void sendSegment(int seqNumber) {
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " REsends segment number: " + seqNumber + (char) 27 + "[0m");        
-        MySegment segment = new DataSegment(this.user, seqNumber, Monitor.getFEL(Thread.currentThread()).getSimTime());
-        Monitor.getChannel(Thread.currentThread()).startTravel(segment);
-        Monitor.getFEL(Thread.currentThread()).scheduleNextEvent(new Event(Monitor.getFEL(Thread.currentThread()).getSimTime() + timeout, segment));
+        MySegment segment = new DataSegment(this.user, seqNumber, Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
+        Monitor.getInstance().getChannel(Thread.currentThread()).startTravel(segment);
+        Monitor.getInstance().getFEL(Thread.currentThread()).scheduleNextEvent(new Event(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() + timeout, segment));
     }
     
     @Override
@@ -63,18 +63,18 @@ public abstract class TCPCommonLayer implements TCP {
     public void restart() {
         seqNumber = 0;
         size = MyConstants.MSS;
-        double timestamp = Monitor.getFEL(Thread.currentThread()).getSimTime();
-        Monitor.getFEL(Thread.currentThread()).scheduleNextEvent(new Event(timestamp, user));
-        Monitor.getChannel(Thread.currentThread()).resetChannelForUser(this.user.getID());
+        double timestamp = Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime();
+        Monitor.getInstance().getFEL(Thread.currentThread()).scheduleNextEvent(new Event(timestamp, user));
+        Monitor.getInstance().getChannel(Thread.currentThread()).resetChannelForUser(this.user.getID());
     }
     
     @Override
     public void timeout(MySegment segment) {
         decreaseCongestionWindow();
-        ((DataSegment) segment).setReceivedTimestamp(Monitor.getFEL(Thread.currentThread()).getSimTime());
-        Monitor.getStatistic(Thread.currentThread()).refreshResponseTimeStatistics((DataSegment)segment);
-        this.devRTT = Monitor.getStatistic(Thread.currentThread()).devRTT(this.devRTT, (DataSegment) segment);
-        timeout = Monitor.getStatistic(Thread.currentThread()).ERTT() + (4 * this.devRTT);
+        ((DataSegment) segment).setReceivedTimestamp(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
+        Monitor.getInstance().getStatistic(Thread.currentThread()).refreshResponseTimeStatistics((DataSegment)segment);
+        this.devRTT = Monitor.getInstance().getStatistic(Thread.currentThread()).devRTT(this.devRTT, (DataSegment) segment);
+        timeout = Monitor.getInstance().getStatistic(Thread.currentThread()).ERTT() + (4 * this.devRTT);
         sendSegment(segment.getSeq());
         //System.out.printl1n(timeout);
     }

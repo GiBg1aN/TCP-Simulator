@@ -11,7 +11,7 @@ import static mainPackage.MyConstants.*;
  * Rappresenta il canale dove viaggiano i segmenti.
  */
 public class Channel {
-    private static int MAX_LENGTH;
+    private static final int MAX_LENGTH = T;
     private final LinkedList<MySegment> queue = new LinkedList<>();
     private final Map<Integer, List<Integer>> cumulativeAcks = new TreeMap<>();
     private final LinkedList<MySegment> travelling = new LinkedList<>(); // Rappresenta i pacchetti in transito.
@@ -20,7 +20,6 @@ public class Channel {
     
     public Channel(Thread t) {
         this.t = t;
-        MAX_LENGTH = T;
     }
     
     /**
@@ -29,7 +28,7 @@ public class Channel {
      */
     public void startTravel(MySegment segm) {
         travelling.addLast(segm);  
-        Monitor.getFEL(t).scheduleNextEvent((new Event(Monitor.getFEL(t).getSimTime() + TRAVEL_TIME, EventType.TRAVEL)));
+        Monitor.getInstance().getFEL(t).scheduleNextEvent((new Event(Monitor.getInstance().getFEL(t).getSimTime() + TRAVEL_TIME, EventType.TRAVEL)));
     }
     
     /**
@@ -52,7 +51,7 @@ public class Channel {
         if (!queue.isEmpty()) {
             MySegment s = queue.removeFirst();
             
-            if (Monitor.isSegmentNotCorrupted(Thread.currentThread())) {
+            if (Monitor.getInstance().isSegmentNotCorrupted(Thread.currentThread())) {
                 if (s.getClass() == DataSegment.class ) {
                     if (!cumulativeAcks.containsKey(s.getUser().getID())) {
                         cumulativeAcks.put(s.getUser().getID(), new LinkedList<>());
@@ -65,10 +64,10 @@ public class Channel {
                 }
             } else {
                 //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31mSEGMENT CORRUPTED!" + (char) 27 + "[0m");           
-                Monitor.getStatistic(Thread.currentThread()).increaseCorruptedSegmentsNumber();
+                Monitor.getInstance().getStatistic(Thread.currentThread()).increaseCorruptedSegmentsNumber();
             }
         }
-        Monitor.getFEL(t).scheduleNextEvent(new Event(Monitor.getFEL(t).getSimTime() + MU, EventType.CH_SOLVING));
+        Monitor.getInstance().getFEL(t).scheduleNextEvent(new Event(Monitor.getInstance().getFEL(t).getSimTime() + MU, EventType.CH_SOLVING));
     }
     
     public void resetChannelForUser(int id) { cumulativeAcks.remove(id); }
@@ -80,7 +79,7 @@ public class Channel {
     private void sendAcknowledgement(DataSegment segm) {
         int lastAck = getLastAcknowledgement(segm.getUser().getID());        
         MySegment ack = new AckSegment(segm.getUser(), lastAck, segm);
-        Monitor.getChannel(t).startTravel(ack);
+        Monitor.getInstance().getChannel(t).startTravel(ack);
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[34mAdversary sends ack number: " + ack.getSeq() + (char) 27 + "[0m");           
     }
     

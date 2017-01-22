@@ -23,7 +23,6 @@ import mainPackage.RunPilota;
 import mainPackage.TCPProtocolType;
 
 public class GUI {
-
     public static void runGui() {
         /* LAYOUT */
         JFrame frame = new JFrame("TCP Simulation");

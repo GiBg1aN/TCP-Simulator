@@ -16,11 +16,11 @@ public class RunPilota implements Runnable {
     public void run() {
         final int N_USERS = MyConstants.K;
         Event nextEvent;
-        Monitor.addFEL(Thread.currentThread());
-        FEL fel = Monitor.getFEL(Thread.currentThread());
-        Monitor.addChannel(Thread.currentThread());
-        Monitor.addStatistic(Thread.currentThread());
-        Monitor.addRandomStream(Thread.currentThread());
+        Monitor.getInstance().addFEL(Thread.currentThread());
+        FEL fel = Monitor.getInstance().getFEL(Thread.currentThread());
+        Monitor.getInstance().addChannel(Thread.currentThread());
+        Monitor.getInstance().addStatistic(Thread.currentThread());
+        Monitor.getInstance().addRandomStream(Thread.currentThread());
 
         /* Creazione utenti */
         for (int i = 0; i < N_USERS; i++) {

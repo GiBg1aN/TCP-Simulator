@@ -41,6 +41,8 @@ public class Statistics {
             min = (min < d) ? min : d;
         }
         meanDevStanCounter += (d * d);
+        
+        Monitor.getInstance().checkPoint(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
     }
     
     public void increaseTimeout() { timeout++; }
@@ -57,10 +59,10 @@ public class Statistics {
         return (3/4 * devRTT) + (1/4 * Math.abs(ERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
     }
     
-    public double throughput(Thread t) { return segmentCounter / (Monitor.getFEL(t).getSimTime()); }
+    public double throughput(Thread t) { return segmentCounter / (Monitor.getInstance().getFEL(t).getSimTime()); }
     
     public double maxSimTime() {
-        return Monitor.getFELs().entrySet().stream()
+        return Monitor.getInstance().getFELs().entrySet().stream()
                 .mapToDouble(x -> x.getValue().getSimTime())
                 .max()
                 .getAsDouble();
@@ -78,30 +80,30 @@ public class Statistics {
         writer.println("-GLOBALS-");
         printProtocol();
         printConstants();
-        double meanMeanDevStan = Monitor.getSTATISTICs().entrySet().stream()
+        double meanMeanDevStan = Monitor.getInstance().getSTATISTICs().entrySet().stream()
                 .mapToDouble(x -> x.getValue().meanDevStan())
                 .average()
                 .getAsDouble();
-        int meanTimeout = (int) Monitor.getSTATISTICs().entrySet().stream()
+        int meanTimeout = (int) Monitor.getInstance().getSTATISTICs().entrySet().stream()
                 .mapToDouble(x -> x.getValue().timeout)
                 .average()
                 .getAsDouble();
-        int meanCorruptedSegmentsNumber = (int) Monitor.getSTATISTICs().entrySet().stream()
+        int meanCorruptedSegmentsNumber = (int) Monitor.getInstance().getSTATISTICs().entrySet().stream()
                 .mapToDouble(x -> x.getValue().corruptedSegmentsNumber)
                 .average()
                 .getAsDouble();
-        double meanThroughput = Monitor.getSTATISTICs().entrySet().stream()
+        double meanThroughput = Monitor.getInstance().getSTATISTICs().entrySet().stream()
                 .mapToDouble(x -> x.getValue().throughput(x.getKey()))
                 .average()
                 .getAsDouble();
-        int meanSegmentsSent = (int) Monitor.getSTATISTICs().entrySet().stream()
+        int meanSegmentsSent = (int) Monitor.getInstance().getSTATISTICs().entrySet().stream()
                 .mapToDouble(x -> x.getValue().segmentCounter)
                 .average()
                 .getAsDouble();
         
-        writer.append("Mean Response time: " + Monitor.campionaryMean() +
-                "\nMin response time: " + Monitor.minMean() +
-                "\nMax response time: " + Monitor.maxMean() +
+        writer.append("Mean Response time: " + Monitor.getInstance().campionaryMean() +
+                "\nMin response time: " + Monitor.getInstance().minMean() +
+                "\nMax response time: " + Monitor.getInstance().maxMean() +
                 "\nStandard Deviation: " + meanMeanDevStan +
                 "\n#Timeout: " + meanTimeout +
                 "\n#Corrupted Segments: " + meanCorruptedSegmentsNumber +
