@@ -19,9 +19,9 @@ public class Main {
             try {
                 Thread.sleep(250);
                 if (Monitor.getInstance().gatherInformation()) {
-                    double minMean = Monitor.getInstance().minMean();
-                    double campionaryMean = Monitor.getInstance().campionaryMean();
-                    double maxMean = Monitor.getInstance().maxMean();
+                    double minMean = Monitor.getInstance().minThroughput();
+                    double campionaryMean = Monitor.getInstance().campionaryThroughputMean();
+                    double maxMean = Monitor.getInstance().maxThroughput();
 
                     if (Monitor.getInstance().getCheckTime() - 0.05 > MyConstants.WARM_UP) {
                         statistics.printTimes(minMean, campionaryMean, maxMean);

@@ -53,21 +53,34 @@ public class Monitor {
 
     
     /* GLOBAL STATISTICS */
-    public synchronized double campionaryMean() { 
-        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().mean()).average().getAsDouble();
+    public synchronized double campionaryThroughputMean() {
+        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().throughput(x.getKey())).average().getAsDouble();
     }
 
-    public synchronized double campionaryVariance() {
+    public synchronized double ThroughputStd() {
+        int n = MyConstants.N_THREAD;
+        
+        Double squareSum = statisticsMap.entrySet().stream()
+                .mapToDouble(x ->  Math.pow(x.getValue().throughput(x.getKey()), 2))
+                .sum();
+        Double sum = statisticsMap.entrySet().stream()
+                .mapToDouble(x -> x.getValue().throughput(x.getKey()))
+                .sum();
+        return (1 / n) * Math.sqrt((n * squareSum) - (sum * sum));
+    }
+
+    public synchronized double minThroughput() {
         return statisticsMap.entrySet().stream()
-                .mapToDouble(x -> x.getValue().meanDevStan() * x.getValue().meanDevStan()).average().getAsDouble();
+                .mapToDouble(x -> x.getValue().throughput(x.getKey()))
+                .min()
+                .getAsDouble();
     }
 
-    public synchronized double minMean() {
-        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().mean()).min().getAsDouble();
-    }
-
-    public synchronized double maxMean() { 
-        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().mean()).max().getAsDouble();
+    public synchronized double maxThroughput() { 
+        return statisticsMap.entrySet().stream()
+                .mapToDouble(x -> x.getValue().throughput(x.getKey()))
+                .max()
+                .getAsDouble();
     }
 
     public int generateSegmentsToSend(Thread t) {
@@ -83,16 +96,18 @@ public class Monitor {
     public boolean isSegmentNotCorrupted(Thread t) { return (UniformGen.nextDouble(randomStreamsMap.get(t), 0, 1) < P); }
 
     public synchronized boolean checkConfidentialRange(double d) {
-        double min = -d * campionaryVariance() + campionaryMean();
-        double max = d * campionaryVariance() + campionaryMean();
-        int counter = 0;
-        for (Statistics s : statisticsMap.values()) {
-            if (s.mean() > min && s.mean() < max) {
-                counter++;
-            }
-        }
-        double timeout = (checkTime > MyConstants.WARM_UP) ? 1 : 0;
-        Chart.getInstance().addValue(minMean(), campionaryMean(), maxMean(), timeout);
+        double deltaNeg = (-d * ThroughputStd() / Math.sqrt(MyConstants.N_THREAD)) + campionaryThroughputMean();
+        double deltaPos = (d * ThroughputStd() / Math.sqrt(MyConstants.N_THREAD)) + campionaryThroughputMean();
+        long counter;
+        
+        counter = statisticsMap.entrySet()
+                .stream()
+                .mapToDouble(x -> x.getValue().throughput(x.getKey()))
+                .filter(x -> x > deltaNeg && x < deltaPos)
+                .count();
+        
+        double warmUp = (checkTime > MyConstants.WARM_UP) ? 100000 : 0;
+        Chart.getInstance().addValue(minThroughput(), campionaryThroughputMean(), maxThroughput(), warmUp, deltaNeg, deltaPos);
         boolean res =  counter / (double) statisticsMap.size() >= 0.95;
         
         checked = 0;

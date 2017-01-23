@@ -16,14 +16,11 @@ public class Statistics {
     private int segmentCounter;
     private int timeout;
     private int corruptedSegmentsNumber;
-    private int steadyStateSum;
-    private int steadyStateSegmentCounter;    
     private double sum;
     private double max;
     private double min;
     private double meanDevStanCounter;
     private boolean firstValue = true;
-    private boolean steadyStateFirstValue = true;
     private PrintWriter writer;
     private PrintWriter times;
 
@@ -31,18 +28,6 @@ public class Statistics {
     /* STATISTICS */
     public void refreshResponseTimeStatistics(DataSegment item) {
         double d = item.getReceivedTimestamp() - item.getSentTimestamp();        
-        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > MyConstants.WARM_UP) {
-            steadyStateSum += d;
-            steadyStateSegmentCounter++;
-            if (steadyStateFirstValue) {
-                max = d;
-                min = d;
-                steadyStateFirstValue = false;
-            } else {
-                max = (max > d) ? max : d;
-                min = (min < d) ? min : d;
-            }
-        }
 
         sum += d;
         segmentCounter++;
@@ -71,8 +56,6 @@ public class Statistics {
             corruptedSegmentsNumber++; 
         }
     }
-    
-    public double mean() { return (steadyStateSum == 0) ? sum / segmentCounter : steadyStateSum / steadyStateSegmentCounter; }
     
     public double meanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
     
@@ -103,10 +86,6 @@ public class Statistics {
         writer.println("-GLOBALS-");
         printProtocol();
         printConstants();
-        double meanMeanDevStan = Monitor.getInstance().getStatistics().entrySet().stream()
-                .mapToDouble(x -> x.getValue().meanDevStan())
-                .average()
-                .getAsDouble();
         int meanTimeout = (int) Monitor.getInstance().getStatistics().entrySet().stream()
                 .mapToDouble(x -> x.getValue().timeout)
                 .average()
@@ -124,10 +103,10 @@ public class Statistics {
                 .average()
                 .getAsDouble();
         
-        writer.append("Mean Response time: " + Monitor.getInstance().campionaryMean() +
-                "\nMin response time: " + Monitor.getInstance().minMean() +
-                "\nMax response time: " + Monitor.getInstance().maxMean() +
-                "\nStandard Deviation: " + meanMeanDevStan +
+        writer.append("Mean Response time: " + Monitor.getInstance().campionaryThroughputMean() +
+                "\nMin response time: " + Monitor.getInstance().minThroughput() +
+                "\nMax response time: " + Monitor.getInstance().maxThroughput() +
+                "\nStandard Deviation: " + Math.sqrt(Monitor.getInstance().ThroughputStd()) +
                 "\n#Timeout: " + meanTimeout +
                 "\n#Corrupted Segments: " + meanCorruptedSegmentsNumber +
                 "\nThroughput: " + meanThroughput +
