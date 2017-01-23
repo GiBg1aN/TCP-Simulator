@@ -19,7 +19,7 @@ public class Monitor {
     private final Map<Thread, Statistics> statisticsMap = new HashMap<>();
     private final Map<Thread, RandomStream> randomStreamsMap = new HashMap<>();
     private int checked;
-    private double checkTime = 0.5;
+    private double checkTime = 0.05;
     
     private static final Monitor monitorInstance = new Monitor();
     
@@ -66,7 +66,8 @@ public class Monitor {
         Double sum = statisticsMap.entrySet().stream()
                 .mapToDouble(x -> x.getValue().throughput(x.getKey()))
                 .sum();
-        return (1 / n) * Math.sqrt((n * squareSum) - (sum * sum));
+        double res = Math.sqrt((n * squareSum) - (sum * sum))/n;
+        return res;
     }
 
     public synchronized double minThroughput() {
@@ -96,9 +97,12 @@ public class Monitor {
     public boolean isSegmentNotCorrupted(Thread t) { return (UniformGen.nextDouble(randomStreamsMap.get(t), 0, 1) < P); }
 
     public synchronized boolean checkConfidentialRange(double d) {
-        double deltaNeg = (-d * ThroughputStd() / Math.sqrt(MyConstants.N_THREAD)) + campionaryThroughputMean();
-        double deltaPos = (d * ThroughputStd() / Math.sqrt(MyConstants.N_THREAD)) + campionaryThroughputMean();
+        
+        double mean = campionaryThroughputMean();
+        double deltaNeg = (-d * ThroughputStd() / Math.sqrt(MyConstants.N_THREAD)) + mean;
+        double deltaPos = (d * ThroughputStd() / Math.sqrt(MyConstants.N_THREAD)) + mean;
         long counter;
+        
         
         counter = statisticsMap.entrySet()
                 .stream()
@@ -107,8 +111,8 @@ public class Monitor {
                 .count();
         
         double warmUp = (checkTime > MyConstants.WARM_UP) ? 100000 : 0;
-        Chart.getInstance().addValue(minThroughput(), campionaryThroughputMean(), maxThroughput(), warmUp, deltaNeg, deltaPos);
-        boolean res =  counter / (double) statisticsMap.size() >= 0.95;
+        Chart.getInstance().addValue(minThroughput(), mean, maxThroughput(), warmUp, deltaNeg, deltaPos);
+        boolean res =  counter / (double) statisticsMap.size() >= 0.95 && checkTime > MyConstants.WARM_UP;
         
         checked = 0;
         checkTime += 0.05;
