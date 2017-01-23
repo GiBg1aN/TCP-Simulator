@@ -13,5 +13,6 @@ public class MyConstants {
     public static final double TRAVEL_TIME = 0.01; // tempo che il pacchetto impiega nella trasmissione.
     public static TCPProtocolType protocolType = TCPProtocolType.AIMD;
     public static int simulationTime = 100;
-    public static int N_THREAD = 15;    
+    public static int N_THREAD = 15;  
+    public static double WARM_UP = 10;
 }

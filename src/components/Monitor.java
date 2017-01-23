@@ -18,12 +18,10 @@ public class Monitor {
     private final Map<Thread, Channel> channelMap = new HashMap<>();
     private final Map<Thread, Statistics> statisticsMap = new HashMap<>();
     private final Map<Thread, RandomStream> randomStreamsMap = new HashMap<>();
-    
     private int checked;
-    private double checkTime = 3;
+    private double checkTime = 0.5;
     
     private static final Monitor monitorInstance = new Monitor();
-
     
     
     private Monitor() {};
@@ -41,10 +39,7 @@ public class Monitor {
         }
     }
     
-    public synchronized boolean gatherInformation() {
-        return checked == MyConstants.N_THREAD;
-    }
-    
+    public synchronized boolean gatherInformation() { return checked == MyConstants.N_THREAD; }
     
     
     /* ADDER */
@@ -96,11 +91,12 @@ public class Monitor {
                 counter++;
             }
         }
-        Chart.getInstance().addValue(minMean(), campionaryMean(), maxMean());
+        double timeout = (checkTime > MyConstants.WARM_UP) ? 1 : 0;
+        Chart.getInstance().addValue(minMean(), campionaryMean(), maxMean(), timeout);
         boolean res =  counter / (double) statisticsMap.size() >= 0.95;
         
         checked = 0;
-        checkTime += 0.5;
+        checkTime += 0.05;
         notifyAll();
         
         return res;
@@ -110,7 +106,7 @@ public class Monitor {
     /* GETTER */
     public synchronized Map<Thread, FEL> getFELs() { return FELMap; }
 
-    public synchronized Map<Thread, Statistics> getSTATISTICs() { return statisticsMap; }
+    public synchronized Map<Thread, Statistics> getStatistics() { return statisticsMap; }
     
     public synchronized FEL getFEL(Thread t) { return FELMap.get(t); }
 
@@ -118,5 +114,7 @@ public class Monitor {
 
     public synchronized Statistics getStatistic(Thread t) { return statisticsMap.get(t); }
 
-    public synchronized RandomStream getRandomStream(Thread t) { return randomStreamsMap.get(t); }    
+    public synchronized RandomStream getRandomStream(Thread t) { return randomStreamsMap.get(t); }
+
+    public double getCheckTime() { return checkTime; }
 }

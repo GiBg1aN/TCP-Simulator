@@ -23,17 +23,18 @@ public class Chart extends ApplicationFrame {
     private final Timer timer;
     private final DynamicTimeSeriesCollection dataset;
     private static Chart instance;
-    float[] newData = new float[3];
+    float[] newData = new float[4];
     public ValueAxis range;
 
     public Chart(final String title) {
         super(title);
-        dataset = new DynamicTimeSeriesCollection(3, COUNT, new Second());
+        dataset = new DynamicTimeSeriesCollection(4, COUNT, new Second());
         dataset.setTimeBase(new Second(0, 0, 0, 1, 1, 2011));
 
         dataset.addSeries(gaussianData(), 0, "Max");
         dataset.addSeries(gaussianData(), 1, "Mean");
         dataset.addSeries(gaussianData(), 2, "Min");
+        dataset.addSeries(gaussianData(), 3, "Timeout");
         
         JFreeChart chart = createChart(dataset);
 
@@ -69,7 +70,7 @@ public class Chart extends ApplicationFrame {
     }
     
 
-    public float[] addValue(double max, double mean, double min) {
+    public float[] addValue(double max, double mean, double min, double timeout) {
         try {
             double maxRange = Math.max(min + 0.003, max + 0.003);
             double minRange = Math.min(min - 0.003, max - 0.003);
@@ -77,6 +78,7 @@ public class Chart extends ApplicationFrame {
             this.newData[0] = (float) min;
             this.newData[1] = (float) mean;
             this.newData[2] = (float) max;
+            this.newData[3] = (float) timeout;
             dataset.advanceTime();
             dataset.appendData(newData);
             Thread.sleep(0);

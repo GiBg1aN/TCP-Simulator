@@ -16,22 +16,37 @@ public class Statistics {
     private int segmentCounter;
     private int timeout;
     private int corruptedSegmentsNumber;
+    private int steadyStateSum;
+    private int steadyStateSegmentCounter;    
     private double sum;
     private double max;
     private double min;
     private double meanDevStanCounter;
     private boolean firstValue = true;
+    private boolean steadyStateFirstValue = true;
     private PrintWriter writer;
     private PrintWriter times;
 
     
     /* STATISTICS */
     public void refreshResponseTimeStatistics(DataSegment item) {
-        double d = item.getReceivedTimestamp() - item.getSentTimestamp();
-        
+        double d = item.getReceivedTimestamp() - item.getSentTimestamp();        
+        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > MyConstants.WARM_UP) {
+            steadyStateSum += d;
+            steadyStateSegmentCounter++;
+            if (steadyStateFirstValue) {
+                max = d;
+                min = d;
+                steadyStateFirstValue = false;
+            } else {
+                max = (max > d) ? max : d;
+                min = (min < d) ? min : d;
+            }
+        }
+
         sum += d;
         segmentCounter++;
-        
+
         if (firstValue) {
             max = d;
             min = d;
@@ -41,19 +56,27 @@ public class Statistics {
             min = (min < d) ? min : d;
         }
         meanDevStanCounter += (d * d);
-        
+
         Monitor.getInstance().checkPoint(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
     }
     
-    public void increaseTimeout() { timeout++; }
+    public void increaseTimeout() {
+        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > MyConstants.WARM_UP) {
+            timeout++;
+        }
+    }
     
-    public void increaseCorruptedSegmentsNumber() { corruptedSegmentsNumber++; }
+    public void increaseCorruptedSegmentsNumber() {
+        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > MyConstants.WARM_UP) {
+            corruptedSegmentsNumber++; 
+        }
+    }
     
-    public double mean() { return sum / segmentCounter; }
+    public double mean() { return (steadyStateSum == 0) ? sum / segmentCounter : steadyStateSum / steadyStateSegmentCounter; }
     
     public double meanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
     
-    public double ERTT() { return mean(); }
+    public double ERTT() { return sum / segmentCounter; }
 
     public double devRTT(double devRTT, DataSegment item) {
         return (3/4 * devRTT) + (1/4 * Math.abs(ERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
@@ -80,23 +103,23 @@ public class Statistics {
         writer.println("-GLOBALS-");
         printProtocol();
         printConstants();
-        double meanMeanDevStan = Monitor.getInstance().getSTATISTICs().entrySet().stream()
+        double meanMeanDevStan = Monitor.getInstance().getStatistics().entrySet().stream()
                 .mapToDouble(x -> x.getValue().meanDevStan())
                 .average()
                 .getAsDouble();
-        int meanTimeout = (int) Monitor.getInstance().getSTATISTICs().entrySet().stream()
+        int meanTimeout = (int) Monitor.getInstance().getStatistics().entrySet().stream()
                 .mapToDouble(x -> x.getValue().timeout)
                 .average()
                 .getAsDouble();
-        int meanCorruptedSegmentsNumber = (int) Monitor.getInstance().getSTATISTICs().entrySet().stream()
+        int meanCorruptedSegmentsNumber = (int) Monitor.getInstance().getStatistics().entrySet().stream()
                 .mapToDouble(x -> x.getValue().corruptedSegmentsNumber)
                 .average()
                 .getAsDouble();
-        double meanThroughput = Monitor.getInstance().getSTATISTICs().entrySet().stream()
+        double meanThroughput = Monitor.getInstance().getStatistics().entrySet().stream()
                 .mapToDouble(x -> x.getValue().throughput(x.getKey()))
                 .average()
                 .getAsDouble();
-        int meanSegmentsSent = (int) Monitor.getInstance().getSTATISTICs().entrySet().stream()
+        int meanSegmentsSent = (int) Monitor.getInstance().getStatistics().entrySet().stream()
                 .mapToDouble(x -> x.getValue().segmentCounter)
                 .average()
                 .getAsDouble();

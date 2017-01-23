@@ -23,7 +23,9 @@ public class Main {
                     double campionaryMean = Monitor.getInstance().campionaryMean();
                     double maxMean = Monitor.getInstance().maxMean();
 
-                    statistics.printTimes(minMean, campionaryMean, maxMean);
+                    if (Monitor.getInstance().getCheckTime() - 0.05 > MyConstants.WARM_UP) {
+                        statistics.printTimes(minMean, campionaryMean, maxMean);
+                    }
 
                     if (Monitor.getInstance().checkConfidentialRange(1.96) && 
                             minMean > campionaryMean * 0.95 && maxMean < campionaryMean * 1.05) {
