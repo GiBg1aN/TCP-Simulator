@@ -102,6 +102,12 @@ public class Monitor {
 
     
     /* GLOBAL STATISTICS */
+    public synchronized double campionaryResponseTimeMean() {
+        return statisticsMap.entrySet().stream()
+                .mapToDouble(x -> x.getValue().mean())
+                .average()
+                .getAsDouble();
+    }
     public synchronized double campionaryThroughputMean() {
         return statisticsMap.entrySet().stream()
                 .mapToDouble(x -> x.getValue().throughput(x.getKey()))

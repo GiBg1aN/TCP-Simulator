@@ -5,11 +5,7 @@ import components.Monitor;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import mainPackage.MyConstants;
-import static mainPackage.MyConstants.G;
-import static mainPackage.MyConstants.K;
-import static mainPackage.MyConstants.P;
-import static mainPackage.MyConstants.T;
+import static mainPackage.MyConstants.*;
 
 public class Statistics {
     private int segmentCounter;
@@ -45,29 +41,28 @@ public class Statistics {
     }
 
     public void increaseTimeout() {
-        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > MyConstants.WARM_UP) {
+        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > WARM_UP) {
             timeout++;
         }
     }
 
     public void increaseCorruptedSegmentsNumber() {
-        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > MyConstants.WARM_UP) {
+        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > WARM_UP) {
             corruptedSegmentsNumber++;
         }
     }
+    
+    public double mean() { return sum / segmentCounter; }
 
     public double meanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
 
-    public double ERTT() { return (segmentCounter == 0) ? MyConstants.TIMEOUT : sum / segmentCounter; }
+    public double ERTT() { return (segmentCounter == 0) ? TIMEOUT : sum / segmentCounter; }
 
     public double devRTT(double devRTT, DataSegment item) {
         return (3 / 4 * devRTT) + (1 / 4 * Math.abs(ERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
     }
 
-    public double throughput(Thread t) {
-        //System.out.println(t + " - " + segmentCounter + " -- " + segmentCounter / (Monitor.getInstance().getFEL(t).getSimTime()));
-        return segmentCounter / (Monitor.getInstance().getFEL(t).getSimTime());
-    }
+    public double throughput(Thread t) { return segmentCounter / (Monitor.getInstance().getFEL(t).getSimTime()); }
 
     public double maxSimTime() {
         return Monitor.getInstance().getFELs().entrySet().stream()
@@ -96,24 +91,22 @@ public class Statistics {
                 .mapToDouble(x -> x.getValue().corruptedSegmentsNumber)
                 .average()
                 .getAsDouble();
-        int meanSegmentsSent = (int) Monitor.getInstance().getStatistics().entrySet().stream()
-                .mapToDouble(x -> x.getValue().segmentCounter)
-                .average()
-                .getAsDouble();
 
-        writer.append("Mean Response time: " + Monitor.getInstance().campionaryThroughputMean()
-                + "\nMin response time: " + Monitor.getInstance().minThroughput()
-                + "\nMax response time: " + Monitor.getInstance().maxThroughput()
+        writer.append("Mean Throughput: " + Monitor.getInstance().campionaryThroughputMean()
+                + "\nMin Throughput: " + Monitor.getInstance().minThroughput()
+                + "\nMax Throughput: " + Monitor.getInstance().maxThroughput()
+                + "\nMean Response Time" + Monitor.getInstance().campionaryResponseTimeMean()
                 + "\nStandard Deviation: " + Math.sqrt(Monitor.getInstance().ThroughputStd())
                 + "\n#Timeout: " + meanTimeout
                 + "\n#Corrupted Segments: " + meanCorruptedSegmentsNumber
-                + "\nSegments sent: " + meanSegmentsSent
                 + "\nSim. Time: " + maxSimTime() + "\n");
     }
 
-    public void printProtocol() { writer.append(MyConstants.protocolType.toString() + "\n"); }
+    public void printProtocol() { writer.append(protocolType.toString() + "\n"); }
 
-    public void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\nErr(%): " + (MyConstants.maxERROR-1)*100 + "\n"); }
+    public void printConstants() { 
+        writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\nErr(%): " + (maxERROR - 1) * 100 + "\n");
+    }
     
 
     /* STREAMS */
