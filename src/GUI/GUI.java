@@ -42,7 +42,7 @@ public class GUI {
         JLabel segmentCorruptionInverseLabel = new JLabel("Probabilità che un segmento sia integro:");
         JLabel casualNumberLabel = new JLabel("Probabilità di successo geometrica:");
         JLabel warmUpLabel = new JLabel("Tempo di Warm-up");
-
+        JLabel errorLabel = new JLabel("Errore relativo");
         
         JComboBox protocolComboBox = new JComboBox(new String[]{"AIMD", "Tahoe", "Reno"});
 
@@ -52,6 +52,7 @@ public class GUI {
         JTextField segmentCorruptionInverseTextField = new JTextField(String.valueOf(0.98), 5);
         JTextField casualNumberTextField = new JTextField(String.valueOf(0.2), 5);
         JTextField warmUpTextField = new JTextField(Double.toString(MyConstants.WARM_UP), 3);
+        JTextField errorTextField = new JTextField(Double.toString(5.0), 3);
 
         JSlider segmentCorruptionInverseSlider = initSlider(980, segmentCorruptionInverseTextField);
         JSlider casualNumberSlider = initSlider(200, casualNumberTextField);
@@ -84,6 +85,10 @@ public class GUI {
                 MyConstants.N_THREAD = Integer.parseInt(parallelSimulationTextField.getText());
                 
                 MyConstants.WARM_UP = Double.parseDouble(warmUpTextField.getText());
+                
+                MyConstants.minERROR = 1 - Double.parseDouble(errorTextField.getText())/100;
+                MyConstants.maxERROR = 1 + Double.parseDouble(errorTextField.getText())/100;
+                                
 
                 RunPilota[] runPilota = new RunPilota[MyConstants.N_THREAD];
 
@@ -137,6 +142,8 @@ public class GUI {
         panel.add(parallelSimulationTextField);
         panel.add(warmUpLabel);
         panel.add(warmUpTextField);
+        panel.add(errorLabel);
+        panel.add(errorTextField);
 
         panel1.setLayout(new GridLayout(0, 1));
         panel3.setLayout(new GridLayout(0, 1));

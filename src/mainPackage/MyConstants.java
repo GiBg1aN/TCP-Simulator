@@ -15,4 +15,6 @@ public class MyConstants {
     public static int simulationTime = 100;
     public static int N_THREAD = 15;  
     public static double WARM_UP = 10;
+    public static double minERROR = 0.70;
+    public static double maxERROR = 1.30;
 }

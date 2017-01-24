@@ -96,10 +96,6 @@ public class Statistics {
                 .mapToDouble(x -> x.getValue().corruptedSegmentsNumber)
                 .average()
                 .getAsDouble();
-        double meanThroughput = Monitor.getInstance().getStatistics().entrySet().stream()
-                .mapToDouble(x -> x.getValue().throughput(x.getKey()))
-                .average()
-                .getAsDouble();
         int meanSegmentsSent = (int) Monitor.getInstance().getStatistics().entrySet().stream()
                 .mapToDouble(x -> x.getValue().segmentCounter)
                 .average()
@@ -111,14 +107,13 @@ public class Statistics {
                 + "\nStandard Deviation: " + Math.sqrt(Monitor.getInstance().ThroughputStd())
                 + "\n#Timeout: " + meanTimeout
                 + "\n#Corrupted Segments: " + meanCorruptedSegmentsNumber
-                + "\nThroughput: " + meanThroughput
                 + "\nSegments sent: " + meanSegmentsSent
                 + "\nSim. Time: " + maxSimTime() + "\n");
     }
 
     public void printProtocol() { writer.append(MyConstants.protocolType.toString() + "\n"); }
 
-    public void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }
+    public void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\nErr(%): " + (MyConstants.maxERROR-1)*100 + "\n"); }
     
 
     /* STREAMS */
@@ -157,7 +152,7 @@ public class Statistics {
                 boolean flag = true;
                 int i = 0;
                 while (flag) {
-                    f = new File("times_" + i + ".csv");
+                    f = new File("out/times_" + i + ".csv");
                     if (!f.exists() || f.isDirectory()) {
                         flag = false;
                         filename = ("out/times_" + i + ".csv");
