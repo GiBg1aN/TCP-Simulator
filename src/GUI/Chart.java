@@ -75,7 +75,7 @@ public class Chart extends ApplicationFrame {
 
     public float[] addValue(double max, double mean, double min, double warmUp, double deltaNeg, double deltaPos) {
         try {
-            double error = deltaPos - deltaNeg;
+            double error = 5;
             double maxRange = Math.max(min + error, max + error);
             double minRange = Math.min(min - error, max - error);
             range.setRange(minRange, maxRange);

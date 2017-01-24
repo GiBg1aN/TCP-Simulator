@@ -27,8 +27,7 @@ public class Main {
                         statistics.printTimes(minMean, campionaryMean, maxMean);
                     }
 
-                    if (Monitor.getInstance().checkConfidentialRange(1.96) && 
-                            minMean > campionaryMean * 0.95 && maxMean < campionaryMean * 1.05) {
+                    if (Monitor.getInstance().checkConfidentialRange()) {
                         System.out.println("FINE SIMULAZIONE");
                         flag = false;
                         /*for (RunPilota r : runPilota) {
