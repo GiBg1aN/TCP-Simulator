@@ -2,6 +2,8 @@ package mainPackage;
 
 import GUI.GUI;
 import components.Monitor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import statistics.Statistics;
 
 public class Main {
@@ -12,34 +14,34 @@ public class Main {
     public static void run(RunPilota[] runPilota) {
         boolean flag = true;
         Statistics statistics = new Statistics();
-        statistics.getWriterInstance();
-        statistics.openStreamForTimes();
         
         while (flag) {
             try {
                 Thread.sleep(250);
                 if (Monitor.getInstance().gatherInformation()) {
-                    double minMean = Monitor.getInstance().minThroughput();
-                    double campionaryMean = Monitor.getInstance().campionaryThroughputMean();
-                    double maxMean = Monitor.getInstance().maxThroughput();
-
-                    if (Monitor.getInstance().getCheckTime() - 0.05 > MyConstants.WARM_UP) {
-                        statistics.printTimes(minMean, campionaryMean, maxMean);
-                    }
-
                     if (Monitor.getInstance().checkConfidentialRange()) {
                         System.out.println("FINE SIMULAZIONE");
                         flag = false;
-                        /*for (RunPilota r : runPilota) {
-                            r.stop();
-                        }*/
                     }
                 }
             } catch (InterruptedException ex) {
                 System.out.println("Simulazione stoppata");
             }
         }
+        
+        statistics.getWriterInstance();
+        statistics.openStreamForTimes();
+        
         statistics.printGlobalStatistics();
+        Monitor.getInstance().getGatheredMeans().forEach(x -> statistics.printTimes(x.getMin(), x.getMean(), x.getMax()));
+        
         statistics.closeStream();
+        
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.exit(0);
     }
 }

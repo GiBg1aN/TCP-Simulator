@@ -14,42 +14,20 @@ import umontreal.ssj.rng.LFSR113;
 import umontreal.ssj.rng.RandomStream;
 
 public class Monitor {
-
-    private class Range {
-
-        private double min;
-        private double mean;
-        private double max;
-
-        public Range(double min, double mean, double max) {
-            this.min = min;
-            this.mean = mean;
-            this.max = max;
-        }
-
-        public boolean containsMean(double currentMean) {
-            return currentMean >= min && currentMean <= max;
-        }
-    }
-
     private final Map<Thread, FEL> FELMap = new HashMap<>();
     private final Map<Thread, Channel> channelMap = new HashMap<>();
     private final Map<Thread, Statistics> statisticsMap = new HashMap<>();
     private final Map<Thread, RandomStream> randomStreamsMap = new HashMap<>();
+    private final LinkedList<Range> gatheredMeans = new LinkedList<>();
     private int checked;
     private double checkTime = 0.05;
-    private LinkedList<Range> gatheredMeans = new LinkedList<>();
 
     private static final Monitor monitorInstance = new Monitor();
 
-    private Monitor() {
-    }
-
-    ;
     
-    public static Monitor getInstance() {
-        return monitorInstance;
-    }
+    private Monitor() {}
+    
+    public static Monitor getInstance() { return monitorInstance; }
 
     public synchronized void checkPoint(double simTime) {
         try {
@@ -62,30 +40,69 @@ public class Monitor {
         }
     }
 
-    public synchronized boolean gatherInformation() {
-        return checked == MyConstants.N_THREAD;
+    public synchronized boolean gatherInformation() { return checked == MyConstants.N_THREAD; }
+    
+    public int generateSegmentsToSend(Thread t) {
+        double gap = UniformGen.nextDouble(randomStreamsMap.get(t), 0, G);
+        int segmentsToSend = 1;
+
+        while (GeometricDist.prob(G, segmentsToSend) > gap) {
+            segmentsToSend++;
+        }
+        return segmentsToSend;
     }
 
+    public boolean isSegmentNotCorrupted(Thread t) { return (UniformGen.nextDouble(randomStreamsMap.get(t), 0, 1) < P); }
+
+    public synchronized boolean checkConfidentialRange() {
+        double mean = campionaryThroughputMean();
+        int counter = 0;
+        boolean res = false;
+
+        if (gatheredMeans.size() >= 100) {
+            gatheredMeans.removeFirst();
+        }
+        
+        if (Monitor.getInstance().minThroughput() > mean * 0.95 && Monitor.getInstance().maxThroughput() < mean * 1.05) {
+            gatheredMeans.addLast(new Range(minThroughput(), mean, maxThroughput()));
+        }
+        
+        if (gatheredMeans.size() == 100) {
+            for (Range range : gatheredMeans) {
+                if (range.containsMean(mean)) {
+                    counter++;
+                }
+            }
+            res = counter / gatheredMeans.size() >= 0.95;
+        }
+
+        double warmUp = (checkTime > MyConstants.WARM_UP) ? 100000 : 0;
+        Chart.getInstance().addValue(minThroughput(), mean, maxThroughput(), warmUp, 0, 0);
+
+        checked = 0;
+        checkTime += 0.05;
+        notifyAll();
+
+        return res;
+    }
+
+    
     /* ADDER */
-    public synchronized void addFEL(Thread t) {
-        FELMap.put(t, new FEL());
-    }
+    public synchronized void addFEL(Thread t) { FELMap.put(t, new FEL()); }
 
-    public synchronized void addChannel(Thread t) {
-        channelMap.put(t, new Channel(t));
-    }
+    public synchronized void addChannel(Thread t) { channelMap.put(t, new Channel(t)); }
 
-    public synchronized void addStatistic(Thread t) {
-        statisticsMap.put(t, new Statistics());
-    }
+    public synchronized void addStatistic(Thread t) { statisticsMap.put(t, new Statistics()); }
 
-    public synchronized void addRandomStream(Thread t) {
-        randomStreamsMap.put(t, new LFSR113());
-    }
+    public synchronized void addRandomStream(Thread t) { randomStreamsMap.put(t, new LFSR113()); }
 
+    
     /* GLOBAL STATISTICS */
     public synchronized double campionaryThroughputMean() {
-        return statisticsMap.entrySet().stream().mapToDouble(x -> x.getValue().throughput(x.getKey())).average().getAsDouble();
+        return statisticsMap.entrySet().stream()
+                .mapToDouble(x -> x.getValue().throughput(x.getKey()))
+                .average()
+                .getAsDouble();
     }
 
     public synchronized double ThroughputStd() {
@@ -114,86 +131,22 @@ public class Monitor {
                 .max()
                 .getAsDouble();
     }
-
-    public int generateSegmentsToSend(Thread t) {
-        double gap = UniformGen.nextDouble(randomStreamsMap.get(t), 0, G);
-        int segmentsToSend = 1;
-
-        while (GeometricDist.prob(G, segmentsToSend) > gap) {
-            segmentsToSend++;
-        }
-        return segmentsToSend;
-    }
-
-    public boolean isSegmentNotCorrupted(Thread t) {
-        return (UniformGen.nextDouble(randomStreamsMap.get(t), 0, 1) < P);
-    }
-
-    public synchronized boolean checkConfidentialRange() {
-
-        double mean = campionaryThroughputMean();
-        /*double deltaNeg = (-d * ThroughputStd() / Math.sqrt(MyConstants.N_THREAD)) + mean;
-         double deltaPos = (d * ThroughputStd() / Math.sqrt(MyConstants.N_THREAD)) + mean;*/
-        int counter = 0;
-        boolean res = false;
-        /*counter = statisticsMap.entrySet()
-         .stream()
-         .mapToDouble(x -> x.getValue().throughput(x.getKey()))
-         .filter(x -> x > deltaNeg && x < deltaPos)
-         .count();*/
-
-        if (gatheredMeans.size() >= 100) {
-            gatheredMeans.removeFirst();
-        }
-        if (Monitor.getInstance().minThroughput() > mean * 0.95 && Monitor.getInstance().maxThroughput() < mean * 1.05) {
-            gatheredMeans.addLast(new Range(minThroughput(), mean, maxThroughput()));
-        }
-        System.out.println(gatheredMeans.size() + " BANANE COLLEZIONATE");
-        if (gatheredMeans.size() == 100) {
-            for (Range range : gatheredMeans) {
-                if (range.containsMean(mean)) {
-                    counter++;
-                }
-            }
-            res = counter / gatheredMeans.size() >= 0.95;
-        }
-
-        double warmUp = (checkTime > MyConstants.WARM_UP) ? 100000 : 0;
-        Chart.getInstance().addValue(minThroughput(), mean, maxThroughput(), warmUp, 0, 0);
-
-        checked = 0;
-        checkTime += 0.05;
-        notifyAll();
-
-        return res;
-    }
+    
 
     /* GETTER */
-    public synchronized Map<Thread, FEL> getFELs() {
-        return FELMap;
-    }
+    public double getCheckTime() { return checkTime; }
+    
+    public synchronized Map<Thread, FEL> getFELs() { return FELMap; }
 
-    public synchronized Map<Thread, Statistics> getStatistics() {
-        return statisticsMap;
-    }
+    public synchronized Map<Thread, Statistics> getStatistics() { return statisticsMap; }
 
-    public synchronized FEL getFEL(Thread t) {
-        return FELMap.get(t);
-    }
+    public synchronized FEL getFEL(Thread t) { return FELMap.get(t); }
 
-    public synchronized Channel getChannel(Thread t) {
-        return channelMap.get(t);
-    }
+    public synchronized Channel getChannel(Thread t) { return channelMap.get(t); }
 
-    public synchronized Statistics getStatistic(Thread t) {
-        return statisticsMap.get(t);
-    }
+    public synchronized Statistics getStatistic(Thread t) { return statisticsMap.get(t); }
 
-    public synchronized RandomStream getRandomStream(Thread t) {
-        return randomStreamsMap.get(t);
-    }
+    public synchronized RandomStream getRandomStream(Thread t) { return randomStreamsMap.get(t); }
 
-    public double getCheckTime() {
-        return checkTime;
-    }
+    public LinkedList<Range> getGatheredMeans() { return gatheredMeans; }
 }

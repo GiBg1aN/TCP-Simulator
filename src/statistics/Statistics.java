@@ -12,7 +12,6 @@ import static mainPackage.MyConstants.P;
 import static mainPackage.MyConstants.T;
 
 public class Statistics {
-
     private int segmentCounter;
     private int timeout;
     private int corruptedSegmentsNumber;
@@ -23,6 +22,7 @@ public class Statistics {
     private boolean firstValue = true;
     private PrintWriter writer;
     private PrintWriter times;
+    
 
     /* STATISTICS */
     public void refreshResponseTimeStatistics(DataSegment item, boolean gather) {
@@ -56,13 +56,9 @@ public class Statistics {
         }
     }
 
-    public double meanDevStan() {
-        return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter);
-    }
+    public double meanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
 
-    public double ERTT() {
-        return (segmentCounter == 0) ? MyConstants.TIMEOUT : sum / segmentCounter;
-    }
+    public double ERTT() { return (segmentCounter == 0) ? MyConstants.TIMEOUT : sum / segmentCounter; }
 
     public double devRTT(double devRTT, DataSegment item) {
         return (3 / 4 * devRTT) + (1 / 4 * Math.abs(ERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
@@ -79,6 +75,7 @@ public class Statistics {
                 .max()
                 .getAsDouble();
     }
+    
 
     /* FORMATTED PRINTS */
     public void printTimes(double minMean, double campionaryMean, double maxMean) {
@@ -119,13 +116,10 @@ public class Statistics {
                 + "\nSim. Time: " + maxSimTime() + "\n");
     }
 
-    public void printProtocol() {
-        writer.append(MyConstants.protocolType.toString() + "\n");
-    }
+    public void printProtocol() { writer.append(MyConstants.protocolType.toString() + "\n"); }
 
-    public void printConstants() {
-        writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n");
-    }
+    public void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }
+    
 
     /* STREAMS */
     public PrintWriter openStream() {
