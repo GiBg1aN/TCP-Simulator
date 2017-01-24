@@ -4,5 +4,6 @@ public enum EventType {
     TIMEOUT,
     CH_SOLVING,
     TRANSMIT,
-    TRAVEL
+    TRAVEL_DATA,
+    TRAVEL_ACK
 }

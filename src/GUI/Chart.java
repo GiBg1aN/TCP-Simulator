@@ -56,7 +56,7 @@ public class Chart extends ApplicationFrame {
 
     private JFreeChart createChart(final XYDataset dataset) {
         final JFreeChart result = ChartFactory.createTimeSeriesChart(
-                "Response Time variation during simulation", "hh:mm:ss", "Response Time", dataset, true, true, false);
+                "Throughput variation during simulation", "hh:mm:ss", "Throughput", dataset, true, true, false);
         final XYPlot plot = result.getXYPlot();
         ValueAxis domain = plot.getDomainAxis();
         domain.setAutoRange(true);

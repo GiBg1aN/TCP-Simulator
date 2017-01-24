@@ -41,8 +41,11 @@ public class Event {
         if (eventType == EventType.TRANSMIT) {
             user.transmit();
         }
-        if (eventType == EventType.TRAVEL) {
-            Monitor.getInstance().getChannel(Thread.currentThread()).enqueueSegment();
+        if (eventType == EventType.TRAVEL_DATA) {
+            Monitor.getInstance().getChannel(Thread.currentThread()).enqueueSegment(EventType.TRAVEL_DATA);
+        }
+        if (eventType == EventType.TRAVEL_ACK) {
+            Monitor.getInstance().getChannel(Thread.currentThread()).enqueueSegment(EventType.TRAVEL_ACK);
         }
     }
 
