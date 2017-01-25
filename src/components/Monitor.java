@@ -142,6 +142,13 @@ public class Monitor {
                 .getAsDouble();
     }
     
+    public double meanDroppedSegments() {
+        return statisticsMap.entrySet().stream()
+                .mapToDouble(x -> x.getValue().getDroppedSegmentsCounter())
+                .average()
+                .getAsDouble();
+    }
+    
 
     /* GETTER */
     public double getCheckTime() { return checkTime; }

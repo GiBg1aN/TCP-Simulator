@@ -11,7 +11,6 @@ import static mainPackage.MyConstants.*;
  * Rappresenta il canale dove viaggiano i segmenti.
  */
 public class Channel {
-
     private static final int MAX_LENGTH = T;
     private final LinkedList<MySegment> queue = new LinkedList<>();
     private final Map<Integer, List<Integer>> cumulativeAcks = new TreeMap<>();
@@ -45,6 +44,8 @@ public class Channel {
         MySegment segm = (event == EventType.TRAVEL_DATA) ? travellingData.removeFirst() : travellingAck.removeFirst();
         if (queue.size() < MAX_LENGTH) {
             queue.addLast(segm);
+        } else {
+            Monitor.getInstance().getStatistic(Thread.currentThread()).increaseDroppedSegmentNumber();
         }
     }
 
@@ -111,4 +112,6 @@ public class Channel {
         }
         return min;
     }
+    
+    public int size() { return queue.size(); }
 }

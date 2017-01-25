@@ -1,5 +1,6 @@
 package GUI;
 
+import components.Monitor;
 import java.awt.BorderLayout;
 import javax.swing.Timer;
 import mainPackage.MyConstants;
@@ -37,8 +38,7 @@ public class Chart extends ApplicationFrame {
         dataset.addSeries(gaussianData(), 3, "SteadyState");
         dataset.addSeries(gaussianData(), 4, "Delta-");
         dataset.addSeries(gaussianData(), 5, "Delta+");
-        
-        
+
         JFreeChart chart = createChart(dataset);
 
         this.add(new ChartPanel(chart), BorderLayout.CENTER);
@@ -71,13 +71,20 @@ public class Chart extends ApplicationFrame {
     public void start() {
         timer.start();
     }
-    
+
 
     public float[] addValue(double max, double mean, double min, double warmUp, double deltaNeg, double deltaPos) {
         try {
-            double error = 5;
-            double maxRange = Math.max(min + error, max + error);
-            double minRange = Math.min(min - error, max - error);
+            double minRange;
+            double maxRange;
+            double error;
+            if (Monitor.getInstance().getCheckTime() > MyConstants.WARM_UP) {
+                error = 5;
+            } else {
+                error = 100;
+            }
+            maxRange = Math.max(min + error, max + error);
+            minRange = Math.min(min - error, max - error);
             range.setRange(minRange, maxRange);
             this.newData[0] = (float) min;
             this.newData[1] = (float) mean;
@@ -96,7 +103,7 @@ public class Chart extends ApplicationFrame {
 
         return newData;
     }
-    
+
     public void reset(int ID) {
         if (ID == 0) {
             this.newData[0] = 1;

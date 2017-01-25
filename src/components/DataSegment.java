@@ -4,7 +4,7 @@ package components;
 public class DataSegment implements MySegment {
     private final User user;
     private final int seq;
-    private final double sentTimestamp;
+    private double sentTimestamp;
     private double receivedTimestamp;
 
 
@@ -24,6 +24,8 @@ public class DataSegment implements MySegment {
     public int getSeq() { return seq; }
 
     public double getSentTimestamp() { return sentTimestamp; }
+    
+    public void setSentTimeStamp(double sentTimestamp) { this.sentTimestamp = sentTimestamp; }
 
     public double getReceivedTimestamp() { return receivedTimestamp; }
     

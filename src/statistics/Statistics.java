@@ -11,6 +11,7 @@ public class Statistics {
     private int segmentCounter;
     private int timeout;
     private int corruptedSegmentsNumber;
+    private int droppedSegmentsCounter;
     private double sum;
     private double max;
     private double min;
@@ -50,6 +51,12 @@ public class Statistics {
         if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > WARM_UP) {
             corruptedSegmentsNumber++;
         }
+    }
+    
+    public void increaseDroppedSegmentNumber() { 
+        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > WARM_UP) {
+            droppedSegmentsCounter++;
+        } 
     }
     
     public double mean() { return sum / segmentCounter; }
@@ -95,10 +102,11 @@ public class Statistics {
         writer.append("Mean Throughput: " + Monitor.getInstance().campionaryThroughputMean()
                 + "\nMin Throughput: " + Monitor.getInstance().minThroughput()
                 + "\nMax Throughput: " + Monitor.getInstance().maxThroughput()
-                + "\nMean Response Time" + Monitor.getInstance().campionaryResponseTimeMean()
+                + "\nMean Response Time: " + Monitor.getInstance().campionaryResponseTimeMean()
                 + "\nStandard Deviation: " + Math.sqrt(Monitor.getInstance().ThroughputStd())
                 + "\n#Timeout: " + meanTimeout
                 + "\n#Corrupted Segments: " + meanCorruptedSegmentsNumber
+                + "\n#Dropped Segments: " + Monitor.getInstance().meanDroppedSegments()
                 + "\nSim. Time: " + maxSimTime() + "\n");
     }
 
@@ -173,4 +181,9 @@ public class Statistics {
         }
         return writer;
     }
+    
+    
+    /* GETTER */
+    public int getDroppedSegmentsCounter() { return droppedSegmentsCounter; }
+    
 }

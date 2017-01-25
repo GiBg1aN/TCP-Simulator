@@ -105,7 +105,6 @@ public class GUI {
             @Override
             protected void done() {
                 JOptionPane.showMessageDialog(frame, "Simulazione terminata");
-                Thread.currentThread().interrupt();
             }
         };
 
