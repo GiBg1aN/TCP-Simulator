@@ -29,16 +29,11 @@ public class RunPilota implements Runnable {
         fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
 
         /* Avvio simulazione */
-        //while (Monitor.getFEL(Thread.currentThread()).getSimTime() < MyConstants.simulationTime) {
         while (true) {
             nextEvent = fel.getNextEvent();
             nextEvent.solveEvent();
         }
 
-        /*System.out.println("Fine simulazione " + Monitor.getFEL(Thread.currentThread()).getSimTime());
-
-        Monitor.getSTATISTIC(Thread.currentThread()).printStatistics();
-        Monitor.getSTATISTIC(Thread.currentThread()).closeStream();*/
+        //System.out.println("Fine simulazione " + Monitor.getFEL(Thread.currentThread()).getSimTime());
     }
-
 }

@@ -59,8 +59,7 @@ public class Monitor {
         int counter = 0;
         boolean res = false;
 
-        if (gatheredMeans.size() >= 100) {
-            System.out.println(gatheredMeans.size() + " - BANANA RIMOSSA");
+        if (gatheredMeans.size() >= 50) {
             gatheredMeans.removeFirst();
         }
         
@@ -68,7 +67,7 @@ public class Monitor {
                 Monitor.getInstance().maxThroughput() < mean * MyConstants.maxERROR &&
                 Monitor.getInstance().checkTime >= MyConstants.WARM_UP) {
             gatheredMeans.addLast(new Range(minThroughput(), mean, maxThroughput()));
-            System.out.println(gatheredMeans.size() + " - BANANA AGGIUNTA");
+            System.out.println(gatheredMeans.size() + " - DATI RACCOLTI");
         }
         
         if (gatheredMeans.size() >= 50) {
