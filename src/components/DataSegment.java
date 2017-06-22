@@ -1,13 +1,11 @@
 package components;
 
-import mainPackage.SegmentType;
-
 
 public class DataSegment implements MySegment {
     private final User user;
     private final int seq;
-    private final double sentTimestamp;
-    private double receivedTimestamp; //TODO: utilizzarla per le statistiche
+    private double sentTimestamp;
+    private double receivedTimestamp;
 
 
     public DataSegment(User user, int seq, double sentTimestamp) {
@@ -17,10 +15,8 @@ public class DataSegment implements MySegment {
         this.receivedTimestamp = -1;
     }
     
+    
     /* GETTER E SETTER */
-    @Override
-    public SegmentType getSegmentType() { return SegmentType.DATA; }
-
     @Override
     public User getUser() { return user; }
     
@@ -28,6 +24,8 @@ public class DataSegment implements MySegment {
     public int getSeq() { return seq; }
 
     public double getSentTimestamp() { return sentTimestamp; }
+    
+    public void setSentTimeStamp(double sentTimestamp) { this.sentTimestamp = sentTimestamp; }
 
     public double getReceivedTimestamp() { return receivedTimestamp; }
     

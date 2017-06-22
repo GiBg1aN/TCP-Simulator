@@ -1,8 +1,6 @@
 package components;
 
-import mainPackage.MyConstants;
 import mainPackage.TCPProtocolType;
-import statistics.Statistics;
 import tcpImplementations.AIMD;
 import tcpImplementations.Reno;
 import tcpImplementations.TCP;
@@ -10,9 +8,8 @@ import tcpImplementations.Tahoe;
 
 
 public class User {
-    private int ID;
+    private final int ID;
     private TCP tcpProtocol;
-
 
 
     public User(int ID, TCPProtocolType tcpProtocol) {
@@ -28,8 +25,8 @@ public class User {
         }
     }
 
-    public void transmit(double timestamp) {
-        int segmentsToSend = MyConstants.generateSegmentsToSend(); // Numero segmenti per utente
+    public void transmit() {
+        int segmentsToSend = Monitor.getInstance().generateSegmentsToSend(Thread.currentThread()); // Numero segmenti per utente
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " starts transmission...sending " + segmentsToSend + " segments" + (char) 27 + "[0m");
         tcpProtocol.startTransmission(segmentsToSend); 
     }
@@ -40,10 +37,11 @@ public class User {
     
     public void timeout(MySegment segment) {
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " reachs timeout for segment number: " + seqNumber + (char) 27 + "[0m");
-        Statistics.increaseTimeout();
+        Monitor.getInstance().getStatistic(Thread.currentThread()).increaseTimeout();
         tcpProtocol.timeout(segment);
     }
 
+    
     /* GETTER E SETTER */
     public int getID() { return ID; }
 }

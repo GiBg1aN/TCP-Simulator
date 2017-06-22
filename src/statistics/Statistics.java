@@ -1,80 +1,129 @@
 package statistics;
 
 import components.DataSegment;
-import components.FEL;
+import components.Monitor;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import static mainPackage.MyConstants.G;
-import static mainPackage.MyConstants.K;
-import static mainPackage.MyConstants.P;
-import static mainPackage.MyConstants.T;
-
+import static mainPackage.MyConstants.*;
 
 public class Statistics {
-    private static double sum;
-    private static int segmentCounter;
-    private static int timeout;
-    private static int corruptedSegmentsNumber;
-    private static PrintWriter writer;
-    private static double max;
-    private static double min = 1;
-    private static double meanDevStanCounter;
+    private int segmentCounter;
+    private int timeout;
+    private int corruptedSegmentsNumber;
+    private int droppedSegmentsCounter;
+    private double sum;
+    private double max;
+    private double min;
+    private double meanDevStanCounter;
+    private boolean firstValue = true;
+    private PrintWriter writer;
+    private PrintWriter times;
     
-    
+
     /* STATISTICS */
-    public static void refreshResponseTimeStatistics(DataSegment item) {
-        double d = item.getReceivedTimestamp() - item.getSentTimestamp();
-        sum += d;
-        segmentCounter++;
-        
-        max = (max > d) ? max : d;
-        min = (min < d) ? min : d;
-        meanDevStanCounter += (d * d);
+    public void refreshResponseTimeStatistics(DataSegment item, boolean gather) {
+        if (gather) {
+            double d = item.getReceivedTimestamp() - item.getSentTimestamp();
+
+            sum += d;
+            segmentCounter++;
+            if (firstValue) {
+                max = d;
+                min = d;
+                firstValue = false;
+            } else {
+                max = (max > d) ? max : d;
+                min = (min < d) ? min : d;
+            }
+            meanDevStanCounter += (d * d);
+        }
+        Monitor.getInstance().checkPoint(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
+    }
+
+    public void increaseTimeout() {
+        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > WARM_UP) {
+            timeout++;
+        }
+    }
+
+    public void increaseCorruptedSegmentsNumber() {
+        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > WARM_UP) {
+            corruptedSegmentsNumber++;
+        }
     }
     
-    public static void increaseTimeout() { timeout++; }
+    public void increaseDroppedSegmentNumber() { 
+        if (Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() > WARM_UP) {
+            droppedSegmentsCounter++;
+        } 
+    }
     
-    public static void increaseCorruptedSegmentsNumber() { corruptedSegmentsNumber++; }
+    public double mean() { return sum / segmentCounter; }
+
+    public double meanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
+
+    public double ERTT() { return (segmentCounter == 0) ? TIMEOUT : sum / segmentCounter; }
+
+    public double devRTT(double devRTT, DataSegment item) {
+        return (3 / 4 * devRTT) + (1 / 4 * Math.abs(ERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
+    }
+
+    public double throughput(Thread t) { return segmentCounter / (Monitor.getInstance().getFEL(t).getSimTime()); }
+
+    public double maxSimTime() {
+        return Monitor.getInstance().getFELs().entrySet().stream()
+                .mapToDouble(x -> x.getValue().getSimTime())
+                .max()
+                .getAsDouble();
+    }
     
-    public static double evalMean() { return (sum / segmentCounter); }
-    
-    public static double evalMeanDevStan() { return (Math.sqrt((segmentCounter * meanDevStanCounter) - (sum * sum)) / segmentCounter); }
-    
+
     /* FORMATTED PRINTS */
-    public static void printStatistics() {
+    public void printTimes(double minMean, double campionaryMean, double maxMean) {
+        if (!Double.isNaN(minMean) && !Double.isNaN(campionaryMean) && !Double.isNaN(maxMean)) {
+            times.append(minMean + "," + campionaryMean + "," + maxMean + "\n");
+        }
+    }
+
+    public void printGlobalStatistics() {
+        writer.println("-GLOBALS-");
+        printProtocol();
         printConstants();
-        printResponseTimeStatistics();
-        printTimeout();
-        printCorruptedSegmentsNumber();
-        printThroughput();
-        printSegmentsSent();
+        int meanTimeout = (int) Monitor.getInstance().getStatistics().entrySet().stream()
+                .mapToDouble(x -> x.getValue().timeout)
+                .average()
+                .getAsDouble();
+        int meanCorruptedSegmentsNumber = (int) Monitor.getInstance().getStatistics().entrySet().stream()
+                .mapToDouble(x -> x.getValue().corruptedSegmentsNumber)
+                .average()
+                .getAsDouble();
+
+        writer.append("Mean Throughput: " + Monitor.getInstance().campionaryThroughputMean()
+                + "\nMin Throughput: " + Monitor.getInstance().minThroughput()
+                + "\nMax Throughput: " + Monitor.getInstance().maxThroughput()
+                + "\nMean Response Time: " + Monitor.getInstance().campionaryResponseTimeMean()
+                + "\nStandard Deviation: " + Math.sqrt(Monitor.getInstance().ThroughputStd())
+                + "\n#Timeout: " + meanTimeout
+                + "\n#Corrupted Segments: " + meanCorruptedSegmentsNumber
+                + "\n#Dropped Segments: " + Monitor.getInstance().meanDroppedSegments()
+                + "\nSim. Time: " + maxSimTime() + "\n");
+    }
+
+    public void printProtocol() { writer.append(protocolType.toString() + "\n"); }
+
+    public void printConstants() { 
+        writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\nErr(%): " + (maxERROR - 1) * 100 + "\n");
     }
     
-    public static void printConstants() { writer.append("T: " + T + "\nP: " + P + "\nG: " + G + "\nK: " + K + "\n"); }
-    
-    public static void printResponseTimeStatistics() { 
-        writer.append("Mean response time: "+ evalMean() +
-                "\nMin  response time: " + min +
-                "\nMax  response time: " + max +
-                "\nStandard Deviation: " + evalMeanDevStan() + "\n"); 
-    }
-    
-    public static void printTimeout() { writer.append("#Timeout: " + timeout + "\n"); }
-    
-    public static void printCorruptedSegmentsNumber() { writer.append("#CorruptedSegments: " + corruptedSegmentsNumber + "\n"); }
-    
-    public static void printThroughput() { writer.append("Throughput: " + (segmentCounter / (FEL.getInstance().getSimTime())) + "\n"); }
-    
-    public static void printSegmentsSent() { writer.append("Segments sent: "+ segmentCounter + "\n"); }
-    
+
     /* STREAMS */
-    public static PrintWriter openStream() {
+    public PrintWriter openStream() {
         try {
             String filename = "out/output_header";
-            
+
             File f = new File(filename);
-            if(f.exists() && !f.isDirectory()) { 
+            if (f.exists() && !f.isDirectory()) {
                 boolean flag = true;
                 int i = 0;
                 while (flag) {
@@ -94,23 +143,47 @@ public class Statistics {
             return writer;
         }
     }
-    
-    public static void closeStream() { writer.close(); }
-    
-    public static PrintWriter getWriterInstance() {
+
+    public PrintWriter openStreamForTimes() {
+        try {
+            String filename = "out/times.csv";
+
+            File f = new File(filename);
+            if (f.exists() && !f.isDirectory()) {
+                boolean flag = true;
+                int i = 0;
+                while (flag) {
+                    f = new File("out/times_" + i + ".csv");
+                    if (!f.exists() || f.isDirectory()) {
+                        flag = false;
+                        filename = ("out/times_" + i + ".csv");
+                    }
+                    i++;
+                }
+            }
+
+            times = new PrintWriter(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            return times;
+        }
+    }
+
+    public void closeStream() {
+        writer.close();
+        times.close();
+    }
+
+    public PrintWriter getWriterInstance() {
         if (writer == null) {
             return openStream();
         }
         return writer;
     }
-
-    public static double getERTT() {
-        
-        return evalMean();
-    }
-
-    public static double getDevRTT(double devRTT, DataSegment item) {
-        //System.out.println((item.getReceivedTimestamp() - item.getSentTimestamp()));
-        return (3/4 * devRTT) + (1/4 * Math.abs(getERTT() - (item.getReceivedTimestamp() - item.getSentTimestamp())));
-    }
+    
+    
+    /* GETTER */
+    public int getDroppedSegmentsCounter() { return droppedSegmentsCounter; }
+    
 }

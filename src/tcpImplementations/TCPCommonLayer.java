@@ -1,15 +1,13 @@
 package tcpImplementations;
 
-import components.Channel;
 import components.DataSegment;
 import components.Event;
-import components.FEL;
+import components.Monitor;
 import components.MySegment;
 import components.User;
 import java.util.LinkedList;
 import java.util.List;
 import mainPackage.MyConstants;
-import statistics.Statistics;
 
 
 public abstract class TCPCommonLayer implements TCP {
@@ -30,18 +28,18 @@ public abstract class TCPCommonLayer implements TCP {
     
     protected void sendSegment() {
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " sends segment number: " + seqNumber + (char) 27 + "[0m");
-        DataSegment segment = new DataSegment(this.user, this.seqNumber, FEL.getInstance().getSimTime());
-        Channel.getInstance().startTravel(segment);
-        FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + timeout, segment));
+        DataSegment segment = new DataSegment(this.user, this.seqNumber, Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
+        Monitor.getInstance().getChannel(Thread.currentThread()).startTravel(segment);
+        Monitor.getInstance().getFEL(Thread.currentThread()).scheduleNextEvent(new Event(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() + timeout, segment));
         congestionWindow.add(segment);
         seqNumber++;
     }
     
-    protected void sendSegment(int seqNumber) {
+    protected void sendSegment(int seqNumber, double timestamp) {
         //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " REsends segment number: " + seqNumber + (char) 27 + "[0m");        
-        MySegment segment = new DataSegment(this.user, seqNumber, FEL.getInstance().getSimTime());
-        Channel.getInstance().startTravel(segment);
-        FEL.getInstance().scheduleNextEvent(new Event(FEL.getInstance().getSimTime() + timeout, segment));
+        MySegment segment = new DataSegment(this.user, seqNumber, timestamp);
+        Monitor.getInstance().getChannel(Thread.currentThread()).startTravel(segment);
+        Monitor.getInstance().getFEL(Thread.currentThread()).scheduleNextEvent(new Event(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() + timeout, segment));
     }
     
     @Override
@@ -65,20 +63,20 @@ public abstract class TCPCommonLayer implements TCP {
     public void restart() {
         seqNumber = 0;
         size = MyConstants.MSS;
-        double timestamp = FEL.getInstance().getSimTime();
-        FEL.getInstance().scheduleNextEvent(new Event(timestamp, user));
-        Channel.getInstance().resetChannelForUser(this.user.getID());
+        double timestamp = Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime();
+        Monitor.getInstance().getFEL(Thread.currentThread()).scheduleNextEvent(new Event(timestamp, user));
+        Monitor.getInstance().getChannel(Thread.currentThread()).resetChannelForUser(this.user.getID());
     }
     
     @Override
     public void timeout(MySegment segment) {
         decreaseCongestionWindow();
-        ((DataSegment) segment).setReceivedTimestamp(FEL.getInstance().getSimTime());
-        Statistics.refreshResponseTimeStatistics((DataSegment)segment);
-        this.devRTT = Statistics.getDevRTT(this.devRTT, (DataSegment) segment);
-        timeout = Statistics.getERTT() + (4 * this.devRTT);
-        sendSegment(segment.getSeq());
-        //System.out.println(timeout);
+        ((DataSegment) segment).setReceivedTimestamp(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
+        Monitor.getInstance().getStatistic(Thread.currentThread()).refreshResponseTimeStatistics((DataSegment)segment, false);
+        this.devRTT = Monitor.getInstance().getStatistic(Thread.currentThread()).devRTT(this.devRTT, (DataSegment) segment);
+        timeout = Monitor.getInstance().getStatistic(Thread.currentThread()).ERTT() + (4 * this.devRTT);
+        sendSegment(segment.getSeq(), ((DataSegment)segment).getSentTimestamp());
+        //System.out.printl1n(timeout);
     }
 
     @Override

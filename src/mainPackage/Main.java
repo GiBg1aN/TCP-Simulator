@@ -1,58 +1,47 @@
 package mainPackage;
 
-import components.Event;
-import components.FEL;
-import components.User;
-import java.io.IOException;
-import java.io.PrintWriter;
+import GUI.GUI;
+import components.Monitor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import statistics.Statistics;
 
-
 public class Main {
-    public static void main(String[] args) throws InterruptedException, IOException {
-        final int N_USERS = MyConstants.K;
-        Event nextEvent;
-        FEL fel = FEL.getInstance();
-        //Channel channel = Channel.getInstance();
-        PrintWriter writer = Statistics.getWriterInstance();
-        TCPProtocolType protocolType = TCPProtocolType.AIMD;
+    public static void main(String[] args) {
+        GUI.runGui();
+    }
+
+    public static void run(RunPilota[] runPilota) {
+        boolean flag = true;
+        Statistics statistics = new Statistics();
         
-        if (args.length == 2) {
-            if (args[0].equals("-aimd")) {
-                writer.println("PROTOCOL TYPE: AIMD");
-                protocolType = TCPProtocolType.AIMD;
-            } else if (args[0].equals("-tahoe")) {
-                writer.println("PROTOCOL TYPE: TAHOE");
-                protocolType = TCPProtocolType.TAHOE;            
-            } else if (args[0].equals("-reno")) {
-                writer.println("PROTOCOL TYPE: RENO");
-                protocolType = TCPProtocolType.RENO;            
-            } else {
-                System.out.println("Argomenti non validi.");
-                System.exit(1);
+        while (flag) {
+            try {
+                Thread.sleep(250);
+                if (Monitor.getInstance().gatherInformation()) {
+                    if (Monitor.getInstance().checkConfidentialRange()) {
+                        System.out.println("FINE SIMULAZIONE");
+                        flag = false;
+                    }
+                }
+            } catch (InterruptedException ex) {
+                System.out.println("Simulazione stoppata");
             }
-        } else {
-            System.out.println("Numero di argomenti non valido.");
-            System.exit(1);
         }
         
-        System.out.println("Inizio simulazione");
-
-        /* ---------------------------------------------------------- */
-        for (int i = 0; i < N_USERS; i++) {
-            fel.scheduleNextEvent(new Event(0.0, new User(i, protocolType)));
-        }
-        fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
-        /* ---------------------------------------------------------- */
-
-        while (FEL.getInstance().getSimTime() < Integer.parseInt(args[1])) {
-            nextEvent = fel.getNextEvent(); // Ottengo il prossimo evento
-            nextEvent.solveEvent();
-        }
+        statistics.getWriterInstance();
+        statistics.openStreamForTimes();
         
-        System.out.println("Fine simulazione");
+        statistics.printGlobalStatistics();
+        Monitor.getInstance().getGatheredMeans().forEach(x -> statistics.printTimes(x.getMin(), x.getMean(), x.getMax()));
         
-        Statistics.printStatistics();
-        Statistics.closeStream();
+        statistics.closeStream();
+        
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.exit(0);
     }
 }
