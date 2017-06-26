@@ -7,7 +7,6 @@ import mainPackage.MyConstants;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.DynamicTimeSeriesCollection;
@@ -15,29 +14,31 @@ import org.jfree.data.time.Second;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.ApplicationFrame;
 
-
+/**
+ * This class allow to show the real time trend of the throughput during the
+ * simulation. The graph shows the minimum, the maximum and the mean of
+ * throughput collecting data directly from <code>Statistics</code>.
+ */
 public class Chart extends ApplicationFrame {
     static Chart demo;
-    private static final int COUNT = 2 * 60;
-    private static final int FAST = 100;
-    private static final int SLOW = FAST * 5;
+    private final int COUNT = 2 * 60;
+    private final int FAST = 100;
+    private final int SLOW = FAST * 5;
     private final Timer timer;
     private final DynamicTimeSeriesCollection dataset;
     private static Chart instance;
-    float[] newData = new float[6];
+    float[] newData = new float[4];
     public ValueAxis range;
 
     public Chart(final String title) {
         super(title);
-        dataset = new DynamicTimeSeriesCollection(6, COUNT, new Second());
+        dataset = new DynamicTimeSeriesCollection(4, COUNT, new Second());
         dataset.setTimeBase(new Second(0, 0, 0, 1, 1, 2011));
 
         dataset.addSeries(gaussianData(), 0, "Max");
         dataset.addSeries(gaussianData(), 1, "Mean");
         dataset.addSeries(gaussianData(), 2, "Min");
         dataset.addSeries(gaussianData(), 3, "SteadyState");
-        dataset.addSeries(gaussianData(), 4, "Delta-");
-        dataset.addSeries(gaussianData(), 5, "Delta+");
 
         JFreeChart chart = createChart(dataset);
 
@@ -63,7 +64,6 @@ public class Chart extends ApplicationFrame {
         domain.setVisible(false);
         range = plot.getRangeAxis();
         range.setRange(0.0205, 0.0225);
-        NumberAxis y = (NumberAxis) plot.getRangeAxis();
 
         return result;
     }
@@ -73,16 +73,18 @@ public class Chart extends ApplicationFrame {
     }
 
 
-    public float[] addValue(double max, double mean, double min, double warmUp, double deltaNeg, double deltaPos) {
+    public float[] addValue(double max, double mean, double min, double warmUp) {
         try {
             double minRange;
             double maxRange;
             double error;
+            
             if (Monitor.getInstance().getCheckTime() > MyConstants.WARM_UP) {
                 error = 5;
             } else {
                 error = 100;
             }
+            
             maxRange = Math.max(min + error, max + error);
             minRange = Math.min(min - error, max - error);
             range.setRange(minRange, maxRange);
@@ -90,8 +92,6 @@ public class Chart extends ApplicationFrame {
             this.newData[1] = (float) mean;
             this.newData[2] = (float) max;
             this.newData[3] = (float) warmUp;
-            this.newData[4] = (float) deltaNeg;
-            this.newData[5] = (float) deltaPos;
             dataset.advanceTime();
             dataset.appendData(newData);
             Thread.sleep(0);
@@ -108,6 +108,7 @@ public class Chart extends ApplicationFrame {
         if (ID == 0) {
             this.newData[0] = 1;
             this.newData[1] = MyConstants.SSTHRESH;
+            
             for (int i = 0; i < 10; i++) {
                 dataset.advanceTime();
                 dataset.appendData(newData);

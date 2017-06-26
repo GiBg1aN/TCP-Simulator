@@ -1,5 +1,8 @@
 package components;
 
+/**
+ * A support class.
+ */
 public class Range {
     private final double min;
     private final double mean;

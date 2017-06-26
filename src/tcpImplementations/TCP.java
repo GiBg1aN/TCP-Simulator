@@ -2,7 +2,9 @@ package tcpImplementations;
 
 import components.MySegment;
 
-
+/**
+ * A common interface for TCP protocols.
+ */
 public interface TCP {
     boolean receiveSegment(MySegment s);
     

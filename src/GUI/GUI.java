@@ -19,9 +19,12 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import mainPackage.MyConstants;
-import mainPackage.RunPilota;
+import mainPackage.PilotRun;
 import mainPackage.TCPProtocolType;
 
+/**
+ * This class renders a basic UI to set up the simulation.
+ */
 public class GUI {
     public static void runGui() {
         /* LAYOUT */
@@ -35,14 +38,14 @@ public class GUI {
         JPanel panel6 = new JPanel();
 
         /* COMPONENTS */
-        JLabel protocolLabel = new JLabel("Seleziona protocollo:");
-        JLabel userNoLabel = new JLabel("Numero utenti:");
-        JLabel queueLengthLabel = new JLabel("Lunghezza della coda:");
-        JLabel parallelSimulationLabel = new JLabel("Numero di simulazione in parallelo:");
-        JLabel segmentCorruptionInverseLabel = new JLabel("Probabilità che un segmento sia integro:");
-        JLabel casualNumberLabel = new JLabel("Probabilità di successo geometrica:");
-        JLabel warmUpLabel = new JLabel("Tempo di Warm-up");
-        JLabel errorLabel = new JLabel("Errore relativo");
+        JLabel protocolLabel = new JLabel("Select protocol:");
+        JLabel userNoLabel = new JLabel("# Users:");
+        JLabel queueLengthLabel = new JLabel("Channel size:");
+        JLabel parallelSimulationLabel = new JLabel("# Parallel simulations:");
+        JLabel segmentCorruptionInverseLabel = new JLabel("Segment integrity probability:");
+        JLabel casualNumberLabel = new JLabel("Geometric distribution probability for segment generation:");
+        JLabel warmUpLabel = new JLabel("Warm-up duration");
+        JLabel errorLabel = new JLabel("Relative error");
         
         JComboBox protocolComboBox = new JComboBox(new String[]{"AIMD", "Tahoe", "Reno"});
 
@@ -90,12 +93,12 @@ public class GUI {
                 MyConstants.maxERROR = 1 + Double.parseDouble(errorTextField.getText())/100;
                                 
 
-                RunPilota[] runPilota = new RunPilota[MyConstants.N_THREAD];
+                PilotRun[] runPilota = new PilotRun[MyConstants.N_THREAD];
 
                 Chart.getInstance();
                 
                 for (int i = 0; i < MyConstants.N_THREAD; i++) {
-                    runPilota[i] = new RunPilota();
+                    runPilota[i] = new PilotRun();
                     runPilota[i].start();
                 }
                 mainPackage.Main.run(runPilota);
@@ -104,7 +107,7 @@ public class GUI {
 
             @Override
             protected void done() {
-                JOptionPane.showMessageDialog(frame, "Simulazione terminata");
+                JOptionPane.showMessageDialog(frame, "Simulation terminated");
             }
         };
 

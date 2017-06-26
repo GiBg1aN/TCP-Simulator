@@ -6,7 +6,10 @@ import tcpImplementations.Reno;
 import tcpImplementations.TCP;
 import tcpImplementations.Tahoe;
 
-
+/**
+ * This class models an user, describing the TCP protocol used and manages the
+ * transmission/reception of user's segments.
+ */
 public class User {
     private final int ID;
     private TCP tcpProtocol;
@@ -26,8 +29,7 @@ public class User {
     }
 
     public void transmit() {
-        int segmentsToSend = Monitor.getInstance().generateSegmentsToSend(Thread.currentThread()); // Numero segmenti per utente
-        //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " starts transmission...sending " + segmentsToSend + " segments" + (char) 27 + "[0m");
+        int segmentsToSend = Monitor.getInstance().generateSegmentsToSend(Thread.currentThread());
         tcpProtocol.startTransmission(segmentsToSend); 
     }
     
@@ -36,13 +38,12 @@ public class User {
     }
     
     public void timeout(MySegment segment) {
-        //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[31m" + ID + " reachs timeout for segment number: " + seqNumber + (char) 27 + "[0m");
         Monitor.getInstance().getStatistic(Thread.currentThread()).increaseTimeout();
         tcpProtocol.timeout(segment);
     }
 
     
-    /* GETTER E SETTER */
+    /* GETTER / SETTER */
     public int getID() { return ID; }
 }
 

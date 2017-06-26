@@ -3,7 +3,7 @@ package components;
 import mainPackage.EventType;
 
 /**
- * Rappresenta un evento generico che viene elaborato dalla Future Event List.
+ * Represents a generic event that gets elaborated from Future Event List.
  */
 public class Event {
     private final double timestamp;
@@ -11,20 +11,20 @@ public class Event {
     private User user;
     private MySegment segment;
     
-    /* Evento generico */
+    /* Generic event type */
     public Event(double timestamp, EventType eventType) {
         this.timestamp = timestamp;
         this.eventType = eventType;
     }
     
-    /* Evento di tipo TRANSMIT */
+    /* TRANSMIT event type */
     public Event(double timestamp, User user) {
         this.timestamp = timestamp;
         this.user = user;
         this.eventType = EventType.TRANSMIT;
     }
     
-    /* Evento di tipo TIMEOUT */
+    /* TIMEOUT event type */
     public Event(double timestamp, MySegment segment) {
         this.timestamp = timestamp;
         this.segment = segment;
@@ -50,7 +50,7 @@ public class Event {
     }
 
     
-    /* GETTER E SETTER */
+    /* GETTER / SETTER */
     public double getTimestamp() { return timestamp; }
 
     public EventType getEventType() { return eventType; }

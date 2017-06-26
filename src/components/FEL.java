@@ -6,13 +6,15 @@ import java.util.List;
 import mainPackage.EventType;
 
 /**
- * Rappresenta la Future Event List.
+ * This class models the Future Event List.
  */
 public class FEL {
     private final List<Event> fel = new LinkedList<>();
     private double simTime;
     
-    /* Ritorna l'evento con il timestamp minimo */
+    /*
+     * Returns the event with minimum timestamp in the future event list
+     */
     public Event getNextEvent() {
         Event next = fel.stream().min(Comparator.comparing(e -> e.getTimestamp())).get();
         simTime = next.getTimestamp();
@@ -22,11 +24,9 @@ public class FEL {
 
     public void scheduleNextEvent(Event event) { fel.add(event); }
     
-    /**
-     * Se l'ack del segmento inviato è arrivato correttamente il relativo timeout
-     * viene annullato.
-     * @param seqNumber numero di sequenza del segmento.
-     * @param userID    id dell'utente.
+    /*
+     * When a data segment is received correctly its timeout event will be
+     * removed from FEL.
      */
     public void removeTimeoutEvent(int seqNumber, int userID) {
         for (int i = 0; i < fel.size(); i++) {

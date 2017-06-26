@@ -13,6 +13,9 @@ import umontreal.ssj.randvar.UniformGen;
 import umontreal.ssj.rng.LFSR113;
 import umontreal.ssj.rng.RandomStream;
 
+/**
+ * This class manages the parallel pilot runs of the simulation.
+ */
 public class Monitor {
     private final Map<Thread, FEL> FELMap = new HashMap<>();
     private final Map<Thread, Channel> channelMap = new HashMap<>();
@@ -27,8 +30,15 @@ public class Monitor {
     
     private Monitor() {}
     
+    /**
+     * Singleton instance.
+     * @return a Monitor class instance.
+     */
     public static Monitor getInstance() { return monitorInstance; }
 
+    /*
+     * Allows the threads'synchronization.
+     */
     public synchronized void checkPoint(double simTime) {
         try {
             if (simTime >= checkTime) {
@@ -40,6 +50,9 @@ public class Monitor {
         }
     }
 
+    /*
+     * Allows the threads'synchronization.
+     */
     public synchronized boolean gatherInformation() { return checked == MyConstants.N_THREAD; }
     
     public int generateSegmentsToSend(Thread t) {
@@ -67,7 +80,6 @@ public class Monitor {
                 Monitor.getInstance().maxThroughput() < mean * MyConstants.maxERROR &&
                 Monitor.getInstance().checkTime >= MyConstants.WARM_UP) {
             gatheredMeans.addLast(new Range(minThroughput(), mean, maxThroughput()));
-            System.out.println(gatheredMeans.size() + " - DATI RACCOLTI");
         }
         
         if (gatheredMeans.size() >= 50) {
@@ -80,7 +92,7 @@ public class Monitor {
         }
 
         double warmUp = (checkTime > MyConstants.WARM_UP) ? 100000 : 0;
-        Chart.getInstance().addValue(minThroughput(), mean, maxThroughput(), warmUp, 0, 0);
+        Chart.getInstance().addValue(minThroughput(), mean, maxThroughput(), warmUp);
 
         checked = 0;
         checkTime += 0.05;

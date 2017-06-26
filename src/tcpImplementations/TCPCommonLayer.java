@@ -9,7 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import mainPackage.MyConstants;
 
-
+/**
+ * This class models the common behaviour of Tahoe and Reno.
+ */
 public abstract class TCPCommonLayer implements TCP {
     protected int size;
     protected int segmentsToSend;
@@ -27,7 +29,6 @@ public abstract class TCPCommonLayer implements TCP {
     }
     
     protected void sendSegment() {
-        //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " sends segment number: " + seqNumber + (char) 27 + "[0m");
         DataSegment segment = new DataSegment(this.user, this.seqNumber, Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime());
         Monitor.getInstance().getChannel(Thread.currentThread()).startTravel(segment);
         Monitor.getInstance().getFEL(Thread.currentThread()).scheduleNextEvent(new Event(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() + timeout, segment));
@@ -36,7 +37,6 @@ public abstract class TCPCommonLayer implements TCP {
     }
     
     protected void sendSegment(int seqNumber, double timestamp) {
-        //System.out.println("(" + FEL.getInstance().getSimTime() + ")" + (char) 27 + "[35m" + user.getID() + " REsends segment number: " + seqNumber + (char) 27 + "[0m");        
         MySegment segment = new DataSegment(this.user, seqNumber, timestamp);
         Monitor.getInstance().getChannel(Thread.currentThread()).startTravel(segment);
         Monitor.getInstance().getFEL(Thread.currentThread()).scheduleNextEvent(new Event(Monitor.getInstance().getFEL(Thread.currentThread()).getSimTime() + timeout, segment));
@@ -76,7 +76,6 @@ public abstract class TCPCommonLayer implements TCP {
         this.devRTT = Monitor.getInstance().getStatistic(Thread.currentThread()).devRTT(this.devRTT, (DataSegment) segment);
         timeout = Monitor.getInstance().getStatistic(Thread.currentThread()).ERTT() + (4 * this.devRTT);
         sendSegment(segment.getSeq(), ((DataSegment)segment).getSentTimestamp());
-        //System.out.printl1n(timeout);
     }
 
     @Override

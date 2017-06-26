@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import static mainPackage.MyConstants.*;
 
+/**
+ * This class gathers information and data about the simulation, once simulation
+ * ends, it writes the statistics in a CSV file.
+ */
 public class Statistics {
     private int segmentCounter;
     private int timeout;

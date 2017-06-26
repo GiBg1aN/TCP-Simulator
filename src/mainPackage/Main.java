@@ -6,12 +6,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import statistics.Statistics;
 
+/**
+ * This class initialises the GUI and starts all pilot runs.
+ */
 public class Main {
     public static void main(String[] args) {
         GUI.runGui();
     }
 
-    public static void run(RunPilota[] runPilota) {
+    public static void run(PilotRun[] pilotRun) {
         boolean flag = true;
         Statistics statistics = new Statistics();
         
@@ -20,12 +23,12 @@ public class Main {
                 Thread.sleep(250);
                 if (Monitor.getInstance().gatherInformation()) {
                     if (Monitor.getInstance().checkConfidentialRange()) {
-                        System.out.println("FINE SIMULAZIONE");
+                        System.out.println("Simulation ended");
                         flag = false;
                     }
                 }
             } catch (InterruptedException ex) {
-                System.out.println("Simulazione stoppata");
+                System.out.println("Simulation stopped");
             }
         }
         

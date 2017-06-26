@@ -1,6 +1,8 @@
 package components;
 
-
+/**
+ * This class represents the data segment.
+ */
 public class DataSegment implements MySegment {
     private final User user;
     private final int seq;
@@ -16,7 +18,7 @@ public class DataSegment implements MySegment {
     }
     
     
-    /* GETTER E SETTER */
+    /* GETTER / SETTER */
     @Override
     public User getUser() { return user; }
     

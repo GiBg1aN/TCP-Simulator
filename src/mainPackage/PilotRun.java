@@ -5,7 +5,10 @@ import components.FEL;
 import components.Monitor;
 import components.User;
 
-public class RunPilota implements Runnable {
+/**
+ * This class provides information about a pilot run behaviour.
+ */
+public class PilotRun implements Runnable {
     Thread t = new Thread(this);
 
     public void start() { t.start(); }
@@ -22,18 +25,16 @@ public class RunPilota implements Runnable {
         Monitor.getInstance().addStatistic(Thread.currentThread());
         Monitor.getInstance().addRandomStream(Thread.currentThread());
 
-        /* Creazione utenti */
+        /* users creation */
         for (int i = 0; i < N_USERS; i++) {
             fel.scheduleNextEvent(new Event(0.0, new User(i, MyConstants.protocolType)));
         }
         fel.scheduleNextEvent(new Event(0.0, EventType.CH_SOLVING));
 
-        /* Avvio simulazione */
+        /* simulation starting */
         while (true) {
             nextEvent = fel.getNextEvent();
             nextEvent.solveEvent();
         }
-
-        //System.out.println("Fine simulazione " + Monitor.getFEL(Thread.currentThread()).getSimTime());
     }
 }
